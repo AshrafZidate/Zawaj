@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpMarriageTimelineView: View {
-    @State private var selectedTimeline: String?
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpMarriageTimelineView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -54,23 +54,28 @@ struct SignUpMarriageTimelineView: View {
                 // Timeline selection buttons
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "1-3 Months") {
-                        selectedTimeline = "1-3 Months"
+                        coordinator.marriageTimeline = "1-3 Months"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "3-6 Months") {
-                        selectedTimeline = "3-6 Months"
+                        coordinator.marriageTimeline = "3-6 Months"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "6-12 Months") {
-                        selectedTimeline = "6-12 Months"
+                        coordinator.marriageTimeline = "6-12 Months"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "1-2 Years") {
-                        selectedTimeline = "1-2 Years"
+                        coordinator.marriageTimeline = "1-2 Years"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Not sure") {
-                        selectedTimeline = "Not sure"
+                        coordinator.marriageTimeline = "Not sure"
+                        coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
@@ -82,4 +87,5 @@ struct SignUpMarriageTimelineView: View {
 
 #Preview {
     SignUpMarriageTimelineView()
+        .environmentObject(OnboardingCoordinator())
 }

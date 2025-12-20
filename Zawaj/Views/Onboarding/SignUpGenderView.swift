@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpGenderView: View {
-    @State private var selectedGender: String?
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpGenderView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -59,11 +59,13 @@ struct SignUpGenderView: View {
                 // Gender selection buttons
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Male") {
-                        selectedGender = "Male"
+                        coordinator.gender = "Male"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Female") {
-                        selectedGender = "Female"
+                        coordinator.gender = "Female"
+                        coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
@@ -75,4 +77,5 @@ struct SignUpGenderView: View {
 
 #Preview {
     SignUpGenderView()
+        .environmentObject(OnboardingCoordinator())
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpRelationshipStatusView: View {
-    @State private var selectedStatus: String?
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpRelationshipStatusView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -54,19 +54,23 @@ struct SignUpRelationshipStatusView: View {
                 // Relationship status selection buttons
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Single") {
-                        selectedStatus = "Single"
+                        coordinator.relationshipStatus = "Single"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Talking Stage") {
-                        selectedStatus = "Talking Stage"
+                        coordinator.relationshipStatus = "Talking Stage"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Engaged") {
-                        selectedStatus = "Engaged"
+                        coordinator.relationshipStatus = "Engaged"
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Married") {
-                        selectedStatus = "Married"
+                        coordinator.relationshipStatus = "Married"
+                        coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
@@ -78,4 +82,5 @@ struct SignUpRelationshipStatusView: View {
 
 #Preview {
     SignUpRelationshipStatusView()
+        .environmentObject(OnboardingCoordinator())
 }

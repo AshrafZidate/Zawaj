@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var email: String = ""
     @State private var password: String = ""
 
@@ -24,13 +25,29 @@ struct LoginView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 28) {
-                // Logo
-                Image("logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .padding(.top, 40)
+            VStack(spacing: 0) {
+                // Back button
+                HStack {
+                    Button(action: {
+                        coordinator.previousStep()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    Spacer()
+                }
+                .frame(height: 44)
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
+
+                VStack(spacing: 28) {
+                    // Logo
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .padding(.top, 20)
 
                 // App branding
                 VStack(spacing: 8) {
@@ -136,7 +153,7 @@ struct LoginView: View {
                         Text("Don't have an account?")
                             .foregroundColor(.white.opacity(0.8))
                         Button(action: {
-                            // Navigate to sign up
+                            coordinator.skipToStep(.signUpEmail)
                         }) {
                             Text("Sign up")
                                 .foregroundColor(.white)
@@ -148,6 +165,7 @@ struct LoginView: View {
                 .padding(.horizontal, 24)
 
                 Spacer()
+                }
             }
         }
     }
@@ -155,4 +173,5 @@ struct LoginView: View {
 
 #Preview {
     LoginView()
+        .environmentObject(OnboardingCoordinator())
 }

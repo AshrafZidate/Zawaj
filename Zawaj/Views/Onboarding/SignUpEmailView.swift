@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpEmailView: View {
-    @State private var email: String = ""
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpEmailView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -51,7 +51,7 @@ struct SignUpEmailView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Email text field
-                    TextField("", text: $email, prompt: Text("Email").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.secondary))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
@@ -67,7 +67,7 @@ struct SignUpEmailView: View {
 
                 // Continue button - just above bottom
                 GlassmorphicButton(title: "Continue") {
-                    // Continue action
+                    coordinator.nextStep()
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
@@ -78,4 +78,5 @@ struct SignUpEmailView: View {
 
 #Preview {
     SignUpEmailView()
+        .environmentObject(OnboardingCoordinator())
 }

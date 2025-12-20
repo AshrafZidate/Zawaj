@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpPasswordView: View {
-    @State private var password: String = ""
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var confirmPassword: String = ""
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
@@ -30,14 +30,14 @@ struct SignUpPasswordView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -56,12 +56,12 @@ struct SignUpPasswordView: View {
                     // Password text field with show/hide toggle
                     HStack {
                         if isPasswordVisible {
-                            TextField("", text: $password, prompt: Text("Password").foregroundColor(.secondary))
+                            TextField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.secondary))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
                         } else {
-                            SecureField("", text: $password, prompt: Text("Password").foregroundColor(.secondary))
+                            SecureField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.secondary))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
@@ -114,7 +114,7 @@ struct SignUpPasswordView: View {
 
                 // Continue button - just above bottom
                 GlassmorphicButton(title: "Continue") {
-                    // Continue action
+                    coordinator.nextStep()
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
@@ -125,4 +125,5 @@ struct SignUpPasswordView: View {
 
 #Preview {
     SignUpPasswordView()
+        .environmentObject(OnboardingCoordinator())
 }

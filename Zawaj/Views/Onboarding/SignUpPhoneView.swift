@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct SignUpPhoneView: View {
-    @State private var phoneNumber: String = ""
-    @State private var countryCode: String = "+1"
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var showingCountryPicker = false
 
     var body: some View {
@@ -29,14 +28,14 @@ struct SignUpPhoneView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -59,7 +58,7 @@ struct SignUpPhoneView: View {
                             showingCountryPicker = true
                         }) {
                             HStack(spacing: 6) {
-                                Text(countryCode)
+                                Text(coordinator.countryCode)
                                     .font(.body)
                                     .foregroundColor(.primary)
 
@@ -74,7 +73,7 @@ struct SignUpPhoneView: View {
                         .buttonStyle(.plain)
 
                         // Phone number field
-                        TextField("", text: $phoneNumber, prompt: Text("Phone Number").foregroundColor(.secondary))
+                        TextField("", text: $coordinator.phoneNumber, prompt: Text("Phone Number").foregroundColor(.secondary))
                             .font(.body)
                             .textFieldStyle(.plain)
                             .padding(.horizontal, 16)
@@ -90,14 +89,14 @@ struct SignUpPhoneView: View {
 
                 // Continue button - just above bottom
                 GlassmorphicButton(title: "Continue") {
-                    // Continue action
+                    coordinator.nextStep()
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }
         }
         .sheet(isPresented: $showingCountryPicker) {
-            CountryCodePickerView(selectedCountryCode: $countryCode)
+            CountryCodePickerView(selectedCountryCode: $coordinator.countryCode)
         }
     }
 }
@@ -164,4 +163,5 @@ struct CountryCodePickerView: View {
 
 #Preview {
     SignUpPhoneView()
+        .environmentObject(OnboardingCoordinator())
 }

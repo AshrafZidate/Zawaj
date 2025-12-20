@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
+
     var body: some View {
         ZStack {
             // Gradient background
@@ -51,11 +53,11 @@ struct WelcomeView: View {
                 // Bottom section with buttons
                 VStack(spacing: 16) {
                     GlassmorphicButton(title: "Log In") {
-                        // Login action
+                        coordinator.skipToStep(.login)
                     }
 
                     GlassmorphicButton(title: "Sign Up") {
-                        // Sign up action
+                        coordinator.skipToStep(.signUpEmail)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -65,23 +67,7 @@ struct WelcomeView: View {
     }
 }
 
-struct GlassmorphicButton: View {
-    let title: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.body.weight(.semibold))
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 25))
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 #Preview {
     WelcomeView()
+        .environmentObject(OnboardingCoordinator())
 }

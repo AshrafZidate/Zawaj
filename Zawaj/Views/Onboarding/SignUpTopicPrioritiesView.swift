@@ -22,6 +22,7 @@ extension UTType {
 }
 
 struct SignUpTopicPrioritiesView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var topics: [TopicItem] = [
         TopicItem(id: UUID(), title: "Religious values"),
         TopicItem(id: UUID(), title: "Family expectations"),
@@ -52,14 +53,14 @@ struct SignUpTopicPrioritiesView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -102,7 +103,8 @@ struct SignUpTopicPrioritiesView: View {
 
                 // Continue button
                 Button(action: {
-                    // Continue action
+                    coordinator.topicPriorities = topics.map { $0.title }
+                    coordinator.nextStep()
                 }) {
                     Text("Continue")
                         .font(.body.weight(.semibold))
@@ -120,4 +122,5 @@ struct SignUpTopicPrioritiesView: View {
 
 #Preview {
     SignUpTopicPrioritiesView()
+        .environmentObject(OnboardingCoordinator())
 }

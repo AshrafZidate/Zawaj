@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpAddPartnerView: View {
-    @State private var partnerUsername: String = ""
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpAddPartnerView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -51,7 +51,7 @@ struct SignUpAddPartnerView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Partner username text field
-                    TextField("", text: $partnerUsername, prompt: Text("Partner's username").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username").foregroundColor(.secondary))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
@@ -69,14 +69,17 @@ struct SignUpAddPartnerView: View {
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Send partner request") {
                         // Send partner request
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Invite partner to Zawāj") {
                         // Invite partner via share sheet
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "I don't have a partner") {
                         // Skip partner connection
+                        coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
@@ -88,4 +91,5 @@ struct SignUpAddPartnerView: View {
 
 #Preview {
     SignUpAddPartnerView()
+        .environmentObject(OnboardingCoordinator())
 }

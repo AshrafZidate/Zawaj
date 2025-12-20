@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EnableNotificationsView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
+
     var body: some View {
         ZStack {
             // Gradient background
@@ -25,14 +27,14 @@ struct EnableNotificationsView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -57,10 +59,12 @@ struct EnableNotificationsView: View {
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Enable push notifications") {
                         // Request notification permission
+                        coordinator.nextStep()
                     }
 
                     GlassmorphicButton(title: "Not now") {
                         // Skip notifications
+                        coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
@@ -72,4 +76,5 @@ struct EnableNotificationsView: View {
 
 #Preview {
     EnableNotificationsView()
+        .environmentObject(OnboardingCoordinator())
 }

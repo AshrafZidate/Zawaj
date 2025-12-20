@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpFullNameView: View {
-    @State private var fullName: String = ""
+    @EnvironmentObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         ZStack {
@@ -27,14 +27,14 @@ struct SignUpFullNameView: View {
                 // Back button and progress bar - just below dynamic island
                 HStack {
                     Button(action: {
-                        // Back action
+                        coordinator.previousStep()
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
 
-                    ProgressBar(progress: 0.1)
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
@@ -51,7 +51,7 @@ struct SignUpFullNameView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Full name text field
-                    TextField("", text: $fullName, prompt: Text("Full Name").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.secondary))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
@@ -67,7 +67,7 @@ struct SignUpFullNameView: View {
 
                 // Continue button - just above bottom
                 GlassmorphicButton(title: "Continue") {
-                    // Continue action
+                    coordinator.nextStep()
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
@@ -78,4 +78,5 @@ struct SignUpFullNameView: View {
 
 #Preview {
     SignUpFullNameView()
+        .environmentObject(OnboardingCoordinator())
 }
