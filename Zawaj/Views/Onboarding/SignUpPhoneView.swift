@@ -88,15 +88,41 @@ struct SignUpPhoneView: View {
                 Spacer()
 
                 // Continue button - just above bottom
-                GlassmorphicButton(title: "Continue") {
-                    coordinator.nextStep()
+                GlassmorphicButton(title: "Send Verification Code") {
+                    Task {
+                        await coordinator.sendPhoneVerification()
+                        // Move to next step only if verification SMS was sent successfully
+                        if coordinator.phoneVerificationID != nil {
+                            coordinator.nextStep()
+                        }
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
+                .disabled(coordinator.isLoading || coordinator.phoneNumber.isEmpty)
+            }
+
+            // Loading overlay
+            if coordinator.isLoading {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
             }
         }
         .sheet(isPresented: $showingCountryPicker) {
             CountryCodePickerView(selectedCountryCode: $coordinator.countryCode)
+        }
+        .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
+            Button("OK", role: .cancel) {
+                coordinator.authenticationError = nil
+            }
+        } message: {
+            if let error = coordinator.authenticationError {
+                Text(error)
+            }
         }
     }
 }

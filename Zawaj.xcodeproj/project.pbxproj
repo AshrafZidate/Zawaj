@@ -6,6 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DC5A77CE2EF80DCA00C9B450 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77CD2EF80DCA00C9B450 /* GoogleSignIn */; };
+		DC5A77D02EF80DCA00C9B450 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77CF2EF80DCA00C9B450 /* GoogleSignInSwift */; };
+		DC5A77D32EF80E2700C9B450 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77D22EF80E2700C9B450 /* FirebaseAnalytics */; };
+		DC5A77D52EF80E2700C9B450 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77D42EF80E2700C9B450 /* FirebaseAuth */; };
+		DC5A77D72EF80E2700C9B450 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77D62EF80E2700C9B450 /* FirebaseCore */; };
+		DC5A77D92EF80E2700C9B450 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77D82EF80E2700C9B450 /* FirebaseFirestore */; };
+		DC5A77DB2EF80E2700C9B450 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77DA2EF80E2700C9B450 /* FirebaseMessaging */; };
+		DC5A77DD2EF80E2700C9B450 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = DC5A77DC2EF80E2700C9B450 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		DC8ED54B2EF4CEF2008DAE3A /* Zawaj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zawaj.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +47,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC5A77CE2EF80DCA00C9B450 /* GoogleSignIn in Frameworks */,
+				DC5A77D72EF80E2700C9B450 /* FirebaseCore in Frameworks */,
+				DC5A77DB2EF80E2700C9B450 /* FirebaseMessaging in Frameworks */,
+				DC5A77D02EF80DCA00C9B450 /* GoogleSignInSwift in Frameworks */,
+				DC5A77D32EF80E2700C9B450 /* FirebaseAnalytics in Frameworks */,
+				DC5A77DD2EF80E2700C9B450 /* FirebaseStorage in Frameworks */,
+				DC5A77D52EF80E2700C9B450 /* FirebaseAuth in Frameworks */,
+				DC5A77D92EF80E2700C9B450 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +97,14 @@
 			);
 			name = Zawaj;
 			packageProductDependencies = (
+				DC5A77CD2EF80DCA00C9B450 /* GoogleSignIn */,
+				DC5A77CF2EF80DCA00C9B450 /* GoogleSignInSwift */,
+				DC5A77D22EF80E2700C9B450 /* FirebaseAnalytics */,
+				DC5A77D42EF80E2700C9B450 /* FirebaseAuth */,
+				DC5A77D62EF80E2700C9B450 /* FirebaseCore */,
+				DC5A77D82EF80E2700C9B450 /* FirebaseFirestore */,
+				DC5A77DA2EF80E2700C9B450 /* FirebaseMessaging */,
+				DC5A77DC2EF80E2700C9B450 /* FirebaseStorage */,
 			);
 			productName = Zawaj;
 			productReference = DC8ED54B2EF4CEF2008DAE3A /* Zawaj.app */;
@@ -107,6 +134,10 @@
 			);
 			mainGroup = DC8ED5422EF4CEF2008DAE3A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DC5A77CC2EF80DCA00C9B450 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DC8ED54C2EF4CEF2008DAE3A /* Products */;
 			projectDirPath = "";
@@ -357,6 +388,68 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DC5A77CC2EF80DCA00C9B450 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+		DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DC5A77CD2EF80DCA00C9B450 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77CC2EF80DCA00C9B450 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		DC5A77CF2EF80DCA00C9B450 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77CC2EF80DCA00C9B450 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		DC5A77D22EF80E2700C9B450 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		DC5A77D42EF80E2700C9B450 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		DC5A77D62EF80E2700C9B450 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		DC5A77D82EF80E2700C9B450 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		DC5A77DA2EF80E2700C9B450 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		DC5A77DC2EF80E2700C9B450 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC5A77D12EF80E2700C9B450 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DC8ED5432EF4CEF2008DAE3A /* Project object */;
 }

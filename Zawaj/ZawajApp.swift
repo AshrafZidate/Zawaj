@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct ZawajApp: App {
+    @StateObject private var authService = AuthenticationService()
+
+    init() {
+        // Configure Firebase on app launch
+        FirebaseManager.shared.configure()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authService)
         }
     }
 }

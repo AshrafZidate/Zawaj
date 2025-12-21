@@ -12,6 +12,8 @@ struct SignUpPasswordView: View {
     @State private var confirmPassword: String = ""
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
 
     var body: some View {
         ZStack {
@@ -114,11 +116,50 @@ struct SignUpPasswordView: View {
 
                 // Continue button - just above bottom
                 GlassmorphicButton(title: "Continue") {
-                    coordinator.nextStep()
+                    // Validate passwords match
+                    guard coordinator.password == confirmPassword else {
+                        errorMessage = "Passwords do not match"
+                        showError = true
+                        return
+                    }
+
+                    // Validate password length
+                    guard coordinator.password.count >= 6 else {
+                        errorMessage = "Password must be at least 6 characters"
+                        showError = true
+                        return
+                    }
+
+                    // Sign up with email and password
+                    Task {
+                        await coordinator.signUpWithEmail()
+                        if coordinator.authenticationError != nil {
+                            errorMessage = coordinator.authenticationError ?? "Unknown error"
+                            showError = true
+                        }
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
+                .disabled(coordinator.isLoading)
             }
+
+            // Loading overlay
+            if coordinator.isLoading {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+            }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK", role: .cancel) {
+                coordinator.authenticationError = nil
+            }
+        } message: {
+            Text(errorMessage)
         }
     }
 }

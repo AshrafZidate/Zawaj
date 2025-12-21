@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import FirebaseAuth
 
 enum OnboardingStep: Int, CaseIterable {
     case welcome = 0
@@ -86,6 +87,15 @@ class OnboardingCoordinator: ObservableObject {
     @Published var partnerConnected: Bool = false
     @Published var notificationsEnabled: Bool = false
 
+    // Authentication state
+    @Published var authenticationError: String?
+    @Published var isLoading: Bool = false
+    @Published var phoneVerificationID: String?
+
+    // Services
+    private let authService = AuthenticationService()
+    private let firestoreService = FirestoreService()
+
     func nextStep() {
         guard let nextStep = OnboardingStep(rawValue: currentStep.rawValue + 1) else {
             return
@@ -121,5 +131,220 @@ class OnboardingCoordinator: ObservableObject {
         partnerUsername = ""
         partnerConnected = false
         notificationsEnabled = false
+        authenticationError = nil
+        isLoading = false
+        phoneVerificationID = nil
+    }
+
+    // MARK: - Authentication Methods
+
+    func signUpWithEmail() async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            _ = try await authService.signUpWithEmail(email: email, password: password)
+            try await authService.sendEmailVerification()
+
+            await MainActor.run {
+                isLoading = false
+                nextStep() // Move to phone verification step
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func sendPhoneVerification() async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            let fullPhoneNumber = "\(countryCode)\(phoneNumber)"
+            let verificationID = try await authService.sendPhoneVerification(phoneNumber: fullPhoneNumber)
+
+            await MainActor.run {
+                phoneVerificationID = verificationID
+                isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func verifyPhoneCode(_ code: String) async {
+        guard let verificationID = phoneVerificationID else {
+            authenticationError = "Verification ID not found. Please request a new code."
+            return
+        }
+
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            _ = try await authService.verifyPhoneCode(verificationID: verificationID, code: code)
+
+            await MainActor.run {
+                isLoading = false
+                nextStep()
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func signInWithEmail(email: String, password: String) async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            let user = try await authService.signInWithEmail(email: email, password: password)
+
+            // Check if user has completed onboarding by fetching profile
+            if let _ = try? await firestoreService.getUserProfile(userId: user.uid) {
+                // User exists, navigate to completed
+                await MainActor.run {
+                    isLoading = false
+                    skipToStep(.completed)
+                }
+            } else {
+                // New user, continue onboarding
+                await MainActor.run {
+                    isLoading = false
+                    skipToStep(.signUpEmail)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func signInWithGoogle() async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            let user = try await authService.signInWithGoogle()
+
+            // Check if user has completed onboarding
+            if let _ = try? await firestoreService.getUserProfile(userId: user.uid) {
+                await MainActor.run {
+                    isLoading = false
+                    skipToStep(.completed)
+                }
+            } else {
+                await MainActor.run {
+                    self.email = user.email ?? ""
+                    isLoading = false
+                    skipToStep(.signUpPhone)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func signInWithApple(credential: AuthenticationServices.ASAuthorizationAppleIDCredential) async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            let user = try await authService.signInWithApple(credential: credential)
+
+            // Check if user has completed onboarding
+            if let _ = try? await firestoreService.getUserProfile(userId: user.uid) {
+                await MainActor.run {
+                    isLoading = false
+                    skipToStep(.completed)
+                }
+            } else {
+                await MainActor.run {
+                    self.email = user.email ?? ""
+                    if let fullName = credential.fullName {
+                        self.fullName = [fullName.givenName, fullName.familyName]
+                            .compactMap { $0 }
+                            .joined(separator: " ")
+                    }
+                    isLoading = false
+                    skipToStep(.signUpPhone)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func completeOnboarding() async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            guard let firebaseUser = authService.getCurrentUser() else {
+                throw AuthenticationError.userNotFound
+            }
+
+            // Create user profile
+            let user = User(
+                id: firebaseUser.uid,
+                email: email,
+                phoneNumber: "\(countryCode)\(phoneNumber)",
+                isEmailVerified: firebaseUser.isEmailVerified,
+                isPhoneVerified: authService.isPhoneVerified(),
+                fullName: fullName,
+                username: username,
+                gender: gender,
+                birthday: birthday,
+                relationshipStatus: relationshipStatus,
+                marriageTimeline: marriageTimeline,
+                topicPriorities: topicPriorities,
+                partnerId: nil,
+                partnerConnectionStatus: .none,
+                notificationsEnabled: notificationsEnabled,
+                createdAt: Date(),
+                updatedAt: Date(),
+                photoURL: nil
+            )
+
+            // Save to Firestore
+            try await firestoreService.saveUserProfile(user)
+
+            await MainActor.run {
+                isLoading = false
+                skipToStep(.accountSetupLoading)
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func checkUsernameAvailability() async -> Bool {
+        do {
+            return try await firestoreService.isUsernameAvailable(username)
+        } catch {
+            return false
+        }
     }
 }
+
+import AuthenticationServices

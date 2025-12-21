@@ -58,17 +58,41 @@ struct EnableNotificationsView: View {
                 // Action buttons
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Enable push notifications") {
-                        // Request notification permission
-                        coordinator.nextStep()
+                        coordinator.notificationsEnabled = true
+                        Task {
+                            await coordinator.completeOnboarding()
+                        }
                     }
 
                     GlassmorphicButton(title: "Not now") {
-                        // Skip notifications
-                        coordinator.nextStep()
+                        coordinator.notificationsEnabled = false
+                        Task {
+                            await coordinator.completeOnboarding()
+                        }
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
+                .disabled(coordinator.isLoading)
+            }
+
+            // Loading overlay
+            if coordinator.isLoading {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+            }
+        }
+        .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
+            Button("OK", role: .cancel) {
+                coordinator.authenticationError = nil
+            }
+        } message: {
+            if let error = coordinator.authenticationError {
+                Text(error)
             }
         }
     }

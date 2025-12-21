@@ -11,6 +11,7 @@ struct LoginView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var showError: Bool = false
 
     var body: some View {
         ZStack {
@@ -70,7 +71,12 @@ struct LoginView: View {
                 VStack(spacing: 16) {
                     // Continue with Google
                     Button(action: {
-                        // Google sign in
+                        Task {
+                            await coordinator.signInWithGoogle()
+                            if coordinator.authenticationError != nil {
+                                showError = true
+                            }
+                        }
                     }) {
                         HStack(spacing: 8) {
                             Image("google-logo")
@@ -87,9 +93,10 @@ struct LoginView: View {
                     }
                     .buttonStyle(.plain)
 
-                    // Continue with Apple
+                    // Continue with Apple (SignInWithAppleButton will replace this later)
                     Button(action: {
-                        // Apple sign in
+                        // Apple Sign-In requires SignInWithAppleButton from AuthenticationServices
+                        // This is a placeholder - will be implemented with proper Apple Sign-In button
                     }) {
                         HStack(spacing: 8) {
                             Image(systemName: "apple.logo")
@@ -138,7 +145,12 @@ struct LoginView: View {
 
                     // Login button
                     Button(action: {
-                        // Login action
+                        Task {
+                            await coordinator.signInWithEmail(email: email, password: password)
+                            if coordinator.authenticationError != nil {
+                                showError = true
+                            }
+                        }
                     }) {
                         Text("Login with Email")
                             .font(.body.weight(.semibold))
@@ -166,6 +178,27 @@ struct LoginView: View {
 
                 Spacer()
                 }
+                .disabled(coordinator.isLoading)
+                .opacity(coordinator.isLoading ? 0.6 : 1.0)
+            }
+
+            // Loading overlay
+            if coordinator.isLoading {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+            }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK", role: .cancel) {
+                coordinator.authenticationError = nil
+            }
+        } message: {
+            if let error = coordinator.authenticationError {
+                Text(error)
             }
         }
     }
