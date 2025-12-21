@@ -13,6 +13,7 @@ enum OnboardingStep: Int, CaseIterable {
     case welcome = 0
     case login
     case signUpEmail
+    case emailVerification
     case signUpPhone
     case signUpPassword
     case signUpFullName
@@ -29,13 +30,15 @@ enum OnboardingStep: Int, CaseIterable {
 
     var progress: Double {
         // Calculate progress based on step position
-        // Welcome, login, accountSetupLoading, and completed don't count towards progress
+        // Welcome, login, emailVerification, accountSetupLoading, and completed don't count towards progress
         switch self {
         case .welcome:
             return 0.0
         case .login:
             return 0.0
         case .signUpEmail:
+            return 0.08
+        case .emailVerification:
             return 0.08
         case .signUpPhone:
             return 0.17
@@ -148,7 +151,7 @@ class OnboardingCoordinator: ObservableObject {
 
             await MainActor.run {
                 isLoading = false
-                nextStep() // Move to phone verification step
+                nextStep() // Move to email verification step
             }
         } catch {
             await MainActor.run {
@@ -156,6 +159,10 @@ class OnboardingCoordinator: ObservableObject {
                 isLoading = false
             }
         }
+    }
+
+    func resendEmailVerification() async throws {
+        try await authService.sendEmailVerification()
     }
 
     func sendPhoneVerification() async {

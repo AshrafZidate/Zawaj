@@ -19,6 +19,8 @@ struct OnboardingContainerView: View {
                 LoginView()
             case .signUpEmail:
                 SignUpEmailView()
+            case .emailVerification:
+                EmailVerificationView()
             case .signUpPhone:
                 SignUpPhoneView()
             case .signUpPassword:
