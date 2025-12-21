@@ -10,6 +10,7 @@ import FirebaseCore
 
 @main
 struct ZawajApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var authService = AuthenticationService()
 
     init() {

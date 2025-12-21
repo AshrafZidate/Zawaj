@@ -13,9 +13,8 @@ enum OnboardingStep: Int, CaseIterable {
     case welcome = 0
     case login
     case signUpEmail
-    case emailVerification
-    case signUpPhone
     case signUpPassword
+    case emailVerification
     case signUpFullName
     case signUpUsername
     case signUpGender
@@ -24,6 +23,7 @@ enum OnboardingStep: Int, CaseIterable {
     case signUpMarriageTimeline
     case signUpTopicPriorities
     case signUpAddPartner
+    case signUpAnswerPreference
     case enableNotifications
     case accountSetupLoading
     case completed
@@ -38,30 +38,30 @@ enum OnboardingStep: Int, CaseIterable {
             return 0.0
         case .signUpEmail:
             return 0.08
-        case .emailVerification:
-            return 0.08
-        case .signUpPhone:
-            return 0.17
         case .signUpPassword:
-            return 0.25
+            return 0.17
+        case .emailVerification:
+            return 0.17
         case .signUpFullName:
-            return 0.33
+            return 0.25
         case .signUpUsername:
-            return 0.42
+            return 0.33
         case .signUpGender:
-            return 0.50
+            return 0.42
         case .signUpBirthday:
-            return 0.58
+            return 0.50
         case .signUpRelationshipStatus:
-            return 0.67
+            return 0.58
         case .signUpMarriageTimeline:
-            return 0.75
+            return 0.67
         case .signUpTopicPriorities:
-            return 0.83
+            return 0.75
         case .signUpAddPartner:
+            return 0.83
+        case .signUpAnswerPreference:
             return 0.92
         case .enableNotifications:
-            return 1.0
+            return 0.96
         case .accountSetupLoading:
             return 1.0
         case .completed:
@@ -88,7 +88,7 @@ class OnboardingCoordinator: ObservableObject {
     @Published var topicPriorities: [String] = []
     @Published var partnerUsername: String = ""
     @Published var partnerConnected: Bool = false
-    @Published var notificationsEnabled: Bool = false
+    @Published var answerPreference: String = ""
 
     // Authentication state
     @Published var authenticationError: String?
@@ -133,7 +133,6 @@ class OnboardingCoordinator: ObservableObject {
         topicPriorities = []
         partnerUsername = ""
         partnerConnected = false
-        notificationsEnabled = false
         authenticationError = nil
         isLoading = false
         phoneVerificationID = nil
@@ -163,6 +162,21 @@ class OnboardingCoordinator: ObservableObject {
 
     func resendEmailVerification() async throws {
         try await authService.sendEmailVerification()
+    }
+
+    func checkEmailVerification() async -> Bool {
+        do {
+            // Reload user to get latest email verification status
+            try await authService.reloadUser()
+
+            // Return current email verification status
+            return authService.isEmailVerified()
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+            }
+            return false
+        }
     }
 
     func sendPhoneVerification() async {
@@ -224,10 +238,19 @@ class OnboardingCoordinator: ObservableObject {
                     skipToStep(.completed)
                 }
             } else {
-                // New user, continue onboarding
+                // User authenticated but hasn't completed onboarding
+                // Pre-fill their email and check verification status
                 await MainActor.run {
+                    self.email = user.email ?? ""
                     isLoading = false
-                    skipToStep(.signUpEmail)
+
+                    // If email is verified, skip to full name step
+                    // Otherwise, send them to email verification
+                    if user.isEmailVerified {
+                        skipToStep(.signUpFullName)
+                    } else {
+                        skipToStep(.emailVerification)
+                    }
                 }
             }
         } catch {
@@ -255,7 +278,7 @@ class OnboardingCoordinator: ObservableObject {
                 await MainActor.run {
                     self.email = user.email ?? ""
                     isLoading = false
-                    skipToStep(.signUpPhone)
+                    skipToStep(.signUpFullName)
                 }
             }
         } catch {
@@ -288,7 +311,7 @@ class OnboardingCoordinator: ObservableObject {
                             .joined(separator: " ")
                     }
                     isLoading = false
-                    skipToStep(.signUpPhone)
+                    skipToStep(.signUpFullName)
                 }
             }
         } catch {
@@ -324,7 +347,7 @@ class OnboardingCoordinator: ObservableObject {
                 topicPriorities: topicPriorities,
                 partnerId: nil,
                 partnerConnectionStatus: .none,
-                notificationsEnabled: notificationsEnabled,
+                answerPreference: answerPreference,
                 createdAt: Date(),
                 updatedAt: Date(),
                 photoURL: nil

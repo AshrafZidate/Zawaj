@@ -19,12 +19,10 @@ struct OnboardingContainerView: View {
                 LoginView()
             case .signUpEmail:
                 SignUpEmailView()
-            case .emailVerification:
-                EmailVerificationView()
-            case .signUpPhone:
-                SignUpPhoneView()
             case .signUpPassword:
                 SignUpPasswordView()
+            case .emailVerification:
+                EmailVerificationView()
             case .signUpFullName:
                 SignUpFullNameView()
             case .signUpUsername:
@@ -41,6 +39,8 @@ struct OnboardingContainerView: View {
                 SignUpTopicPrioritiesView()
             case .signUpAddPartner:
                 SignUpAddPartnerView()
+            case .signUpAnswerPreference:
+                SignUpAnswerPreferenceView()
             case .enableNotifications:
                 EnableNotificationsView()
             case .accountSetupLoading:

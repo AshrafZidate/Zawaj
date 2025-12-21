@@ -27,14 +27,7 @@ struct EmailVerificationView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Progress indicator
-                ProgressView(value: OnboardingStep.signUpEmail.progress)
-                    .tint(.white)
-                    .background(Color.white.opacity(0.3))
-                    .padding(.horizontal, 24)
-                    .padding(.top, 8)
-
-                // Back button
+                // Header: Back button and progress bar
                 HStack {
                     Button(action: {
                         coordinator.previousStep()
@@ -43,116 +36,117 @@ struct EmailVerificationView: View {
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                     }
-                    Spacer()
+
+                    ProgressBar(progress: coordinator.currentStep.progress)
                 }
                 .frame(height: 44)
                 .padding(.horizontal, 24)
-                .padding(.top, 16)
+                .padding(.top, 8)
 
-                ScrollView {
-                    VStack(spacing: 32) {
-                        // Icon
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.15))
-                                .frame(width: 120, height: 120)
+                // Content section
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Verify your email")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(.white)
 
-                            Image(systemName: "envelope.fill")
-                                .font(.system(size: 50))
-                                .foregroundColor(.white)
-                        }
-                        .padding(.top, 40)
+                    Text("We've sent a verification link to:")
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.7))
 
-                        // Title and description
-                        VStack(spacing: 16) {
-                            Text("Verify your email")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
+                    // Email display
+                    Text(coordinator.email)
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
 
-                            VStack(spacing: 12) {
-                                Text("We've sent a verification link to:")
-                                    .font(.body)
-                                    .foregroundColor(.white.opacity(0.9))
-                                    .multilineTextAlignment(.center)
+                    Text("Click the link in the email to verify your account, then tap Continue below.")
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.7))
 
-                                Text(coordinator.email)
-                                    .font(.body.weight(.semibold))
+                    // Resend button section
+                    VStack(spacing: 12) {
+                        if showResendSuccess {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("Email sent!")
+                                    .font(.callout)
                                     .foregroundColor(.white)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.white.opacity(0.15))
-                                    )
-
-                                Text("Click the link in the email to verify your account, then continue below.")
-                                    .font(.body)
-                                    .foregroundColor(.white.opacity(0.9))
-                                    .multilineTextAlignment(.center)
                             }
                         }
-                        .padding(.horizontal, 24)
 
-                        // Resend button
-                        VStack(spacing: 12) {
-                            if showResendSuccess {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                    Text("Email sent!")
-                                        .font(.body)
-                                        .foregroundColor(.white)
-                                }
-                                .padding(.vertical, 8)
+                        Button(action: {
+                            resendVerificationEmail()
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.callout)
+                                Text(resendCooldown > 0 ? "Resend in \(resendCooldown)s" : "Resend verification email")
+                                    .font(.callout.weight(.medium))
                             }
+                            .foregroundColor(resendCooldown > 0 ? .white.opacity(0.5) : .white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 25)
+                                    .stroke(resendCooldown > 0 ? Color.white.opacity(0.3) : Color.white, lineWidth: 2)
+                            )
+                        }
+                        .disabled(resendCooldown > 0 || coordinator.isLoading)
+                    }
+                    .padding(.top, 8)
 
-                            Button(action: {
-                                resendVerificationEmail()
-                            }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "arrow.clockwise")
-                                        .font(.body)
-                                    Text(resendCooldown > 0 ? "Resend in \(resendCooldown)s" : "Resend verification email")
-                                        .font(.body.weight(.medium))
-                                }
-                                .foregroundColor(resendCooldown > 0 ? .white.opacity(0.5) : .white)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 14)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 25)
-                                        .stroke(resendCooldown > 0 ? Color.white.opacity(0.3) : Color.white, lineWidth: 2)
-                                )
+                    // Help text
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Didn't receive the email?")
+                            .font(.callout)
+                            .foregroundColor(.white.opacity(0.7))
+
+                        Text("• Check your spam folder")
+                            .font(.callout)
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("• Make sure \(coordinator.email) is correct")
+                            .font(.callout)
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("• Try resending the email")
+                            .font(.callout)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .padding(.top, 8)
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+
+                Spacer()
+
+                // Continue button
+                GlassmorphicButton(title: "Continue") {
+                    Task {
+                        coordinator.isLoading = true
+
+                        // Check if email is verified
+                        let isVerified = await coordinator.checkEmailVerification()
+
+                        if isVerified {
+                            // Email verified - proceed to next step
+                            await MainActor.run {
+                                coordinator.isLoading = false
+                                coordinator.nextStep()
                             }
-                            .disabled(resendCooldown > 0 || coordinator.isLoading)
+                        } else {
+                            // Not verified - show error
+                            await MainActor.run {
+                                coordinator.authenticationError = "Please verify your email before continuing. Check your inbox and click the verification link."
+                                coordinator.isLoading = false
+                            }
                         }
-                        .padding(.horizontal, 24)
-
-                        // Help text
-                        VStack(spacing: 8) {
-                            Text("Didn't receive the email?")
-                                .font(.callout)
-                                .foregroundColor(.white.opacity(0.7))
-
-                            Text("• Check your spam folder\n• Make sure \(coordinator.email) is correct\n• Try resending the email")
-                                .font(.callout)
-                                .foregroundColor(.white.opacity(0.7))
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .padding(.horizontal, 32)
-
-                        Spacer(minLength: 40)
-
-                        // Continue button
-                        GlassmorphicButton(title: "Continue") {
-                            coordinator.nextStep()
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 32)
                     }
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
             }
 
             // Loading overlay

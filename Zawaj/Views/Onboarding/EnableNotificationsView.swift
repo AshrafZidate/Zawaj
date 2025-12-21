@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct EnableNotificationsView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
+    @State private var shouldShowView = true
 
     var body: some View {
         ZStack {
@@ -58,14 +60,12 @@ struct EnableNotificationsView: View {
                 // Action buttons
                 VStack(spacing: 24) {
                     GlassmorphicButton(title: "Enable push notifications") {
-                        coordinator.notificationsEnabled = true
                         Task {
-                            await coordinator.completeOnboarding()
+                            await requestNotificationPermission()
                         }
                     }
 
                     GlassmorphicButton(title: "Not now") {
-                        coordinator.notificationsEnabled = false
                         Task {
                             await coordinator.completeOnboarding()
                         }
@@ -86,6 +86,11 @@ struct EnableNotificationsView: View {
                     .scaleEffect(1.5)
             }
         }
+        .onAppear {
+            Task {
+                await checkNotificationStatus()
+            }
+        }
         .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
@@ -94,6 +99,49 @@ struct EnableNotificationsView: View {
             if let error = coordinator.authenticationError {
                 Text(error)
             }
+        }
+    }
+
+    private func checkNotificationStatus() async {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        // If notifications are already authorized, skip this screen
+        if settings.authorizationStatus == .authorized ||
+           settings.authorizationStatus == .provisional ||
+           settings.authorizationStatus == .ephemeral {
+            await coordinator.completeOnboarding()
+        }
+    }
+
+    private func requestNotificationPermission() async {
+        let center = UNUserNotificationCenter.current()
+
+        // Check current authorization status
+        let settings = await center.notificationSettings()
+
+        switch settings.authorizationStatus {
+        case .notDetermined:
+            // Permission not yet requested - show system dialog
+            do {
+                _ = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                // Complete onboarding after request
+                await coordinator.completeOnboarding()
+            } catch {
+                await MainActor.run {
+                    coordinator.authenticationError = error.localizedDescription
+                }
+            }
+        case .authorized, .provisional, .ephemeral:
+            // Already granted, proceed
+            await coordinator.completeOnboarding()
+        case .denied:
+            // User previously denied - show alert to go to settings
+            await MainActor.run {
+                coordinator.authenticationError = "Notifications are disabled. Please enable them in Settings > Zawaj > Notifications to continue."
+            }
+        @unknown default:
+            await coordinator.completeOnboarding()
         }
     }
 }

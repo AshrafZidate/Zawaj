@@ -35,7 +35,7 @@ struct User: Codable, Identifiable {
     var partnerConnectionStatus: PartnerStatus
 
     // Settings
-    var notificationsEnabled: Bool
+    var answerPreference: String
     var createdAt: Date
     var updatedAt: Date
     var photoURL: String?
@@ -55,7 +55,7 @@ struct User: Codable, Identifiable {
         topicPriorities: [String] = [],
         partnerId: String? = nil,
         partnerConnectionStatus: PartnerStatus = .none,
-        notificationsEnabled: Bool = false,
+        answerPreference: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         photoURL: String? = nil
@@ -74,7 +74,7 @@ struct User: Codable, Identifiable {
         self.topicPriorities = topicPriorities
         self.partnerId = partnerId
         self.partnerConnectionStatus = partnerConnectionStatus
-        self.notificationsEnabled = notificationsEnabled
+        self.answerPreference = answerPreference
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.photoURL = photoURL
