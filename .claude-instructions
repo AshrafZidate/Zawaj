@@ -1,0 +1,21 @@
+# Claude Code Instructions for Zawaj Project
+
+## Git Commit Policy
+
+**CRITICAL RULE: NEVER commit changes unless explicitly instructed by the user.**
+
+- Do NOT use `git commit` unless the user says "commit" or "commit these changes"
+- Do NOT proactively commit after completing tasks
+- Always wait for explicit user confirmation before committing
+- Use `git status` and `git diff` to show changes, but don't commit them
+- When in doubt, ASK before committing
+
+## Exception
+The only time to commit without asking is if the user explicitly says:
+- "Commit this"
+- "Commit these changes"
+- "Create a commit"
+- Similar direct instructions
+
+## Always Remember
+User approval is required before any git commit operation.

@@ -18,6 +18,10 @@ class DashboardViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var error: String?
 
+    // Sheet states
+    @Published var showingAddPartner: Bool = false
+    @Published var showingInvitePartner: Bool = false
+
     private let firestoreService = FirestoreService()
     private let authService = AuthenticationService()
     private let questionBankService = QuestionBankService()
@@ -32,12 +36,6 @@ class DashboardViewModel: ObservableObject {
         }
 
         do {
-            // Development mode: Use mock data
-            if AppConfig.isDevelopmentMode {
-                await loadMockData()
-                return
-            }
-
             // Get current user ID
             guard let userId = authService.getCurrentUser()?.uid else {
                 throw FirestoreError.userNotFound
@@ -58,20 +56,14 @@ class DashboardViewModel: ObservableObject {
                 }
             }
 
-            // TODO: Fetch today's question from Firestore
-            // For now, use placeholder data
-            await MainActor.run {
-                self.todayQuestion = DailyQuestion(
-                    id: "placeholder",
-                    questionText: "What makes you feel most loved in your relationship?",
-                    questionType: .openEnded,
-                    options: nil,
-                    topic: "Love Languages",
-                    date: Date(),
-                    createdAt: Date()
-                )
+            // Fetch random question from Firestore
+            let randomQuestion = try await questionBankService.fetchRandomQuestion()
 
-                // Placeholder answer status
+            // TODO: Check if user and partner have answered this question
+            // For now, default to not answered
+
+            await MainActor.run {
+                self.todayQuestion = randomQuestion
                 self.userAnswered = false
                 self.partnerAnswered = false
                 self.isLoading = false
@@ -84,84 +76,4 @@ class DashboardViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Mock Data for Development
-
-    private func loadMockData() async {
-        await MainActor.run {
-            // Mock current user
-            self.currentUser = User(
-                id: AppConfig.developmentUserId,
-                email: "ashraf@example.com",
-                phoneNumber: "+1234567890",
-                isEmailVerified: true,
-                isPhoneVerified: true,
-                fullName: "Ashraf Zidate",
-                username: "ashraf",
-                gender: "Male",
-                birthday: Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date(),
-                relationshipStatus: "In a relationship",
-                marriageTimeline: "Within 1 year",
-                topicPriorities: ["Communication", "Trust", "Intimacy"],
-                partnerId: "partner_123",
-                partnerConnectionStatus: .connected,
-                answerPreference: "Both at same time",
-                createdAt: Date(),
-                updatedAt: Date(),
-                photoURL: nil
-            )
-
-            // Mock partner
-            self.partner = User(
-                id: "partner_123",
-                email: "partner@example.com",
-                phoneNumber: "+1987654321",
-                isEmailVerified: true,
-                isPhoneVerified: true,
-                fullName: "Sarah Johnson",
-                username: "sarah",
-                gender: "Female",
-                birthday: Calendar.current.date(byAdding: .year, value: -24, to: Date()) ?? Date(),
-                relationshipStatus: "In a relationship",
-                marriageTimeline: "Within 1 year",
-                topicPriorities: ["Communication", "Family", "Values"],
-                partnerId: AppConfig.developmentUserId,
-                partnerConnectionStatus: .connected,
-                answerPreference: "Both at same time",
-                createdAt: Date(),
-                updatedAt: Date(),
-                photoURL: nil
-            )
-
-            // Load question from question bank
-            if let questionBank = self.questionBankService.loadQuestionBankFromJSON(),
-               let randomQuestion = questionBank.questions.randomElement() {
-                self.todayQuestion = DailyQuestion(
-                    id: randomQuestion.id,
-                    questionText: randomQuestion.questionText,
-                    questionType: randomQuestion.questionType == "multipleChoice" ? .multipleChoice : .openEnded,
-                    options: randomQuestion.options,
-                    topic: randomQuestion.topic,
-                    date: Date(),
-                    createdAt: Date()
-                )
-            } else {
-                // Fallback question if JSON fails to load
-                self.todayQuestion = DailyQuestion(
-                    id: "daily_1",
-                    questionText: "What makes you feel most loved in your relationship?",
-                    questionType: .openEnded,
-                    options: nil,
-                    topic: "Love Languages",
-                    date: Date(),
-                    createdAt: Date()
-                )
-            }
-
-            // Mock answer status
-            self.userAnswered = false
-            self.partnerAnswered = true
-
-            self.isLoading = false
-        }
-    }
 }

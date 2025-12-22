@@ -77,9 +77,66 @@ class OnboardingCoordinator: ObservableObject {
     // MARK: - Initialization
 
     init() {
-        // Skip to dashboard in development mode
-        if AppConfig.isDevelopmentMode {
-            currentStep = .completed
+        // Auto-login if enabled
+        if AppConfig.autoLoginEnabled {
+            Task {
+                await performAutoLogin()
+            }
+        }
+    }
+
+    // MARK: - Auto Login
+
+    @MainActor
+    private func performAutoLogin() async {
+        do {
+            let authService = AuthenticationService()
+            let firestoreService = FirestoreService()
+
+            let user = try await authService.signInWithEmail(
+                email: AppConfig.autoLoginEmail,
+                password: AppConfig.autoLoginPassword
+            )
+
+            // Check if user profile exists in Firestore
+            if let _ = try? await firestoreService.getUserProfile(userId: user.uid) {
+                // Profile exists, login successful
+                currentStep = .completed
+            } else {
+                // Profile doesn't exist - create a minimal test profile
+                print("⚠️ User profile not found. Creating test profile...")
+
+                let testUser = User(
+                    id: user.uid,
+                    email: user.email ?? AppConfig.autoLoginEmail,
+                    phoneNumber: "",
+                    isEmailVerified: true,
+                    isPhoneVerified: false,
+                    fullName: "Ashraf Zidate",
+                    username: "ashraf",
+                    gender: "Male",
+                    birthday: Calendar.current.date(from: DateComponents(year: 1990, month: 1, day: 1)) ?? Date(),
+                    relationshipStatus: "Considering Marriage",
+                    marriageTimeline: "Within 1 year",
+                    topicPriorities: ["Religious Values", "Family Expectations", "Lifestyle Goals"],
+                    partnerId: nil,
+                    partnerConnectionStatus: .none,
+                    answerPreference: "Multiple Choice",
+                    createdAt: Date(),
+                    updatedAt: Date(),
+                    photoURL: nil
+                )
+
+                try await firestoreService.saveUserProfile(testUser)
+                print("✅ Test profile created successfully")
+
+                currentStep = .completed
+            }
+        } catch {
+            // Auto-login failed, show welcome screen
+            print("⚠️ Auto-login failed: \(error.localizedDescription)")
+            print("Please check credentials in AppConfig.swift")
+            currentStep = .welcome
         }
     }
 

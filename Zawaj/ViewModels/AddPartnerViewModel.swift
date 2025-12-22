@@ -1,0 +1,103 @@
+//
+//  AddPartnerViewModel.swift
+//  Zawaj
+//
+//  Created on 2025-12-22.
+//
+
+import Foundation
+import SwiftUI
+import Combine
+import FirebaseAuth
+
+class AddPartnerViewModel: ObservableObject {
+    @Published var searchResult: User?
+    @Published var isSearching: Bool = false
+    @Published var requestSent: Bool = false
+    @Published var error: String?
+
+    private let firestoreService = FirestoreService()
+    private let authService = AuthenticationService()
+
+    func searchForPartner(query: String) async {
+        await MainActor.run {
+            isSearching = true
+            error = nil
+            searchResult = nil
+            requestSent = false
+        }
+
+        do {
+            // Search by username or email
+            let user: User?
+
+            if query.starts(with: "@") {
+                // Search by username
+                let username = String(query.dropFirst())
+                user = try await firestoreService.getUserByUsername(username)
+            } else if query.contains("@") {
+                // Search by email
+                user = try await firestoreService.getUserByEmail(query)
+            } else {
+                // Try username without @
+                user = try await firestoreService.getUserByUsername(query)
+            }
+
+            await MainActor.run {
+                if let user = user {
+                    // Don't show current user in results
+                    if user.id == authService.getCurrentUser()?.uid {
+                        self.error = "You cannot add yourself as a partner"
+                        self.searchResult = nil
+                    } else {
+                        self.searchResult = user
+                    }
+                } else {
+                    self.error = "No user found with that username or email"
+                }
+                self.isSearching = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Error searching for user: \(error.localizedDescription)"
+                self.isSearching = false
+            }
+        }
+    }
+
+    func sendPartnerRequest(to user: User) async {
+        guard let currentUserId = authService.getCurrentUser()?.uid else { return }
+
+        do {
+            // Get current user info for the request
+            let currentUser = try await firestoreService.getUserProfile(userId: currentUserId)
+
+            let request = PartnerRequest(
+                id: UUID().uuidString,
+                senderId: currentUserId,
+                senderUsername: currentUser.username,
+                receiverUsername: user.username,
+                status: "pending",
+                createdAt: Date(),
+                respondedAt: nil
+            )
+
+            try await firestoreService.sendPartnerRequest(request: request, receiverId: user.id)
+
+            await MainActor.run {
+                self.requestSent = true
+                self.error = nil
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to send request: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    func clearSearch() {
+        searchResult = nil
+        error = nil
+        requestSent = false
+    }
+}

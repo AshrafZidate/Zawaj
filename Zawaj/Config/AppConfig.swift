@@ -8,13 +8,22 @@
 import Foundation
 
 struct AppConfig {
-    // MARK: - Development Settings
+    // MARK: - Auto Login Settings
 
-    /// Set to true to bypass authentication and go straight to dashboard
-    /// WARNING: Set to false before production release
-    static let isDevelopmentMode = true
+    /// Enable automatic login for testing with a real Firebase account
+    /// Set to false before production release
+    static let autoLoginEnabled = true
 
-    /// Development user ID to use when bypassing authentication
-    /// This should match a real user ID in your Firestore for testing
-    static let developmentUserId = "dev_user_123"
+    /// Credentials for automatic login
+    /// IMPORTANT: Use a real test account email and password
+    /// Never commit real user credentials to git!
+    static let autoLoginEmail = "ashzidate@hotmail.co.uk"  // Replace with your test account
+    static let autoLoginPassword = "123456"  // Replace with your test password
+
+    // MARK: - Environment
+
+    /// Returns true if running in development/testing mode
+    static var isTestMode: Bool {
+        return autoLoginEnabled
+    }
 }

@@ -94,7 +94,7 @@ class FirestoreService {
         }
     }
 
-    func getUserByUsername(_ username: String) async throws -> User {
+    func getUserByUsername(_ username: String) async throws -> User? {
         do {
             let querySnapshot = try await db.collection("users")
                 .whereField("username", isEqualTo: username)
@@ -102,14 +102,31 @@ class FirestoreService {
                 .getDocuments()
 
             guard let document = querySnapshot.documents.first else {
-                throw FirestoreError.userNotFound
+                return nil
             }
 
             let decoder = Firestore.Decoder()
             let user = try decoder.decode(User.self, from: document.data())
             return user
-        } catch let error as FirestoreError {
-            throw error
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
+    func getUserByEmail(_ email: String) async throws -> User? {
+        do {
+            let querySnapshot = try await db.collection("users")
+                .whereField("email", isEqualTo: email)
+                .limit(to: 1)
+                .getDocuments()
+
+            guard let document = querySnapshot.documents.first else {
+                return nil
+            }
+
+            let decoder = Firestore.Decoder()
+            let user = try decoder.decode(User.self, from: document.data())
+            return user
         } catch {
             throw FirestoreError.unknown(error.localizedDescription)
         }
@@ -141,9 +158,23 @@ class FirestoreService {
 
     // MARK: - Partner Requests
 
+    func sendPartnerRequest(request: PartnerRequest, receiverId: String) async throws {
+        do {
+            let encoder = Firestore.Encoder()
+            var requestData = try encoder.encode(request)
+            requestData["receiverId"] = receiverId
+
+            try await db.collection("partnerRequests").document(request.id).setData(requestData)
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
     func sendPartnerRequest(from userId: String, senderUsername: String, to receiverUsername: String) async throws {
         // Check if receiver exists
-        _ = try await getUserByUsername(receiverUsername)
+        guard let receiver = try await getUserByUsername(receiverUsername) else {
+            throw FirestoreError.userNotFound
+        }
 
         let request = PartnerRequest(
             id: UUID().uuidString,
@@ -155,13 +186,7 @@ class FirestoreService {
             respondedAt: nil
         )
 
-        do {
-            let encoder = Firestore.Encoder()
-            let requestData = try encoder.encode(request)
-            try await db.collection("partnerRequests").document(request.id).setData(requestData)
-        } catch {
-            throw FirestoreError.unknown(error.localizedDescription)
-        }
+        try await sendPartnerRequest(request: request, receiverId: receiver.id)
     }
 
     func acceptPartnerRequest(requestId: String, currentUserId: String, partnerUserId: String) async throws {

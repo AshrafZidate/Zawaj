@@ -57,12 +57,6 @@ class ProfileViewModel: ObservableObject {
         }
 
         do {
-            // Development mode: Use mock data
-            if AppConfig.isDevelopmentMode {
-                await loadMockData()
-                return
-            }
-
             guard let userId = authService.getCurrentUser()?.uid else {
                 throw FirestoreError.userNotFound
             }
@@ -164,51 +158,4 @@ class ProfileViewModel: ObservableObject {
 
     // MARK: - Mock Data for Development
 
-    private func loadMockData() async {
-        await MainActor.run {
-            self.currentUser = User(
-                id: AppConfig.developmentUserId,
-                email: "ashraf@example.com",
-                phoneNumber: "+1234567890",
-                isEmailVerified: true,
-                isPhoneVerified: true,
-                fullName: "Ashraf Zidate",
-                username: "ashraf",
-                gender: "Male",
-                birthday: Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date(),
-                relationshipStatus: "In a relationship",
-                marriageTimeline: "Within 1 year",
-                topicPriorities: ["Communication", "Trust", "Intimacy"],
-                partnerId: "partner_123",
-                partnerConnectionStatus: .connected,
-                answerPreference: "Open Ended",
-                createdAt: Date(),
-                updatedAt: Date(),
-                photoURL: nil
-            )
-
-            self.partner = User(
-                id: "partner_123",
-                email: "partner@example.com",
-                phoneNumber: "+1987654321",
-                isEmailVerified: true,
-                isPhoneVerified: true,
-                fullName: "Sarah Johnson",
-                username: "sarah",
-                gender: "Female",
-                birthday: Calendar.current.date(byAdding: .year, value: -24, to: Date()) ?? Date(),
-                relationshipStatus: "In a relationship",
-                marriageTimeline: "Within 1 year",
-                topicPriorities: ["Communication", "Family", "Values"],
-                partnerId: AppConfig.developmentUserId,
-                partnerConnectionStatus: .connected,
-                answerPreference: "Open Ended",
-                createdAt: Date(),
-                updatedAt: Date(),
-                photoURL: nil
-            )
-
-            self.isLoading = false
-        }
-    }
 }

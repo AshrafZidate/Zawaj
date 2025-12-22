@@ -39,21 +39,28 @@ struct DashboardView: View {
                                 HeaderView(userName: viewModel.currentUser?.fullName.split(separator: " ").first.map(String.init))
                                     .padding(.top, 16)
 
-                                TodayQuestionCard(
-                                    question: viewModel.todayQuestion,
-                                    userAnswered: viewModel.userAnswered,
-                                    partnerAnswered: viewModel.partnerAnswered,
-                                    partnerName: viewModel.partner?.fullName.split(separator: " ").first.map(String.init)
-                                ) {
-                                    // TODO: Navigate to question detail screen
-                                }
-
                                 if viewModel.hasPartner {
+                                    // Show question card when user has a partner
+                                    TodayQuestionCard(
+                                        question: viewModel.todayQuestion,
+                                        userAnswered: viewModel.userAnswered,
+                                        partnerAnswered: viewModel.partnerAnswered,
+                                        partnerName: viewModel.partner?.fullName.split(separator: " ").first.map(String.init)
+                                    ) {
+                                        // TODO: Navigate to question detail screen
+                                    }
+
                                     PartnerStatusCard(partner: viewModel.partner)
                                 } else {
-                                    FindPartnerCard {
-                                        // TODO: Navigate to partner search/connect screen
-                                    }
+                                    // Show no-partner state
+                                    NoPartnerView(
+                                        onAddPartner: {
+                                            viewModel.showingAddPartner = true
+                                        },
+                                        onInvitePartner: {
+                                            viewModel.showingInvitePartner = true
+                                        }
+                                    )
                                 }
                             }
                             .padding(.horizontal, 24)
@@ -101,6 +108,12 @@ struct DashboardView: View {
                     ]
                 )
             }
+        }
+        .sheet(isPresented: $viewModel.showingAddPartner) {
+            AddPartnerView()
+        }
+        .sheet(isPresented: $viewModel.showingInvitePartner) {
+            InvitePartnerView()
         }
         .onAppear {
             Task {
