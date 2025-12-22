@@ -20,6 +20,7 @@ class DashboardViewModel: ObservableObject {
 
     private let firestoreService = FirestoreService()
     private let authService = AuthenticationService()
+    private let questionBankService = QuestionBankService()
 
     var hasPartner: Bool {
         currentUser?.partnerConnectionStatus == .connected
@@ -131,16 +132,30 @@ class DashboardViewModel: ObservableObject {
                 photoURL: nil
             )
 
-            // Mock today's question
-            self.todayQuestion = DailyQuestion(
-                id: "daily_1",
-                questionText: "What makes you feel most loved in your relationship?",
-                questionType: .openEnded,
-                options: nil,
-                topic: "Love Languages",
-                date: Date(),
-                createdAt: Date()
-            )
+            // Load question from question bank
+            if let questionBank = self.questionBankService.loadQuestionBankFromJSON(),
+               let randomQuestion = questionBank.questions.randomElement() {
+                self.todayQuestion = DailyQuestion(
+                    id: randomQuestion.id,
+                    questionText: randomQuestion.questionText,
+                    questionType: randomQuestion.questionType == "multipleChoice" ? .multipleChoice : .openEnded,
+                    options: randomQuestion.options,
+                    topic: randomQuestion.topic,
+                    date: Date(),
+                    createdAt: Date()
+                )
+            } else {
+                // Fallback question if JSON fails to load
+                self.todayQuestion = DailyQuestion(
+                    id: "daily_1",
+                    questionText: "What makes you feel most loved in your relationship?",
+                    questionType: .openEnded,
+                    options: nil,
+                    topic: "Love Languages",
+                    date: Date(),
+                    createdAt: Date()
+                )
+            }
 
             // Mock answer status
             self.userAnswered = false

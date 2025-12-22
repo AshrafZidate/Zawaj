@@ -44,6 +44,7 @@ class ProfileViewModel: ObservableObject {
     @Published var showingChangePassword: Bool = false
     @Published var showingDeleteAccountAlert: Bool = false
     @Published var showingDisconnectPartnerAlert: Bool = false
+    @Published var showingDebugTools: Bool = false
 
     private let authService = AuthenticationService()
     private let firestoreService = FirestoreService()
