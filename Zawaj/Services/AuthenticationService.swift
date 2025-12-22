@@ -143,8 +143,8 @@ class AuthenticationService: ObservableObject {
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
 
-        guard let windowScene = await UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = await windowScene.windows.first?.rootViewController else {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = windowScene.windows.first?.rootViewController else {
             throw AuthenticationError.unknown("Failed to get root view controller")
         }
 

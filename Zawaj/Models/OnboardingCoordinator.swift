@@ -74,6 +74,15 @@ class OnboardingCoordinator: ObservableObject {
     @Published var currentStep: OnboardingStep = .welcome
     @Published var navigationPath = NavigationPath()
 
+    // MARK: - Initialization
+
+    init() {
+        // Skip to dashboard in development mode
+        if AppConfig.isDevelopmentMode {
+            currentStep = .completed
+        }
+    }
+
     // User data collected during onboarding
     @Published var email: String = ""
     @Published var password: String = ""

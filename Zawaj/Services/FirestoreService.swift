@@ -141,16 +141,6 @@ class FirestoreService {
 
     // MARK: - Partner Requests
 
-    struct PartnerRequest: Codable {
-        var id: String
-        let senderId: String
-        let senderUsername: String
-        let receiverUsername: String
-        var status: String // "pending", "accepted", "rejected"
-        let createdAt: Date
-        var respondedAt: Date?
-    }
-
     func sendPartnerRequest(from userId: String, senderUsername: String, to receiverUsername: String) async throws {
         // Check if receiver exists
         _ = try await getUserByUsername(receiverUsername)

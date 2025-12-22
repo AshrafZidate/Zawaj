@@ -46,21 +46,7 @@ struct OnboardingContainerView: View {
             case .accountSetupLoading:
                 AccountSetupLoadingView()
             case .completed:
-                // TODO: Navigate to main app view
-                Text("Onboarding Complete!")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.18, green: 0.05, blue: 0.35),
-                                Color(red: 0.72, green: 0.28, blue: 0.44)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                DashboardView()
             }
         }
         .environmentObject(coordinator)
