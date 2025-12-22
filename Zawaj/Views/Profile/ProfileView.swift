@@ -88,17 +88,6 @@ struct ProfileView: View {
                             SettingsButton(icon: "doc.text", title: "Terms of Service") {
                                 // TODO: Open terms
                             }
-
-                            // Debug Tools (Development Only)
-                            if AppConfig.isDevelopmentMode {
-                                Divider()
-                                    .background(Color.white.opacity(0.1))
-                                    .padding(.horizontal, 20)
-
-                                SettingsButton(icon: "hammer.fill", title: "Developer Tools") {
-                                    viewModel.showingDebugTools = true
-                                }
-                            }
                         }
 
                         // Sign Out Button
@@ -138,11 +127,6 @@ struct ProfileView: View {
             }
         } message: {
             Text("Are you sure you want to disconnect from your partner? You can always reconnect later.")
-        }
-        .sheet(isPresented: $viewModel.showingDebugTools) {
-            NavigationView {
-                DebugQuestionBankView()
-            }
         }
         .onAppear {
             Task {

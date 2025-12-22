@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct DebugQuestionBankView: View {
     @StateObject private var viewModel = DebugQuestionBankViewModel()
