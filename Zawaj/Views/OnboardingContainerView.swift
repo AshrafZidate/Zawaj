@@ -15,6 +15,8 @@ struct OnboardingContainerView: View {
             switch coordinator.currentStep {
             case .welcome:
                 WelcomeView()
+            case .launch:
+                LaunchScreen()
             case .login:
                 LoginView()
             case .signUpEmail:

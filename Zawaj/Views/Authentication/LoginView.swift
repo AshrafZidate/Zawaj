@@ -11,7 +11,9 @@ struct LoginView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var showError: Bool = false
+    @State private var showEmailNotFoundError: Bool = false
+    @State private var showInvalidPasswordError: Bool = false
+    @State private var showPasswordResetSent: Bool = false
 
     var body: some View {
         ZStack {
@@ -48,9 +50,6 @@ struct LoginView: View {
                     Button(action: {
                         Task {
                             await coordinator.signInWithGoogle()
-                            if coordinator.authenticationError != nil {
-                                showError = true
-                            }
                         }
                     }) {
                         HStack(spacing: 8) {
@@ -106,6 +105,7 @@ struct LoginView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 52)
                         .autocapitalization(.none)
+                        .autocorrectionDisabled()
                         .keyboardType(.emailAddress)
                         .glassEffect(.clear)
 
@@ -122,11 +122,16 @@ struct LoginView: View {
                     GlassButtonPrimary(title: "Login with Email") {
                         Task {
                             await coordinator.signInWithEmail(email: email, password: password)
-                            if coordinator.authenticationError != nil {
-                                showError = true
+                            if let error = coordinator.authenticationError {
+                                if error.contains("does not exist") {
+                                    showEmailNotFoundError = true
+                                } else {
+                                    showInvalidPasswordError = true
+                                }
                             }
                         }
                     }
+                    .disabled(email.isEmpty || password.isEmpty)
 
                     // Sign up link
                     HStack(spacing: 4) {
@@ -159,14 +164,32 @@ struct LoginView: View {
                     .scaleEffect(1.5)
             }
         }
-        .alert("Error", isPresented: $showError) {
+        .alert("Email Not Found", isPresented: $showEmailNotFoundError) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
             }
         } message: {
-            if let error = coordinator.authenticationError {
-                Text(error)
+            Text("The email you entered does not exist")
+        }
+        .alert("Invalid Password", isPresented: $showInvalidPasswordError) {
+            Button("Try Again", role: .cancel) {
+                password = ""
+                coordinator.authenticationError = nil
             }
+            Button("Reset Password", role: .destructive) {
+                coordinator.authenticationError = nil
+                Task {
+                    await coordinator.sendPasswordReset(email: email)
+                    showPasswordResetSent = true
+                }
+            }
+        } message: {
+            Text("The password you entered is incorrect")
+        }
+        .alert("Password Reset", isPresented: $showPasswordResetSent) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("An email to reset your Zawāj password has been sent to the email address")
         }
     }
 }

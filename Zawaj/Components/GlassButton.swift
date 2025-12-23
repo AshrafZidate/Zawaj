@@ -18,7 +18,7 @@ struct GlassButton: View {
             Text(title)
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: 44)
         }
         .buttonStyle(.glass)
         .glassEffect(.clear)
@@ -37,7 +37,7 @@ struct GlassButtonPrimary: View {
             Text(title)
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: 44)
         }
         .buttonStyle(.glassProminent)
         .glassEffect(.clear)
@@ -55,7 +55,7 @@ struct GlassButtonDestructive: View {
             Text(title)
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: 44)
         }
         .buttonStyle(.glassProminent)
         .glassEffect(.clear)

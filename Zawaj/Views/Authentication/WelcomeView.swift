@@ -33,23 +33,20 @@ struct WelcomeView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            .padding(.bottom, 150) // Offset to account for buttons at bottom
 
-            // Bottom section with buttons - pinned to bottom
-            VStack(spacing: 16) {
-                GlassButton(title: "Log In") {
-                    coordinator.skipToStep(.login)
-                }
+                Spacer()
 
-                GlassButton(title: "Sign Up") {
-                    coordinator.skipToStep(.signUpEmail)
-                }
+                // Tap to continue hint
+                Text("Tap anywhere to continue")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.5))
+                    .padding(.bottom, 40)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 40)
-            .frame(maxHeight: .infinity, alignment: .bottom)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.top, 100)
+        }
+        .onTapGesture {
+            coordinator.skipToStep(.launch)
         }
     }
 }

@@ -12,7 +12,7 @@ struct AppConfig {
 
     /// Enable automatic login for testing with a real Firebase account
     /// Set to false before production release
-    static let autoLoginEnabled = true
+    static let autoLoginEnabled = false
 
     /// Credentials for automatic login
     /// IMPORTANT: Use a real test account email and password

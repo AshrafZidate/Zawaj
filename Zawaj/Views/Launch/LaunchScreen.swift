@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct LaunchScreen: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
+
     var body: some View {
         ZStack {
             GradientBackground()
 
             VStack(spacing: 0) {
-                // Top section with logo
                 Spacer()
 
+                // Logo
                 Image("logo")
                     .resizable()
                     .scaledToFit()
@@ -23,7 +25,7 @@ struct LaunchScreen: View {
 
                 Spacer()
 
-                // Middle section with title
+                // Title
                 VStack(spacing: 0) {
                     Text("Zawāj")
                         .font(.custom("Platypi", size: 64))
@@ -39,7 +41,7 @@ struct LaunchScreen: View {
 
                 Spacer()
 
-                // Bottom section with tagline
+                // Tagline
                 Text("Halal connection. Sacred intention.")
                     .font(.custom("NunitoSans", size: 20))
                     .foregroundColor(.white)
@@ -47,12 +49,25 @@ struct LaunchScreen: View {
                     .padding(.horizontal, 24)
 
                 Spacer()
+
+                // Login/Signup buttons
+                VStack(spacing: 16) {
+                    GlassButton(title: "Log In") {
+                        coordinator.skipToStep(.login)
+                    }
+
+                    GlassButton(title: "Sign Up") {
+                        coordinator.skipToStep(.signUpEmail)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
             }
-            .padding(.vertical, 100)
         }
     }
 }
 
 #Preview {
     LaunchScreen()
+        .environmentObject(OnboardingCoordinator())
 }

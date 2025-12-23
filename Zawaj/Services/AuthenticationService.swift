@@ -24,7 +24,7 @@ enum AuthenticationError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .userNotFound:
-            return "User not found. Please sign up first."
+            return "The email used does not exist"
         case .invalidCredentials:
             return "Invalid email or password."
         case .emailNotVerified:
@@ -256,18 +256,31 @@ class AuthenticationService: ObservableObject {
     // MARK: - Private Helpers
 
     private func mapFirebaseError(_ error: Error) -> Error {
-        guard let authError = AuthErrorCode(rawValue: (error as NSError).code) else {
+        let nsError = error as NSError
+        print("🔥 [Firebase Error] Code: \(nsError.code)")
+        print("🔥 [Firebase Error] Domain: \(nsError.domain)")
+        print("🔥 [Firebase Error] Description: \(nsError.localizedDescription)")
+        print("🔥 [Firebase Error] UserInfo: \(nsError.userInfo)")
+
+        guard let authError = AuthErrorCode(rawValue: nsError.code) else {
+            print("🔥 [Firebase Error] Could not map to AuthErrorCode")
             return AuthenticationError.unknown(error.localizedDescription)
         }
 
+        print("🔥 [Firebase Error] AuthErrorCode: \(authError)")
+
         switch authError {
-        case .userNotFound:
+        case .userNotFound, .invalidEmail:
+            print("🔥 [Firebase Error] Mapped to: userNotFound")
             return AuthenticationError.userNotFound
         case .wrongPassword, .invalidCredential:
+            print("🔥 [Firebase Error] Mapped to: invalidCredentials")
             return AuthenticationError.invalidCredentials
         case .networkError:
+            print("🔥 [Firebase Error] Mapped to: networkError")
             return AuthenticationError.networkError
         default:
+            print("🔥 [Firebase Error] Mapped to: unknown")
             return AuthenticationError.unknown(error.localizedDescription)
         }
     }

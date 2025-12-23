@@ -11,6 +11,7 @@ import FirebaseAuth
 
 enum OnboardingStep: Int, CaseIterable {
     case welcome = 0
+    case launch
     case login
     case signUpEmail
     case signUpPassword
@@ -33,6 +34,8 @@ enum OnboardingStep: Int, CaseIterable {
         // Welcome, login, emailVerification, accountSetupLoading, and completed don't count towards progress
         switch self {
         case .welcome:
+            return 0.0
+        case .launch:
             return 0.0
         case .login:
             return 0.0
@@ -228,6 +231,16 @@ class OnboardingCoordinator: ObservableObject {
 
     func resendEmailVerification() async throws {
         try await authService.sendEmailVerification()
+    }
+
+    func sendPasswordReset(email: String) async {
+        do {
+            try await authService.sendPasswordReset(email: email)
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+            }
+        }
     }
 
     func checkEmailVerification() async -> Bool {
