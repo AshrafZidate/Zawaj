@@ -17,29 +17,13 @@ struct LoginView: View {
         ZStack {
             GradientBackground()
 
-            VStack(spacing: 0) {
-                // Back button
-                HStack {
-                    Button(action: {
-                        coordinator.previousStep()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                }
-                .frame(height: 44)
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-
-                VStack(spacing: 28) {
-                    // Logo
-                    Image("logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .padding(.top, 20)
+            VStack(spacing: 28) {
+                // Logo
+                Image("logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .padding(.top, 20)
 
                 // App branding
                 VStack(spacing: 8) {
@@ -79,10 +63,10 @@ struct LoginView: View {
                                 .foregroundColor(.primary)
                         }
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 25))
+                        .frame(height: 44)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear)
 
                     // Continue with Apple (SignInWithAppleButton will replace this later)
                     Button(action: {
@@ -94,13 +78,12 @@ struct LoginView: View {
                                 .foregroundColor(.primary)
                             Text("Continue with Apple")
                                 .font(.body.weight(.semibold))
-                                .foregroundColor(.primary)
                         }
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 25))
+                        .frame(height: 44)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear)
 
                     // OR divider
                     HStack(spacing: 8) {
@@ -117,38 +100,32 @@ struct LoginView: View {
                     .padding(.horizontal, 10)
 
                     // Email field
-                    TextField("", text: $email, prompt: Text("Email").foregroundColor(.secondary))
+                    TextField("", text: $email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 20)
                         .frame(height: 52)
-                        .background(Color(red: 0.88, green: 0.89, blue: 0.91), in: RoundedRectangle(cornerRadius: 26))
                         .autocapitalization(.none)
                         .keyboardType(.emailAddress)
+                        .glassEffect(.clear)
 
                     // Password field
-                    SecureField("", text: $password, prompt: Text("Password").foregroundColor(.secondary))
+                    SecureField("", text: $password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 20)
                         .frame(height: 52)
-                        .background(Color(red: 0.88, green: 0.89, blue: 0.91), in: RoundedRectangle(cornerRadius: 26))
+                        .glassEffect(.clear)
+                    
 
                     // Login button
-                    Button(action: {
+                    GlassButtonPrimary(title: "Login with Email") {
                         Task {
                             await coordinator.signInWithEmail(email: email, password: password)
                             if coordinator.authenticationError != nil {
                                 showError = true
                             }
                         }
-                    }) {
-                        Text("Login with Email")
-                            .font(.body.weight(.semibold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.blue, in: RoundedRectangle(cornerRadius: 25))
                     }
 
                     // Sign up link
@@ -168,10 +145,9 @@ struct LoginView: View {
                 .padding(.horizontal, 24)
 
                 Spacer()
-                }
-                .disabled(coordinator.isLoading)
-                .opacity(coordinator.isLoading ? 0.6 : 1.0)
             }
+            .disabled(coordinator.isLoading)
+            .opacity(coordinator.isLoading ? 0.6 : 1.0)
 
             // Loading overlay
             if coordinator.isLoading {

@@ -24,7 +24,7 @@ struct WelcomeView: View {
                 // Welcome text
                 VStack(spacing: 12) {
                     Text("Welcome to Zawāj")
-                        .font(.system(size: 36, weight: .bold))
+                        .font(.custom("Platypi", size: 36).weight(.bold))
                         .foregroundColor(.white)
 
                     Text("Zawāj is a tool designed for Muslim couples preparing for marriage.\nLearn about each other through coordinated daily questions.")
