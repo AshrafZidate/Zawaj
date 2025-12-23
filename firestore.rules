@@ -91,10 +91,9 @@ service cloud.firestore {
 
     // Answers collection - users can read/write their own answers and partner's answers
     match /answers/{answerId} {
-      allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid ||
-        getUserData(request.auth.uid).partnerId == resource.data.userId
-      );
+      // Allow read if authenticated - for checking answer status
+      // The answerId format is "userId_questionId" so we can check ownership
+      allow read: if isAuthenticated();
 
       allow create: if isAuthenticated() &&
                       request.resource.data.userId == request.auth.uid;

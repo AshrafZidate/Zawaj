@@ -10,14 +10,6 @@ import SwiftUI
 import FirebaseAuth
 import Combine
 
-// MARK: - Enums
-
-enum AppTheme: String, CaseIterable {
-    case light = "Light"
-    case dark = "Dark"
-    case system = "System"
-}
-
 class ProfileViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var currentUser: User?
@@ -36,7 +28,6 @@ class ProfileViewModel: ObservableObject {
     @Published var streakNotifications: Bool = true
 
     // MARK: - App Preferences
-    @Published var selectedTheme: AppTheme = .system
     @Published var defaultAnswerFormat: QuestionType = .openEnded
 
     // MARK: - Sheet States
@@ -44,7 +35,7 @@ class ProfileViewModel: ObservableObject {
     @Published var showingChangePassword: Bool = false
     @Published var showingDeleteAccountAlert: Bool = false
     @Published var showingDisconnectPartnerAlert: Bool = false
-    @Published var showingDebugTools: Bool = false
+    @Published var showingAddPartner: Bool = false
 
     private let authService = AuthenticationService()
     private let firestoreService = FirestoreService()
@@ -101,10 +92,6 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    func changePassword(currentPassword: String, newPassword: String) async {
-        // TODO: Implement password change
-    }
-
     func updateNotificationSettings() async {
         // TODO: Save notification settings to Firestore
         // For now, just update local state
@@ -151,6 +138,26 @@ class ProfileViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
+    func changePassword(currentPassword: String, newPassword: String) async {
+        await MainActor.run {
+            self.error = nil
+            self.isLoading = true
+        }
+
+        do {
+            try await authService.updatePassword(currentPassword: currentPassword, newPassword: newPassword)
+            await MainActor.run {
+                self.isLoading = false
+                self.successMessage = "Password changed successfully"
+            }
+        } catch {
+            await MainActor.run {
+                self.isLoading = false
                 self.error = error.localizedDescription
             }
         }

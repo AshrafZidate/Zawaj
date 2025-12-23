@@ -72,6 +72,16 @@ class AddPartnerViewModel: ObservableObject {
             // Get current user info for the request
             let currentUser = try await firestoreService.getUserProfile(userId: currentUserId)
 
+            // Check if genders are opposite
+            if !currentUser.gender.isEmpty && !user.gender.isEmpty {
+                if currentUser.gender.lowercased() == user.gender.lowercased() {
+                    await MainActor.run {
+                        self.error = "You can only partner with someone of the opposite gender"
+                    }
+                    return
+                }
+            }
+
             let request = PartnerRequest(
                 id: UUID().uuidString,
                 senderId: currentUserId,

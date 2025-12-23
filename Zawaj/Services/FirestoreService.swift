@@ -281,4 +281,79 @@ class FirestoreService {
             throw FirestoreError.unknown(error.localizedDescription)
         }
     }
+
+    // MARK: - Answers
+
+    func submitAnswer(_ answer: Answer) async throws {
+        do {
+            let encoder = Firestore.Encoder()
+            let answerData = try encoder.encode(answer)
+
+            // Use a composite ID of userId_questionId for easy querying
+            let documentId = "\(answer.userId)_\(answer.questionId)"
+            try await db.collection("answers").document(documentId).setData(answerData)
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
+    func getAnswer(userId: String, questionId: String) async throws -> Answer? {
+        do {
+            let documentId = "\(userId)_\(questionId)"
+            let document = try await db.collection("answers").document(documentId).getDocument()
+
+            guard document.exists else {
+                return nil
+            }
+
+            let decoder = Firestore.Decoder()
+            let answer = try decoder.decode(Answer.self, from: document.data() ?? [:])
+            return answer
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
+    func hasUserAnswered(userId: String, questionId: String) async throws -> Bool {
+        let answer = try await getAnswer(userId: userId, questionId: questionId)
+        return answer != nil
+    }
+
+    func getUserAnswersForQuestion(questionId: String, userIds: [String]) async throws -> [String: Answer] {
+        var answers: [String: Answer] = [:]
+
+        for userId in userIds {
+            if let answer = try await getAnswer(userId: userId, questionId: questionId) {
+                answers[userId] = answer
+            }
+        }
+
+        return answers
+    }
+
+    // MARK: - Daily Questions
+
+    func getTodayQuestion() async throws -> DailyQuestion? {
+        do {
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+
+            let querySnapshot = try await db.collection("dailyQuestions")
+                .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
+                .whereField("date", isLessThan: Timestamp(date: tomorrow))
+                .limit(to: 1)
+                .getDocuments()
+
+            guard let document = querySnapshot.documents.first else {
+                return nil
+            }
+
+            let decoder = Firestore.Decoder()
+            let question = try decoder.decode(DailyQuestion.self, from: document.data())
+            return question
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
 }

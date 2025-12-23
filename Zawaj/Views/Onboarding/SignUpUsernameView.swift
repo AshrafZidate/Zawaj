@@ -50,15 +50,21 @@ struct SignUpUsernameView: View {
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
 
-                    // Username text field
-                    TextField("", text: $coordinator.username, prompt: Text("Username").foregroundColor(.secondary))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 16)
-                        .frame(height: 50)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                        .textContentType(.username)
-                        .autocapitalization(.none)
+                    // Username text field with @ prefix
+                    HStack(spacing: 8) {
+                        Text("@")
+                            .font(.body)
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.leading, 16)
+
+                        TextField("", text: $coordinator.username, prompt: Text("username").foregroundColor(.secondary))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+                            .textContentType(.username)
+                            .autocapitalization(.none)
+                    }
+                    .frame(height: 50)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)

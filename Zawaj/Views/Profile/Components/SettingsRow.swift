@@ -16,7 +16,7 @@ struct SettingsRow: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 20))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.white)
                 .frame(width: 28)
 
             Text(title)
@@ -28,7 +28,7 @@ struct SettingsRow: View {
             if let value = value {
                 Text(value)
                     .font(.body)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.white.opacity(0.8))
                     .lineLimit(1)
             }
         }

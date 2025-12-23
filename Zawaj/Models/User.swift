@@ -30,8 +30,9 @@ struct User: Codable, Identifiable {
     var marriageTimeline: String
     var topicPriorities: [String]
 
-    // Partner connection
-    var partnerId: String?
+    // Partner connection (supports multiple partners)
+    var partnerIds: [String]
+    var partnerId: String? // Deprecated: kept for backward compatibility
     var partnerConnectionStatus: PartnerStatus
 
     // Settings
@@ -53,6 +54,7 @@ struct User: Codable, Identifiable {
         relationshipStatus: String = "",
         marriageTimeline: String = "",
         topicPriorities: [String] = [],
+        partnerIds: [String] = [],
         partnerId: String? = nil,
         partnerConnectionStatus: PartnerStatus = .none,
         answerPreference: String = "",
@@ -72,6 +74,7 @@ struct User: Codable, Identifiable {
         self.relationshipStatus = relationshipStatus
         self.marriageTimeline = marriageTimeline
         self.topicPriorities = topicPriorities
+        self.partnerIds = partnerIds
         self.partnerId = partnerId
         self.partnerConnectionStatus = partnerConnectionStatus
         self.answerPreference = answerPreference

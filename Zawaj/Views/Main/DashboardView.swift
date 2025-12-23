@@ -10,6 +10,8 @@ import SwiftUI
 struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedTab: Int = 0
+    @State private var selectedPartner: User?
+    @State private var showingAnswerReveal: Bool = false
 
     var body: some View {
         ZStack {
@@ -40,6 +42,34 @@ struct DashboardView: View {
                                     .padding(.top, 16)
 
                                 if viewModel.hasPartner {
+                                    // Partners Section
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        Text("Your Partners")
+                                            .font(.title2.weight(.bold))
+                                            .foregroundColor(.white)
+
+                                        ForEach(viewModel.partners) { partner in
+                                            PartnerCard(
+                                                partner: partner,
+                                                userAnswered: viewModel.userAnswered,
+                                                partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false,
+                                                onTap: {
+                                                    let status = PartnerAnswerStatus.determine(
+                                                        userAnswered: viewModel.userAnswered,
+                                                        partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false
+                                                    )
+
+                                                    if status == .reviewAnswers {
+                                                        selectedPartner = partner
+                                                    } else {
+                                                        // Navigate to Questions tab
+                                                        selectedTab = 1
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+
                                     // Show question card when user has a partner
                                     TodayQuestionCard(
                                         question: viewModel.todayQuestion,
@@ -49,16 +79,11 @@ struct DashboardView: View {
                                     ) {
                                         // TODO: Navigate to question detail screen
                                     }
-
-                                    PartnerStatusCard(partner: viewModel.partner)
                                 } else {
                                     // Show no-partner state
                                     NoPartnerView(
                                         onAddPartner: {
                                             viewModel.showingAddPartner = true
-                                        },
-                                        onInvitePartner: {
-                                            viewModel.showingInvitePartner = true
                                         }
                                     )
                                 }
@@ -68,8 +93,16 @@ struct DashboardView: View {
                         }
                     }
                 case 1:
-                    // Questions Tab - Placeholder
-                    PlaceholderView(icon: "questionmark.bubble", title: "Questions", message: "Daily questions will appear here")
+                    // Questions Tab
+                    if viewModel.hasPartner {
+                        QuestionsView(viewModel: viewModel)
+                    } else {
+                        NoPartnerView(
+                            onAddPartner: {
+                                viewModel.showingAddPartner = true
+                            }
+                        )
+                    }
                 case 2:
                     // History Tab - Placeholder
                     PlaceholderView(icon: "clock.arrow.circlepath", title: "History", message: "Your answer history will appear here")
@@ -112,8 +145,14 @@ struct DashboardView: View {
         .sheet(isPresented: $viewModel.showingAddPartner) {
             AddPartnerView()
         }
-        .sheet(isPresented: $viewModel.showingInvitePartner) {
-            InvitePartnerView()
+        .sheet(item: $selectedPartner) { partner in
+            if let question = viewModel.todayQuestion {
+                AnswerRevealSheet(
+                    viewModel: viewModel,
+                    question: question,
+                    partner: partner
+                )
+            }
         }
         .onAppear {
             Task {

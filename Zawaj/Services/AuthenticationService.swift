@@ -237,6 +237,22 @@ class AuthenticationService: ObservableObject {
         }
     }
 
+    func updatePassword(currentPassword: String, newPassword: String) async throws {
+        guard let user = currentUser, let email = user.email else {
+            throw AuthenticationError.userNotFound
+        }
+
+        // Re-authenticate user with current password
+        let credential = EmailAuthProvider.credential(withEmail: email, password: currentPassword)
+
+        do {
+            try await user.reauthenticate(with: credential)
+            try await user.updatePassword(to: newPassword)
+        } catch {
+            throw mapFirebaseError(error)
+        }
+    }
+
     // MARK: - Private Helpers
 
     private func mapFirebaseError(_ error: Error) -> Error {

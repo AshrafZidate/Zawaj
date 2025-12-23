@@ -24,7 +24,7 @@ struct SettingsToggle: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 20))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.white)
                 .frame(width: 28)
 
             Text(title)
