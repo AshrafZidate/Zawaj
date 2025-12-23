@@ -12,16 +12,7 @@ struct SignUpRelationshipStatusView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.18, green: 0.05, blue: 0.35), // #2e0d5a
-                    Color(red: 0.72, green: 0.28, blue: 0.44)  // #b7486f
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GradientBackground()
 
             VStack(spacing: 0) {
                 // Back button and progress bar - just below dynamic island
@@ -53,22 +44,22 @@ struct SignUpRelationshipStatusView: View {
 
                 // Relationship status selection buttons
                 VStack(spacing: 24) {
-                    GlassmorphicButton(title: "Single") {
+                    GlassButton(title: "Single") {
                         coordinator.relationshipStatus = "Single"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "Talking Stage") {
+                    GlassButton(title: "Talking Stage") {
                         coordinator.relationshipStatus = "Talking Stage"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "Engaged") {
+                    GlassButton(title: "Engaged") {
                         coordinator.relationshipStatus = "Engaged"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "Married") {
+                    GlassButton(title: "Married") {
                         coordinator.relationshipStatus = "Married"
                         coordinator.nextStep()
                     }

@@ -51,15 +51,7 @@ struct HeaderView: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(red: 0.18, green: 0.05, blue: 0.35),
-                Color(red: 0.72, green: 0.28, blue: 0.44)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-
+        GradientBackground()
         HeaderView(userName: "Sarah")
             .padding(.horizontal, 24)
     }

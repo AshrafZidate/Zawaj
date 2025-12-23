@@ -12,16 +12,7 @@ struct SignUpMarriageTimelineView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.18, green: 0.05, blue: 0.35), // #2e0d5a
-                    Color(red: 0.72, green: 0.28, blue: 0.44)  // #b7486f
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GradientBackground()
 
             VStack(spacing: 0) {
                 // Back button and progress bar - just below dynamic island
@@ -53,27 +44,27 @@ struct SignUpMarriageTimelineView: View {
 
                 // Timeline selection buttons
                 VStack(spacing: 24) {
-                    GlassmorphicButton(title: "1-3 Months") {
+                    GlassButton(title: "1-3 Months") {
                         coordinator.marriageTimeline = "1-3 Months"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "3-6 Months") {
+                    GlassButton(title: "3-6 Months") {
                         coordinator.marriageTimeline = "3-6 Months"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "6-12 Months") {
+                    GlassButton(title: "6-12 Months") {
                         coordinator.marriageTimeline = "6-12 Months"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "1-2 Years") {
+                    GlassButton(title: "1-2 Years") {
                         coordinator.marriageTimeline = "1-2 Years"
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "Not sure") {
+                    GlassButton(title: "Not sure") {
                         coordinator.marriageTimeline = "Not sure"
                         coordinator.nextStep()
                     }

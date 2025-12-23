@@ -14,16 +14,7 @@ struct EnableNotificationsView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.18, green: 0.05, blue: 0.35), // #2e0d5a
-                    Color(red: 0.72, green: 0.28, blue: 0.44)  // #b7486f
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GradientBackground()
 
             VStack(spacing: 0) {
                 // Back button and progress bar - just below dynamic island
@@ -59,13 +50,13 @@ struct EnableNotificationsView: View {
 
                 // Action buttons
                 VStack(spacing: 24) {
-                    GlassmorphicButton(title: "Enable push notifications") {
+                    GlassButton(title: "Enable push notifications") {
                         Task {
                             await requestNotificationPermission()
                         }
                     }
 
-                    GlassmorphicButton(title: "Not now") {
+                    GlassButton(title: "Not now") {
                         Task {
                             await coordinator.completeOnboarding()
                         }

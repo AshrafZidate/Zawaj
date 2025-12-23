@@ -25,7 +25,7 @@ struct FindPartnerCard: View {
                 .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
 
-            GlassmorphicButton(title: "Find Your Partner") {
+            GlassButton(title: "Find Your Partner") {
                 onTap()
             }
         }
@@ -36,15 +36,7 @@ struct FindPartnerCard: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(red: 0.18, green: 0.05, blue: 0.35),
-                Color(red: 0.72, green: 0.28, blue: 0.44)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-
+        GradientBackground()
         FindPartnerCard(onTap: {})
             .padding(.horizontal, 24)
     }

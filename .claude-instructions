@@ -19,3 +19,93 @@ The only time to commit without asking is if the user explicitly says:
 
 ## Always Remember
 User approval is required before any git commit operation.
+
+---
+
+## Design System Components
+
+When creating new screens or components for this app, use the following reusable components:
+
+### Background
+- **GradientBackground** (`Zawaj/Components/GradientBackground.swift`)
+  - Use as the background for all screens
+  - Place inside a `ZStack` as the first element
+  ```swift
+  var body: some View {
+      ZStack {
+          GradientBackground()
+          // Content here
+      }
+  }
+  ```
+
+### Buttons
+All buttons use iOS 26 Liquid Glass styles. Located in `Zawaj/Components/GlassButton.swift`:
+
+- **GlassButton** - Standard action button (translucent glass style)
+  ```swift
+  GlassButton(title: "Continue") {
+      // action
+  }
+  ```
+
+- **GlassButtonPrimary** - Primary/prominent action button (opaque glass style)
+  ```swift
+  GlassButtonPrimary(title: "Submit") {
+      // action
+  }
+  ```
+
+- **GlassButtonDestructive** - Destructive action button (red, for deletions/sign out)
+  ```swift
+  GlassButtonDestructive(title: "Delete") {
+      // action
+  }
+  ```
+
+### Button Usage Guidelines
+- Use `GlassButtonPrimary` for main call-to-action (submit, save, confirm)
+- Use `GlassButton` for secondary actions (continue, cancel, skip)
+- Use `GlassButtonDestructive` for destructive actions (delete, sign out)
+- Apply `.disabled(!condition)` modifier for conditional enabling
+
+## Screen Template
+
+```swift
+import SwiftUI
+
+struct NewScreenView: View {
+    var body: some View {
+        ZStack {
+            GradientBackground()
+
+            VStack(spacing: 24) {
+                // Content
+
+                GlassButtonPrimary(title: "Primary Action") {
+                    // action
+                }
+            }
+            .padding(.horizontal, 24)
+        }
+    }
+}
+
+#Preview {
+    ZStack {
+        GradientBackground()
+        NewScreenView()
+    }
+}
+```
+
+## Navigation
+- Uses native SwiftUI `TabView` with iOS 26 glass styling
+- Tab bar configured in `DashboardView.swift`
+- Accent color: `Color(red: 0.94, green: 0.26, blue: 0.42)` (pink)
+
+## Styling Conventions
+- Card backgrounds: `.background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))`
+- Text colors: `.foregroundColor(.white)` or `.foregroundColor(.white.opacity(0.7))`
+- Horizontal padding: `.padding(.horizontal, 24)`
+- Button height: 50pt

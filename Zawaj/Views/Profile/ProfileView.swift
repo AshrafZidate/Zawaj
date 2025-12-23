@@ -19,16 +19,7 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.18, green: 0.05, blue: 0.35),
-                    Color(red: 0.72, green: 0.28, blue: 0.44)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GradientBackground()
 
             VStack(spacing: 0) {
                 // Top Navigation Bar
@@ -475,7 +466,7 @@ struct SettingsContent: View {
             }
 
             // Sign Out Button
-            DestructiveButton(title: "Sign Out", icon: "rectangle.portrait.and.arrow.right") {
+            GlassButtonDestructive(title: "Sign Out") {
                 Task {
                     await viewModel.signOut()
                 }

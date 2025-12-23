@@ -294,34 +294,11 @@ struct AnswerInputSection: View {
             }
 
             // Submit Button
-            Button(action: {
+            GlassButtonPrimary(title: "Submit Answer") {
                 let answer = question.questionType == .openEnded ? answerText : (selectedOption ?? "")
                 if !answer.isEmpty {
                     onSubmit(answer)
                 }
-            }) {
-                Text("Submit Answer")
-                    .font(.body.weight(.semibold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        canSubmit ?
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.94, green: 0.26, blue: 0.42),
-                                Color(red: 0.82, green: 0.16, blue: 0.32)
-                            ]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ) :
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.gray, Color.gray]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 12)
-                    )
             }
             .disabled(!canSubmit)
         }
@@ -378,16 +355,7 @@ struct WaitingForPartnersView: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(red: 0.18, green: 0.05, blue: 0.35),
-                Color(red: 0.72, green: 0.28, blue: 0.44)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
-
+        GradientBackground()
         QuestionsView(viewModel: DashboardViewModel())
     }
 }

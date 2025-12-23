@@ -40,7 +40,7 @@ struct TodayQuestionCard: View {
                     }
                 }
 
-                GlassmorphicButton(title: userAnswered ? "View Answer" : "Answer Question") {
+                GlassButton(title: userAnswered ? "View Answer" : "Answer Question") {
                     onTap()
                 }
             } else {
@@ -55,14 +55,7 @@ struct TodayQuestionCard: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(red: 0.18, green: 0.05, blue: 0.35),
-                Color(red: 0.72, green: 0.28, blue: 0.44)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
+        GradientBackground()
 
         TodayQuestionCard(
             question: DailyQuestion(

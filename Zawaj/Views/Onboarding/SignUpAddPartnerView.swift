@@ -12,16 +12,7 @@ struct SignUpAddPartnerView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.18, green: 0.05, blue: 0.35), // #2e0d5a
-                    Color(red: 0.72, green: 0.28, blue: 0.44)  // #b7486f
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GradientBackground()
 
             VStack(spacing: 0) {
                 // Back button and progress bar - just below dynamic island
@@ -67,17 +58,17 @@ struct SignUpAddPartnerView: View {
 
                 // Action buttons
                 VStack(spacing: 24) {
-                    GlassmorphicButton(title: "Send partner request") {
+                    GlassButton(title: "Send partner request") {
                         // Send partner request
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "Invite partner to Zawāj") {
+                    GlassButton(title: "Invite partner to Zawāj") {
                         // Invite partner via share sheet
                         coordinator.nextStep()
                     }
 
-                    GlassmorphicButton(title: "I don't have a partner") {
+                    GlassButton(title: "I don't have a partner") {
                         // Skip partner connection
                         coordinator.nextStep()
                     }
