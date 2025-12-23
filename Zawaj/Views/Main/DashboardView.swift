@@ -17,18 +17,19 @@ struct DashboardView: View {
             Tab("Home", systemImage: "house", value: 0) {
                 HomeTabContent(viewModel: viewModel, selectedTab: $selectedTab, selectedPartner: $selectedPartner)
             }
-
+            
             Tab("Questions", systemImage: "questionmark.bubble", value: 1) {
                 QuestionsTabContent(viewModel: viewModel)
             }
-
+            
             Tab("History", systemImage: "clock.arrow.circlepath", value: 2) {
                 HistoryTabContent()
             }
-
+            
             Tab("Profile", systemImage: "person", value: 3) {
                 ProfileTabContent()
             }
+        }
         .tint(Color(red: 0.94, green: 0.26, blue: 0.42))
         .sheet(isPresented: $viewModel.showingAddPartner) {
             AddPartnerView()
