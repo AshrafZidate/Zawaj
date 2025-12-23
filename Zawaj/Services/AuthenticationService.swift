@@ -18,6 +18,7 @@ enum AuthenticationError: Error, LocalizedError {
     case invalidCredentials
     case emailNotVerified
     case phoneNotVerified
+    case emailAlreadyInUse
     case networkError
     case unknown(String)
 
@@ -31,6 +32,8 @@ enum AuthenticationError: Error, LocalizedError {
             return "Please verify your email before continuing."
         case .phoneNotVerified:
             return "Please verify your phone number before continuing."
+        case .emailAlreadyInUse:
+            return "This email is already in use"
         case .networkError:
             return "Network error. Please check your connection."
         case .unknown(let message):
@@ -276,6 +279,9 @@ class AuthenticationService: ObservableObject {
         case .wrongPassword, .invalidCredential:
             print("🔥 [Firebase Error] Mapped to: invalidCredentials")
             return AuthenticationError.invalidCredentials
+        case .emailAlreadyInUse:
+            print("🔥 [Firebase Error] Mapped to: emailAlreadyInUse")
+            return AuthenticationError.emailAlreadyInUse
         case .networkError:
             print("🔥 [Firebase Error] Mapped to: networkError")
             return AuthenticationError.networkError

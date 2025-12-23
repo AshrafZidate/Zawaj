@@ -13,7 +13,28 @@ struct SignUpPasswordView: View {
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
     @State private var showError: Bool = false
+    @State private var showEmailAlreadyInUseError: Bool = false
     @State private var errorMessage: String = ""
+
+    private var hasMinLength: Bool {
+        coordinator.password.count >= 8
+    }
+
+    private var hasUppercase: Bool {
+        coordinator.password.contains(where: { $0.isUppercase })
+    }
+
+    private var hasNumber: Bool {
+        coordinator.password.contains(where: { $0.isNumber })
+    }
+
+    private var passwordsMatch: Bool {
+        !confirmPassword.isEmpty && coordinator.password == confirmPassword
+    }
+
+    private var isPasswordValid: Bool {
+        hasMinLength && hasUppercase && hasNumber && passwordsMatch
+    }
 
     var body: some View {
         ZStack {
@@ -49,12 +70,12 @@ struct SignUpPasswordView: View {
                     // Password text field with show/hide toggle
                     HStack {
                         if isPasswordVisible {
-                            TextField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.secondary))
+                            TextField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
                         } else {
-                            SecureField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.secondary))
+                            SecureField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
@@ -65,23 +86,23 @@ struct SignUpPasswordView: View {
                         }) {
                             Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
                                 .font(.body)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.6))
                         }
                         .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 16)
-                    .frame(height: 50)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .frame(height: 52)
+                    .glassEffect(.clear)
 
                     // Confirm password text field with show/hide toggle
                     HStack {
                         if isConfirmPasswordVisible {
-                            TextField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.secondary))
+                            TextField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
                         } else {
-                            SecureField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.secondary))
+                            SecureField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
@@ -92,13 +113,22 @@ struct SignUpPasswordView: View {
                         }) {
                             Image(systemName: isConfirmPasswordVisible ? "eye.slash.fill" : "eye.fill")
                                 .font(.body)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.6))
                         }
                         .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 16)
-                    .frame(height: 50)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .frame(height: 52)
+                    .glassEffect(.clear)
+
+                    // Password requirements
+                    VStack(alignment: .leading, spacing: 6) {
+                        PasswordRequirementRow(text: "Minimum of 8 characters", isMet: hasMinLength)
+                        PasswordRequirementRow(text: "Minimum of 1 upper case letter", isMet: hasUppercase)
+                        PasswordRequirementRow(text: "Minimum of 1 number", isMet: hasNumber)
+                        PasswordRequirementRow(text: "Passwords match", isMet: passwordsMatch)
+                    }
+                    .padding(.top, 8)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -106,33 +136,23 @@ struct SignUpPasswordView: View {
                 Spacer()
 
                 // Continue button - just above bottom
-                GlassButton(title: "Continue") {
-                    // Validate passwords match
-                    guard coordinator.password == confirmPassword else {
-                        errorMessage = "Passwords do not match"
-                        showError = true
-                        return
-                    }
-
-                    // Validate password length
-                    guard coordinator.password.count >= 6 else {
-                        errorMessage = "Password must be at least 6 characters"
-                        showError = true
-                        return
-                    }
-
+                GlassButtonPrimary(title: "Continue") {
                     // Sign up with email and password
                     Task {
                         await coordinator.signUpWithEmail()
-                        if coordinator.authenticationError != nil {
-                            errorMessage = coordinator.authenticationError ?? "Unknown error"
-                            showError = true
+                        if let error = coordinator.authenticationError {
+                            if error.contains("already in use") {
+                                showEmailAlreadyInUseError = true
+                            } else {
+                                errorMessage = error
+                                showError = true
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
-                .disabled(coordinator.isLoading)
+                .disabled(!isPasswordValid || coordinator.isLoading)
             }
 
             // Loading overlay
@@ -151,6 +171,42 @@ struct SignUpPasswordView: View {
             }
         } message: {
             Text(errorMessage)
+        }
+        .alert("Email Already in Use", isPresented: $showEmailAlreadyInUseError) {
+            Button("Sign up with a different email", role: .cancel) {
+                coordinator.authenticationError = nil
+                coordinator.email = ""
+                coordinator.skipToStep(.signUpEmail)
+            }
+            Button("Log in with this email") {
+                coordinator.authenticationError = nil
+                coordinator.loginEmail = coordinator.email
+                coordinator.skipToStep(.login)
+            }
+        } message: {
+            Text("The email \(coordinator.email) is already associated with an account")
+        }
+        .onDisappear {
+            coordinator.password = ""
+            confirmPassword = ""
+        }
+    }
+}
+
+// MARK: - Password Requirement Row
+
+private struct PasswordRequirementRow: View {
+    let text: String
+    let isMet: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: isMet ? "checkmark.circle.fill" : "circle")
+                .font(.subheadline)
+                .foregroundColor(isMet ? .green : .white.opacity(0.5))
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(isMet ? .white : .white.opacity(0.5))
         }
     }
 }

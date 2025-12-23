@@ -191,6 +191,12 @@ struct LoginView: View {
         } message: {
             Text("An email to reset your Zawāj password has been sent to the email address")
         }
+        .onAppear {
+            if !coordinator.loginEmail.isEmpty {
+                email = coordinator.loginEmail
+                coordinator.loginEmail = ""
+            }
+        }
     }
 }
 

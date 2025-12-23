@@ -49,8 +49,8 @@ struct EnableNotificationsView: View {
                 Spacer()
 
                 // Action buttons
-                VStack(spacing: 24) {
-                    GlassButton(title: "Enable push notifications") {
+                VStack(spacing: 16) {
+                    GlassButtonPrimary(title: "Enable push notifications") {
                         Task {
                             await requestNotificationPermission()
                         }

@@ -72,8 +72,7 @@ struct AccountSetupLoadingView: View {
 
                 // Continue button (appears after loading completes)
                 if showContinueButton {
-                    GlassButton(title: "Continue to Zawāj") {
-                        // TODO: Navigate to main app
+                    GlassButtonPrimary(title: "Continue to Zawāj") {
                         coordinator.skipToStep(.completed)
                     }
                     .padding(.horizontal, 24)

@@ -42,14 +42,14 @@ struct SignUpFullNameView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Full name text field
-                    TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
-                        .frame(height: 50)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .frame(height: 52)
                         .textContentType(.name)
                         .autocapitalization(.words)
+                        .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -57,9 +57,10 @@ struct SignUpFullNameView: View {
                 Spacer()
 
                 // Continue button - just above bottom
-                GlassButton(title: "Continue") {
+                GlassButtonPrimary(title: "Continue") {
                     coordinator.nextStep()
                 }
+                .disabled(coordinator.fullName.trimmingCharacters(in: .whitespaces).isEmpty)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }

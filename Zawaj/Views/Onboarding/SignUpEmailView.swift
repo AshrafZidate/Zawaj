@@ -10,6 +10,11 @@ import SwiftUI
 struct SignUpEmailView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
 
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: emailRegex, options: .regularExpression) != nil
+    }
+
     var body: some View {
         ZStack {
             GradientBackground()
@@ -42,14 +47,15 @@ struct SignUpEmailView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Email text field
-                    TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
-                        .frame(height: 50)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .frame(height: 52)
                         .autocapitalization(.none)
+                        .autocorrectionDisabled()
                         .keyboardType(.emailAddress)
+                        .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -57,9 +63,10 @@ struct SignUpEmailView: View {
                 Spacer()
 
                 // Continue button - just above bottom
-                GlassButton(title: "Continue") {
+                GlassButtonPrimary(title: "Continue") {
                     coordinator.nextStep()
                 }
+                .disabled(!isValidEmail(coordinator.email))
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }

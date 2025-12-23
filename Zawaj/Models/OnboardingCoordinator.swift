@@ -146,6 +146,7 @@ class OnboardingCoordinator: ObservableObject {
     // User data collected during onboarding
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var loginEmail: String = ""  // For prefilling login email field
     @Published var fullName: String = ""
     @Published var username: String = ""
     @Published var gender: String = ""

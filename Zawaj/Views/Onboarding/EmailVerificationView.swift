@@ -51,7 +51,7 @@ struct EmailVerificationView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .glassEffect(.clear)
 
                     Text("Click the link in the email to verify your account, then tap Continue below.")
                         .font(.body)
@@ -69,22 +69,8 @@ struct EmailVerificationView: View {
                             }
                         }
 
-                        Button(action: {
+                        GlassButton(title: resendCooldown > 0 ? "Resend in \(resendCooldown)s" : "Resend verification email", icon: "arrow.clockwise") {
                             resendVerificationEmail()
-                        }) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.callout)
-                                Text(resendCooldown > 0 ? "Resend in \(resendCooldown)s" : "Resend verification email")
-                                    .font(.callout.weight(.medium))
-                            }
-                            .foregroundColor(resendCooldown > 0 ? .white.opacity(0.5) : .white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(resendCooldown > 0 ? Color.white.opacity(0.3) : Color.white, lineWidth: 2)
-                            )
                         }
                         .disabled(resendCooldown > 0 || coordinator.isLoading)
                     }
@@ -114,7 +100,7 @@ struct EmailVerificationView: View {
                 Spacer()
 
                 // Continue button
-                GlassButton(title: "Continue") {
+                GlassButtonPrimary(title: "Continue") {
                     Task {
                         coordinator.isLoading = true
 

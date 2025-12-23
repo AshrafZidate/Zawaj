@@ -11,18 +11,27 @@ import SwiftUI
 
 struct GlassButton: View {
     let title: String
+    var icon: String? = nil
+    var tint: Color? = nil
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.body.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
+            HStack(spacing: 12) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.title2)
+                }
+                Text(title)
+                    .font(.body.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
         }
+        .tint(tint?.opacity(0.7))
         .buttonStyle(.glass)
         .glassEffect(.clear)
-        
+
     }
 }
 

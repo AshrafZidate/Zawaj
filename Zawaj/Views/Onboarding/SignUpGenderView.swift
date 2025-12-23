@@ -48,13 +48,13 @@ struct SignUpGenderView: View {
                 Spacer()
 
                 // Gender selection buttons
-                VStack(spacing: 24) {
-                    GlassButton(title: "Male") {
+                VStack(spacing: 16) {
+                    GlassButton(title: "Male", icon: "figure.stand") {
                         coordinator.gender = "Male"
                         coordinator.nextStep()
                     }
 
-                    GlassButton(title: "Female") {
+                    GlassButton(title: "Female", icon: "figure.stand.dress") {
                         coordinator.gender = "Female"
                         coordinator.nextStep()
                     }
