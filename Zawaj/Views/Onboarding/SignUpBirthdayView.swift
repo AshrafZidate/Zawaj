@@ -10,6 +10,13 @@ import SwiftUI
 struct SignUpBirthdayView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
 
+    private var isAtLeast16: Bool {
+        let calendar = Calendar.current
+        let now = Date()
+        let ageComponents = calendar.dateComponents([.year], from: coordinator.birthday, to: now)
+        return (ageComponents.year ?? 0) >= 16
+    }
+
     var body: some View {
         ZStack {
             GradientBackground()
@@ -41,26 +48,37 @@ struct SignUpBirthdayView: View {
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
 
-                    // Date picker with iOS calendar style
+                    // Date picker with compact button style
                     DatePicker(
-                        "",
+                        "Date of birth",
                         selection: $coordinator.birthday,
                         displayedComponents: [.date]
                     )
-                    .datePickerStyle(.graphical)
-                    .tint(.blue)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 13))
-                    .frame(maxWidth: .infinity)
+                    .datePickerStyle(.compact)
+                    .tint(.white)
+                    .foregroundColor(.white)
+                    .accentColor(.white)
+                    .colorScheme(.dark)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
 
                 Spacer()
 
+                // Age requirement notice
+                Text("Zawāj users must be at least 16 years old")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.6))
+                    .padding(.bottom, 12)
+
                 // Continue button - just above bottom
-                GlassButton(title: "Continue") {
+                GlassButtonPrimary(title: "Continue") {
                     coordinator.nextStep()
                 }
+                .disabled(!isAtLeast16)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }

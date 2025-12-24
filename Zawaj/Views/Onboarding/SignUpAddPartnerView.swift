@@ -42,14 +42,15 @@ struct SignUpAddPartnerView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Partner username text field
-                    TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username").foregroundColor(.secondary))
+                    TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username or email").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 16)
-                        .frame(height: 50)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .frame(height: 52)
                         .textContentType(.username)
                         .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                        .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -57,11 +58,12 @@ struct SignUpAddPartnerView: View {
                 Spacer()
 
                 // Action buttons
-                VStack(spacing: 24) {
-                    GlassButton(title: "Send partner request") {
+                VStack(spacing: 16) {
+                    GlassButtonPrimary(title: "Send partner request") {
                         // Send partner request
                         coordinator.nextStep()
                     }
+                    .disabled(coordinator.partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty)
 
                     GlassButton(title: "Invite partner to Zawāj") {
                         // Invite partner via share sheet
