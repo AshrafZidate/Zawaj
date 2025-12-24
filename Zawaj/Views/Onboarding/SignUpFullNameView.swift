@@ -42,14 +42,25 @@ struct SignUpFullNameView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Full name text field
-                    TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.white.opacity(0.6)))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 16)
-                        .frame(height: 52)
-                        .textContentType(.name)
-                        .autocapitalization(.words)
-                        .glassEffect(.clear)
+                    HStack {
+                        TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.white.opacity(0.6)))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+                            .textContentType(.name)
+                            .autocapitalization(.words)
+
+                        if !coordinator.fullName.isEmpty {
+                            Button {
+                                coordinator.fullName = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 52)
+                    .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)

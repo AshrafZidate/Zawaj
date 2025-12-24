@@ -15,88 +15,78 @@ struct ProfileView: View {
         case profile = "Profile"
         case partners = "Partners"
         case settings = "Settings"
+
+        var icon: String {
+            switch self {
+            case .profile: return "person.fill"
+            case .partners: return "person.2.fill"
+            case .settings: return "gearshape.fill"
+            }
+        }
     }
 
     var body: some View {
-        ZStack {
-            GradientBackground()
+        NavigationStack {
+            ZStack {
+                GradientBackground()
 
-            VStack(spacing: 0) {
-                // Top Navigation Bar
-                ProfileNavigationBar(selectedTab: $selectedTab)
-                    .padding(.top, 8)
-
-                // Content based on selected tab
-                ScrollView {
-                    VStack(spacing: 24) {
-                        switch selectedTab {
-                        case .profile:
-                            ProfileContent(viewModel: viewModel)
-                        case .partners:
+                switch selectedTab {
+                case .profile:
+                    ProfileContent(viewModel: viewModel)
+                case .partners:
+                    ScrollView {
+                        VStack(spacing: 24) {
                             PartnersContent(viewModel: viewModel)
-                        case .settings:
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 24)
+                        .padding(.bottom, 100)
+                    }
+                case .settings:
+                    ScrollView {
+                        VStack(spacing: 24) {
                             SettingsContent(viewModel: viewModel)
                         }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 24)
+                        .padding(.bottom, 100)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 24)
-                    .padding(.bottom, 100)
                 }
             }
-        }
-        .alert("Disconnect Partner", isPresented: $viewModel.showingDisconnectPartnerAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Disconnect", role: .destructive) {
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Picker("", selection: $selectedTab) {
+                        ForEach(ProfileTab.allCases, id: \.self) { tab in
+                            Text(tab.rawValue).tag(tab)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 250)
+                }
+            }
+            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+            .alert("Disconnect Partner", isPresented: $viewModel.showingDisconnectPartnerAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Disconnect", role: .destructive) {
+                    Task {
+                        await viewModel.disconnectPartner()
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to disconnect from your partner? You can always reconnect later.")
+            }
+            .sheet(isPresented: $viewModel.showingAddPartner) {
+                AddPartnerView()
+            }
+            .sheet(isPresented: $viewModel.showingChangePassword) {
+                ChangePasswordView(viewModel: viewModel)
+            }
+            .onAppear {
                 Task {
-                    await viewModel.disconnectPartner()
+                    await viewModel.loadProfileData()
                 }
             }
-        } message: {
-            Text("Are you sure you want to disconnect from your partner? You can always reconnect later.")
         }
-        .sheet(isPresented: $viewModel.showingAddPartner) {
-            AddPartnerView()
-        }
-        .sheet(isPresented: $viewModel.showingChangePassword) {
-            ChangePasswordView(viewModel: viewModel)
-        }
-        .onAppear {
-            Task {
-                await viewModel.loadProfileData()
-            }
-        }
-    }
-}
-
-// MARK: - Profile Navigation Bar
-
-struct ProfileNavigationBar: View {
-    @Binding var selectedTab: ProfileView.ProfileTab
-
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(ProfileView.ProfileTab.allCases, id: \.self) { tab in
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedTab = tab
-                    }
-                }) {
-                    Text(tab.rawValue)
-                        .font(.body.weight(selectedTab == tab ? .semibold : .regular))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(
-                            selectedTab == tab ?
-                            Color.white.opacity(0.2) :
-                            Color.clear
-                        )
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
-        }
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .padding(.horizontal, 24)
     }
 }
 
@@ -104,178 +94,532 @@ struct ProfileNavigationBar: View {
 
 struct ProfileContent: View {
     @ObservedObject var viewModel: ProfileViewModel
-    @State private var isEditing = false
+    @State private var editingField: EditableField?
+
+    enum EditableField: Identifiable {
+        case fullName, username, relationshipStatus, marriageTimeline, topicPriorities
+
+        var id: Self { self }
+    }
 
     var body: some View {
-        VStack(spacing: 24) {
-            // Editable Profile Information
-            VStack(spacing: 16) {
-                EditableProfileField(
-                    label: "Full Name",
-                    value: viewModel.currentUser?.fullName ?? "",
-                    isEditing: isEditing,
-                    onSave: { newValue in
-                        Task {
-                            await viewModel.updateProfile(updates: ["fullName": newValue])
+        List {
+            // Full Name (Editable)
+            ProfileListRow(
+                icon: "person.text.rectangle",
+                label: "Full Name",
+                value: viewModel.currentUser?.fullName ?? "",
+                isEditable: true
+            )
+            .onTapGesture { editingField = .fullName }
+
+            // Username (Editable)
+            ProfileListRow(
+                icon: "at",
+                label: "Username",
+                value: viewModel.currentUser?.username ?? "",
+                isEditable: true
+            )
+            .onTapGesture { editingField = .username }
+
+            // Email (Not Editable)
+            ProfileListRow(
+                icon: "envelope",
+                label: "Email",
+                value: viewModel.currentUser?.email ?? ""
+            )
+
+            // Gender (Not Editable)
+            ProfileListRow(
+                icon: "person",
+                label: "Gender",
+                value: viewModel.currentUser?.gender ?? ""
+            )
+
+            // Birthday (Not Editable)
+            ProfileListRow(
+                icon: "calendar",
+                label: "Birthday",
+                value: formattedBirthday(viewModel.currentUser?.birthday)
+            )
+
+            // Relationship Status (Editable)
+            ProfileListRow(
+                icon: "heart",
+                label: "Relationship Status",
+                value: viewModel.currentUser?.relationshipStatus ?? "",
+                isEditable: true
+            )
+            .onTapGesture { editingField = .relationshipStatus }
+
+            // Marriage Timeline (Editable)
+            ProfileListRow(
+                icon: "clock",
+                label: "Marriage Timeline",
+                value: viewModel.currentUser?.marriageTimeline ?? "",
+                isEditable: true
+            )
+            .onTapGesture { editingField = .marriageTimeline }
+
+            // Answer Preferences (Inline Toggle)
+            AnswerPreferenceToggleRow(viewModel: viewModel)
+
+            // Topic Priorities (Editable)
+            ProfileListRow(
+                icon: "list.star",
+                label: "Topic Priorities",
+                value: formatTopicPriorities(viewModel.currentUser?.topicPriorities),
+                isEditable: true
+            )
+            .onTapGesture { editingField = .topicPriorities }
+        }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .contentMargins(.top, -20, for: .scrollContent)
+        .sheet(item: $editingField) { field in
+            EditProfileFieldSheet(field: field, viewModel: viewModel)
+        }
+    }
+}
+
+// MARK: - Profile List Row
+
+struct ProfileListRow: View {
+    let icon: String
+    let label: String
+    let value: String
+    var isEditable: Bool = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+
+                Text(value.isEmpty ? "—" : value)
+                    .font(.body)
+                    .foregroundColor(.white)
+            }
+
+            Spacer()
+
+            if isEditable {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.4))
+            }
+        }
+        .contentShape(Rectangle())
+        .listRowBackground(Color.white.opacity(0.1))
+        .listRowSeparatorTint(.white.opacity(0.2))
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+}
+
+// MARK: - Answer Preference Toggle Row
+
+struct AnswerPreferenceToggleRow: View {
+    @ObservedObject var viewModel: ProfileViewModel
+    private let answerOptions = ["Multiple Choice", "Open Ended"]
+
+    private var selectedOption: String {
+        viewModel.currentUser?.answerPreference ?? "Multiple Choice"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            labelRow
+            toggleButtons
+        }
+        .listRowBackground(Color.white.opacity(0.1))
+        .listRowSeparatorTint(.white.opacity(0.2))
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+
+    private var labelRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "text.bubble")
+                .font(.system(size: 18))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 24)
+
+            Text("Answer Preferences")
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.7))
+        }
+    }
+
+    private var toggleButtons: some View {
+        HStack(spacing: 4) {
+            ForEach(answerOptions, id: \.self) { option in
+                toggleButton(for: option)
+            }
+        }
+        .padding(4)
+        .glassEffect(.clear, in: Capsule())
+    }
+
+    @ViewBuilder
+    private func toggleButton(for option: String) -> some View {
+        let isSelected = selectedOption == option
+
+        Button {
+            Task {
+                await viewModel.updateProfile(updates: ["answerPreference": option])
+            }
+        } label: {
+            Text(option)
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(isSelected ? .white : .white.opacity(0.5))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 8)
+        }
+        .background {
+            if isSelected {
+                Capsule()
+                    .fill(.white.opacity(0.2))
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Edit Profile Field Sheet
+
+struct EditProfileFieldSheet: View {
+    let field: ProfileContent.EditableField
+    @ObservedObject var viewModel: ProfileViewModel
+    @Environment(\.dismiss) var dismiss
+
+    @State private var textValue: String = ""
+    @State private var selectedOption: String = ""
+    @State private var topicPriorities: [String] = []
+
+    // Username validation states
+    @State private var isCheckingAvailability: Bool = false
+    @State private var isUsernameAvailable: Bool? = nil
+    @State private var checkTask: Task<Void, Never>? = nil
+
+    private var title: String {
+        switch field {
+        case .fullName: return "Full Name"
+        case .username: return "Username"
+        case .relationshipStatus: return "Relationship Status"
+        case .marriageTimeline: return "Marriage Timeline"
+        case .topicPriorities: return "Topic Priorities"
+        }
+    }
+
+    // Username validation
+    private var isValidUsernameFormat: Bool {
+        let regex = "^[a-zA-Z0-9._-]+$"
+        return !textValue.isEmpty &&
+               textValue.range(of: regex, options: .regularExpression) != nil
+    }
+
+    private var canSaveUsername: Bool {
+        // Allow save if username unchanged, or if new username is valid and available
+        let originalUsername = viewModel.currentUser?.username ?? ""
+        if textValue == originalUsername {
+            return true
+        }
+        return isValidUsernameFormat && isUsernameAvailable == true && !isCheckingAvailability
+    }
+
+    private let relationshipOptions = ["Single", "Talking", "Engaged", "Married"]
+    private let timelineOptions = ["Within 6 months", "6-12 months", "1-2 years", "2+ years", "Not sure yet"]
+
+    var body: some View {
+        NavigationView {
+            ZStack {
+                GradientBackground()
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        switch field {
+                        case .fullName, .username:
+                            textFieldEditor
+
+                        case .relationshipStatus:
+                            optionPicker(options: relationshipOptions)
+
+                        case .marriageTimeline:
+                            optionPicker(options: timelineOptions)
+
+                        case .topicPriorities:
+                            topicPrioritiesEditor
                         }
                     }
-                )
-
-                EditableProfileField(
-                    label: "Username",
-                    value: "@\(viewModel.currentUser?.username ?? "")",
-                    isEditing: isEditing,
-                    onSave: { newValue in
-                        Task {
-                            // Remove @ prefix if user included it
-                            let username = newValue.hasPrefix("@") ? String(newValue.dropFirst()) : newValue
-                            await viewModel.updateProfile(updates: ["username": username])
-                        }
-                    }
-                )
-
-                // Email (Read-only)
-                ProfileInfoRow(
-                    label: "Email",
-                    value: viewModel.currentUser?.email ?? "",
-                    icon: "envelope"
-                )
-
-                // Gender (Read-only)
-                ProfileInfoRow(
-                    label: "Gender",
-                    value: viewModel.currentUser?.gender ?? "",
-                    icon: "person"
-                )
-
-                // Birthday with DatePicker
-                if isEditing {
-                    DatePickerProfileField(
-                        label: "Birthday",
-                        selection: Binding(
-                            get: { viewModel.currentUser?.birthday ?? Date() },
-                            set: { newValue in
-                                Task {
-                                    await viewModel.updateProfile(updates: ["birthday": newValue])
-                                }
-                            }
-                        )
-                    )
-                } else {
-                    ProfileInfoRow(
-                        label: "Birthday",
-                        value: formattedBirthday(viewModel.currentUser?.birthday),
-                        icon: "calendar"
-                    )
-                }
-
-                // Relationship Status with Picker
-                if isEditing {
-                    PickerProfileField(
-                        label: "Relationship Status",
-                        selection: Binding(
-                            get: { viewModel.currentUser?.relationshipStatus ?? "Single" },
-                            set: { newValue in
-                                Task {
-                                    await viewModel.updateProfile(updates: ["relationshipStatus": newValue])
-                                }
-                            }
-                        ),
-                        options: ["Single", "Talking Stage", "Engaged", "Married"]
-                    )
-                } else {
-                    ProfileInfoRow(
-                        label: "Relationship Status",
-                        value: viewModel.currentUser?.relationshipStatus ?? "",
-                        icon: "heart"
-                    )
-                }
-
-                // Marriage Timeline with Picker
-                if isEditing {
-                    PickerProfileField(
-                        label: "Marriage Timeline",
-                        selection: Binding(
-                            get: { viewModel.currentUser?.marriageTimeline ?? "1-3 Months" },
-                            set: { newValue in
-                                Task {
-                                    await viewModel.updateProfile(updates: ["marriageTimeline": newValue])
-                                }
-                            }
-                        ),
-                        options: ["1-3 Months", "3-6 Months", "6-12 Months", "1-2 Years", "Not sure"]
-                    )
-                } else {
-                    ProfileInfoRow(
-                        label: "Marriage Timeline",
-                        value: viewModel.currentUser?.marriageTimeline ?? "",
-                        icon: "clock"
-                    )
-                }
-
-                // Topic Priorities
-                if let priorities = viewModel.currentUser?.topicPriorities, !priorities.isEmpty {
-                    if isEditing {
-                        TopicPrioritiesEditor(
-                            priorities: Binding(
-                                get: { viewModel.currentUser?.topicPriorities ?? [] },
-                                set: { newValue in
-                                    Task {
-                                        await viewModel.updateProfile(updates: ["topicPriorities": newValue])
-                                    }
-                                }
-                            )
-                        )
-                    } else {
-                        ProfileInfoRow(
-                            label: "Topic Priorities",
-                            value: "\(priorities.count) topics ordered",
-                            icon: "list.star"
-                        )
-                    }
+                    .padding(24)
                 }
             }
-            .padding(20)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveChanges()
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .disabled(field == .username && !canSaveUsername)
+                    .opacity(field == .username && !canSaveUsername ? 0.5 : 1)
+                }
+            }
+        }
+        .onAppear {
+            loadCurrentValue()
+        }
+    }
 
-            // Default Answer Format
-            VStack(spacing: 16) {
-                HStack(spacing: 16) {
-                    Image(systemName: "text.bubble")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white)
-                        .frame(width: 28)
+    private var textFieldEditor: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(field == .username ? "Change your username" : "Change your full name")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
 
-                    Text("Default Answer Format")
+            if field == .username {
+                // Username field with @ prefix (matching onboarding)
+                HStack(spacing: 8) {
+                    Text("@")
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(.leading, 16)
+
+                    TextField("", text: $textValue, prompt: Text("username").foregroundColor(.white.opacity(0.6)))
                         .font(.body)
                         .foregroundColor(.white)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
+                        .textFieldStyle(.plain)
+                        .textContentType(.username)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                        .onChange(of: textValue) { _, newValue in
+                            let originalUsername = viewModel.currentUser?.username ?? ""
 
-                Picker("", selection: $viewModel.defaultAnswerFormat) {
-                    Text("Open Ended").tag(QuestionType.openEnded)
-                    Text("Multiple Choice").tag(QuestionType.multipleChoice)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 20)
-                .padding(.bottom, 16)
-            }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+                            // Skip check if unchanged
+                            if newValue == originalUsername {
+                                checkTask?.cancel()
+                                isUsernameAvailable = nil
+                                isCheckingAvailability = false
+                                return
+                            }
 
-            // Edit/Save Button
-            Button(action: { isEditing.toggle() }) {
-                Text(isEditing ? "Done Editing" : "Edit Profile")
-                    .font(.body.weight(.medium))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        Color(red: 0.94, green: 0.26, blue: 0.42),
-                        in: RoundedRectangle(cornerRadius: 12)
-                    )
+                            // Cancel previous check
+                            checkTask?.cancel()
+                            isUsernameAvailable = nil
+
+                            // Only check if format is valid
+                            guard !newValue.isEmpty else { return }
+                            let regex = "^[a-zA-Z0-9._-]+$"
+                            guard newValue.range(of: regex, options: .regularExpression) != nil else { return }
+
+                            // Debounce the availability check
+                            checkTask = Task {
+                                isCheckingAvailability = true
+                                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 second debounce
+
+                                guard !Task.isCancelled else { return }
+
+                                let firestoreService = FirestoreService()
+                                let available = (try? await firestoreService.isUsernameAvailable(newValue)) ?? false
+
+                                guard !Task.isCancelled else { return }
+
+                                await MainActor.run {
+                                    isUsernameAvailable = available
+                                    isCheckingAvailability = false
+                                }
+                            }
+                        }
+
+                    // Clear button
+                    if !textValue.isEmpty && !isCheckingAvailability {
+                        Button {
+                            textValue = ""
+                            isUsernameAvailable = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    // Status indicator
+                    if isCheckingAvailability {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                            .padding(.trailing, 16)
+                    } else if let available = isUsernameAvailable {
+                        Image(systemName: available ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundColor(available ? .green : .red)
+                            .padding(.trailing, 16)
+                    }
+                }
+                .frame(height: 52)
+                .glassEffect(.clear)
+
+                // Username format info and validation feedback
+                if !textValue.isEmpty && !isValidUsernameFormat {
+                    Text("Username can only contain letters, numbers, and . - _")
+                        .font(.caption)
+                        .foregroundColor(.red.opacity(0.8))
+                } else if isUsernameAvailable == false {
+                    Text("This username is already taken")
+                        .font(.caption)
+                        .foregroundColor(.red.opacity(0.8))
+                } else {
+                    Text("Letters, numbers, periods, dashes, and underscores only")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            } else {
+                // Full name field (matching onboarding)
+                HStack {
+                    TextField("", text: $textValue, prompt: Text("Full Name").foregroundColor(.white.opacity(0.6)))
+                        .font(.body)
+                        .foregroundColor(.white)
+                        .textFieldStyle(.plain)
+                        .textContentType(.name)
+                        .autocapitalization(.words)
+
+                    if !textValue.isEmpty {
+                        Button {
+                            textValue = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .frame(height: 52)
+                .glassEffect(.clear)
             }
-            .buttonStyle(PlainButtonStyle())
+        }
+    }
+
+    private func optionPicker(options: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Select an option")
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.7))
+
+            VStack(spacing: 8) {
+                ForEach(options, id: \.self) { option in
+                    Button {
+                        selectedOption = option
+                    } label: {
+                        HStack {
+                            Text(option)
+                                .font(.body)
+                                .foregroundColor(.white)
+
+                            Spacer()
+
+                            if selectedOption == option {
+                                Image(systemName: "checkmark")
+                                    .font(.body.weight(.semibold))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(16)
+                        .background(
+                            selectedOption == option
+                                ? Color.white.opacity(0.2)
+                                : Color.white.opacity(0.1),
+                            in: RoundedRectangle(cornerRadius: 12)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private var topicPrioritiesEditor: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Drag to reorder your priorities")
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.7))
+
+            VStack(spacing: 8) {
+                ForEach(Array(topicPriorities.enumerated()), id: \.offset) { index, topic in
+                    HStack(spacing: 12) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.body)
+                            .foregroundColor(.white.opacity(0.4))
+
+                        Text("\(index + 1)")
+                            .font(.caption.weight(.bold))
+                            .foregroundColor(.white.opacity(0.6))
+                            .frame(width: 20)
+
+                        Text(topic)
+                            .font(.body)
+                            .foregroundColor(.white)
+
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                }
+                .onMove { source, destination in
+                    topicPriorities.move(fromOffsets: source, toOffset: destination)
+                }
+            }
+            .environment(\.editMode, .constant(.active))
+        }
+    }
+
+    private func loadCurrentValue() {
+        guard let user = viewModel.currentUser else { return }
+
+        switch field {
+        case .fullName:
+            textValue = user.fullName
+        case .username:
+            textValue = user.username
+        case .relationshipStatus:
+            selectedOption = user.relationshipStatus
+        case .marriageTimeline:
+            selectedOption = user.marriageTimeline
+        case .topicPriorities:
+            topicPriorities = user.topicPriorities
+        }
+    }
+
+    private func saveChanges() {
+        Task {
+            var updates: [String: Any] = [:]
+
+            switch field {
+            case .fullName:
+                updates["fullName"] = textValue
+            case .username:
+                updates["username"] = textValue
+            case .relationshipStatus:
+                updates["relationshipStatus"] = selectedOption
+            case .marriageTimeline:
+                updates["marriageTimeline"] = selectedOption
+            case .topicPriorities:
+                updates["topicPriorities"] = topicPriorities
+            }
+
+            await viewModel.updateProfile(updates: updates)
         }
     }
 }
@@ -519,16 +863,27 @@ struct EditableProfileField: View {
                 .foregroundColor(.white.opacity(0.7))
 
             if isEditing {
-                TextField("", text: $editedValue)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
-                    .onChange(of: editedValue) { _, newValue in
-                        if !newValue.isEmpty {
-                            onSave(newValue)
+                HStack {
+                    TextField("", text: $editedValue)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .foregroundColor(.white)
+                        .onChange(of: editedValue) { _, newValue in
+                            if !newValue.isEmpty {
+                                onSave(newValue)
+                            }
+                        }
+
+                    if !editedValue.isEmpty {
+                        Button {
+                            editedValue = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
                         }
                     }
+                }
+                .padding()
+                .background(Color.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
             } else {
                 Text(value)
                     .font(.body)
@@ -608,6 +963,12 @@ private func formattedBirthday(_ date: Date?) -> String {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
     return formatter.string(from: date)
+}
+
+// Helper function to format topic priorities
+private func formatTopicPriorities(_ priorities: [String]?) -> String {
+    guard let priorities = priorities, !priorities.isEmpty else { return "" }
+    return priorities.joined(separator: ", ")
 }
 
 struct ProfilePartnerCard: View {

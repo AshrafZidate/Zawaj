@@ -95,6 +95,17 @@ struct SignUpUsernameView: View {
                                 }
                             }
 
+                        // Clear button
+                        if !coordinator.username.isEmpty && !isCheckingAvailability {
+                            Button {
+                                coordinator.username = ""
+                                isUsernameAvailable = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
                         // Status indicator
                         if isCheckingAvailability {
                             ProgressView()

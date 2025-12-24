@@ -22,11 +22,11 @@ struct DashboardView: View {
                 QuestionsTabContent(viewModel: viewModel)
             }
             
-            Tab("History", systemImage: "clock.arrow.circlepath", value: 2) {
+            Tab("Archives", systemImage: "archivebox", value: 2) {
                 HistoryTabContent()
             }
             
-            Tab("Profile", systemImage: "person", value: 3) {
+            Tab("Preferences", systemImage: "gearshape", value: 3) {
                 ProfileTabContent()
             }
         }
@@ -161,13 +161,13 @@ struct QuestionsTabContent: View {
     }
 }
 
-// MARK: - History Tab Content
+// MARK: - Archives Tab Content
 
 struct HistoryTabContent: View {
     var body: some View {
         ZStack {
             GradientBackground()
-            PlaceholderView(icon: "clock.arrow.circlepath", title: "History", message: "Your answer history will appear here")
+            PlaceholderView(icon: "archivebox", title: "Archives", message: "Your past answers will appear here")
         }
     }
 }

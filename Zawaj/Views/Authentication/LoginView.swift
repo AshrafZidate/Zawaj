@@ -99,23 +99,45 @@ struct LoginView: View {
                     .padding(.horizontal, 10)
 
                     // Email field
-                    TextField("", text: $email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 20)
-                        .frame(height: 52)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .keyboardType(.emailAddress)
-                        .glassEffect(.clear)
+                    HStack {
+                        TextField("", text: $email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled()
+                            .keyboardType(.emailAddress)
+
+                        if !email.isEmpty {
+                            Button {
+                                email = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .frame(height: 52)
+                    .glassEffect(.clear)
 
                     // Password field
-                    SecureField("", text: $password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 20)
-                        .frame(height: 52)
-                        .glassEffect(.clear)
+                    HStack {
+                        SecureField("", text: $password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+
+                        if !password.isEmpty {
+                            Button {
+                                password = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .frame(height: 52)
+                    .glassEffect(.clear)
                     
 
                     // Login button

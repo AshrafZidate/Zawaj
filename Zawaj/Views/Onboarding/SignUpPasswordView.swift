@@ -81,6 +81,15 @@ struct SignUpPasswordView: View {
                                 .textContentType(.newPassword)
                         }
 
+                        if !coordinator.password.isEmpty {
+                            Button {
+                                coordinator.password = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
                         Button(action: {
                             isPasswordVisible.toggle()
                         }) {
@@ -106,6 +115,15 @@ struct SignUpPasswordView: View {
                                 .font(.body)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
+                        }
+
+                        if !confirmPassword.isEmpty {
+                            Button {
+                                confirmPassword = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
                         }
 
                         Button(action: {

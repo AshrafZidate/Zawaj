@@ -47,15 +47,26 @@ struct SignUpEmailView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Email text field
-                    TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 16)
-                        .frame(height: 52)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .keyboardType(.emailAddress)
-                        .glassEffect(.clear)
+                    HStack {
+                        TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled()
+                            .keyboardType(.emailAddress)
+
+                        if !coordinator.email.isEmpty {
+                            Button {
+                                coordinator.email = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 52)
+                    .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)

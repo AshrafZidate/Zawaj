@@ -42,15 +42,26 @@ struct SignUpAddPartnerView: View {
                         .foregroundColor(.white.opacity(0.7))
 
                     // Partner username text field
-                    TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username or email").foregroundColor(.white.opacity(0.6)))
-                        .font(.body)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 16)
-                        .frame(height: 52)
-                        .textContentType(.username)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .glassEffect(.clear)
+                    HStack {
+                        TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username or email").foregroundColor(.white.opacity(0.6)))
+                            .font(.body)
+                            .textFieldStyle(.plain)
+                            .textContentType(.username)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled()
+
+                        if !coordinator.partnerUsername.isEmpty {
+                            Button {
+                                coordinator.partnerUsername = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 52)
+                    .glassEffect(.clear)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)

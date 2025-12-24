@@ -64,13 +64,24 @@ struct SignUpPhoneView: View {
                         .buttonStyle(.plain)
 
                         // Phone number field
-                        TextField("", text: $coordinator.phoneNumber, prompt: Text("Phone Number").foregroundColor(.secondary))
-                            .font(.body)
-                            .textFieldStyle(.plain)
-                            .padding(.horizontal, 16)
-                            .frame(height: 50)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                            .keyboardType(.phonePad)
+                        HStack {
+                            TextField("", text: $coordinator.phoneNumber, prompt: Text("Phone Number").foregroundColor(.secondary))
+                                .font(.body)
+                                .textFieldStyle(.plain)
+                                .keyboardType(.phonePad)
+
+                            if !coordinator.phoneNumber.isEmpty {
+                                Button {
+                                    coordinator.phoneNumber = ""
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: 50)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
                 }
                 .padding(.horizontal, 24)
