@@ -29,5 +29,20 @@
 		<string>Amiri-Regular.ttf</string>
 		<string>NunitoSans-Regular.ttf</string>
 	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Topic Item</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.zawaj.topicitem</string>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
+	</array>
 </dict>
 </plist>

@@ -6,35 +6,19 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
-
-struct TopicItem: Identifiable, Codable, Transferable {
-    let id: UUID
-    let title: String
-
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .topicItem)
-    }
-}
-
-extension UTType {
-    static let topicItem = UTType(exportedAs: "com.zawaj.topicitem")
-}
 
 struct SignUpTopicPrioritiesView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
-    @State private var topics: [TopicItem] = [
-        TopicItem(id: UUID(), title: "Religious values"),
-        TopicItem(id: UUID(), title: "Family expectations"),
-        TopicItem(id: UUID(), title: "Personality and emotional compatibility"),
-        TopicItem(id: UUID(), title: "Lifestyle and goals"),
-        TopicItem(id: UUID(), title: "Finances and career plans"),
-        TopicItem(id: UUID(), title: "Views on marriage roles"),
-        TopicItem(id: UUID(), title: "Parenting views"),
-        TopicItem(id: UUID(), title: "Conflict resolution style")
+    @State private var topics: [String] = [
+        "Religious values",
+        "Family expectations",
+        "Personality and emotional compatibility",
+        "Lifestyle and goals",
+        "Finances and career plans",
+        "Views on marriage roles",
+        "Parenting views",
+        "Conflict resolution style"
     ]
-
-    @State private var dragging: TopicItem?
 
     var body: some View {
         ZStack {
@@ -58,51 +42,45 @@ struct SignUpTopicPrioritiesView: View {
                 .padding(.top, 8)
 
                 // Content section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Order these topics by importance to you")
-                        .font(.title2.weight(.bold))
-                        .foregroundColor(.white)
+                Text("Rearrange these topics by importance to you")
+                    .font(.title2.weight(.bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
+                    .padding(.bottom, 24)
 
-                    Text("Top = most important")
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 24)
-
-                // Reorderable topics list
+                // Topics list
                 List {
-                    ForEach(topics) { topic in
-                        Text(topic.title)
-                            .font(.body.weight(.semibold))
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(Material.ultraThin, in: RoundedRectangle(cornerRadius: 30))
-                            .listRowInsets(EdgeInsets(top: 4, leading: 24, bottom: 4, trailing: 24))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
+                    ForEach(Array(topics.enumerated()), id: \.element) { index, topic in
+                        HStack(spacing: 12) {
+                            Text("\(index + 1)")
+                                .font(.body.weight(.semibold))
+                                .foregroundColor(.white.opacity(0.6))
+                            Text(topic)
+                                .font(.body)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                     }
-                    .onMove { source, destination in
-                        topics.move(fromOffsets: source, toOffset: destination)
+                    .onMove { from, to in
+                        topics.move(fromOffsets: from, toOffset: to)
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .environment(\.editMode, .constant(.active))
+                .tint(.clear)
+                .padding(.horizontal, 24)
 
                 // Continue button
-                Button(action: {
-                    coordinator.topicPriorities = topics.map { $0.title }
+                GlassButtonPrimary(title: "Continue") {
+                    coordinator.topicPriorities = topics
                     coordinator.nextStep()
-                }) {
-                    Text("Continue")
-                        .font(.body.weight(.semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.blue, in: RoundedRectangle(cornerRadius: 25))
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
