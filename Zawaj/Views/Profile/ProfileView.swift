@@ -43,14 +43,7 @@ struct ProfileView: View {
                         .padding(.bottom, 100)
                     }
                 case .settings:
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            SettingsContent(viewModel: viewModel)
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 24)
-                        .padding(.bottom, 100)
-                    }
+                    SettingsContent(viewModel: viewModel)
                 }
             }
             .toolbar {
@@ -175,7 +168,7 @@ struct ProfileContent: View {
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
-        .contentMargins(.top, -20, for: .scrollContent)
+        .padding(.top, -30)
         .sheet(item: $editingField) { field in
             EditProfileFieldSheet(field: field, viewModel: viewModel)
         }
@@ -728,10 +721,10 @@ struct SettingsContent: View {
     @ObservedObject var viewModel: ProfileViewModel
 
     var body: some View {
-        VStack(spacing: 24) {
+        List {
             // Notification Settings
-            SettingsSection(title: "Notifications") {
-                SettingsToggle(
+            Section {
+                SettingsListToggle(
                     icon: "bell.badge",
                     title: "Enable Notifications",
                     isOn: $viewModel.notificationsEnabled
@@ -740,75 +733,194 @@ struct SettingsContent: View {
                         await viewModel.updateNotificationSettings()
                     }
                 }
+                .listRowSeparatorTint(viewModel.notificationsEnabled ? .white.opacity(0.5) : .white.opacity(0.2))
 
                 if viewModel.notificationsEnabled {
-                    Divider()
-                        .background(Color.white.opacity(0.1))
-                        .padding(.horizontal, 20)
-
-                    SettingsToggle(
+                    SettingsListToggle(
                         icon: "questionmark.circle",
                         title: "Daily Questions",
                         isOn: $viewModel.dailyQuestionNotifications
                     )
 
-                    SettingsToggle(
+                    SettingsListToggle(
                         icon: "person.crop.circle.badge.checkmark",
                         title: "Partner Answered",
                         isOn: $viewModel.partnerAnsweredNotifications
                     )
 
-                    SettingsToggle(
+                    SettingsListToggle(
                         icon: "person.crop.circle.badge.plus",
                         title: "Partner Requests",
                         isOn: $viewModel.partnerRequestNotifications
                     )
 
-                    SettingsToggle(
+                    SettingsListToggle(
                         icon: "clock.badge.exclamationmark",
                         title: "Reminders",
                         isOn: $viewModel.reminderNotifications
                     )
 
-                    SettingsToggle(
+                    SettingsListToggle(
                         icon: "flame",
                         title: "Streak Alerts",
                         isOn: $viewModel.streakNotifications
                     )
                 }
+            } header: {
+                Text("Notifications")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .textCase(nil)
             }
+            .listRowBackground(Color.white.opacity(0.1))
+            .listRowSeparatorTint(.white.opacity(0.2))
 
             // Account Security
-            SettingsSection(title: "Account Security") {
-                SettingsButton(icon: "key", title: "Change Password") {
+            Section {
+                SettingsListButton(icon: "key", title: "Change Password") {
                     viewModel.showingChangePassword = true
                 }
+            } header: {
+                Text("Account Security")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .textCase(nil)
             }
+            .listRowBackground(Color.white.opacity(0.1))
+            .listRowSeparatorTint(.white.opacity(0.2))
 
             // About & Support
-            SettingsSection(title: "About & Support") {
-                SettingsRow(icon: "info.circle", title: "App Version", value: "1.0.0")
-                SettingsButton(icon: "questionmark.circle", title: "Help & FAQ") {
-                    // TODO: Navigate to help
-                }
-                SettingsButton(icon: "envelope", title: "Contact Support") {
+            Section {
+                SettingsListRow(icon: "info.circle", title: "App Version", value: "1.0.0")
+                SettingsListButton(icon: "envelope", title: "Contact Support") {
                     // TODO: Open email
                 }
-                SettingsButton(icon: "doc.text", title: "Privacy Policy") {
+                SettingsListButton(icon: "doc.text", title: "Privacy Policy") {
                     // TODO: Open privacy policy
                 }
-                SettingsButton(icon: "doc.text", title: "Terms of Service") {
+                SettingsListButton(icon: "doc.text", title: "Terms of Service") {
                     // TODO: Open terms
                 }
+            } header: {
+                Text("About & Support")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .textCase(nil)
             }
+            .listRowBackground(Color.white.opacity(0.1))
+            .listRowSeparatorTint(.white.opacity(0.2))
 
-            // Sign Out Button
-            GlassButtonDestructive(title: "Sign Out") {
-                Task {
-                    await viewModel.signOut()
+            // Sign Out Section
+            Section {
+                GlassButtonDestructive(title: "Sign Out") {
+                    Task {
+                        await viewModel.signOut()
+                    }
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .padding(.top, -30)
+    }
+}
+
+// MARK: - Settings List Components
+
+struct SettingsListToggle: View {
+    let icon: String
+    let title: String
+    @Binding var isOn: Bool
+    let onChange: ((Bool) -> Void)?
+
+    init(icon: String, title: String, isOn: Binding<Bool>, onChange: ((Bool) -> Void)? = nil) {
+        self.icon = icon
+        self.title = title
+        self._isOn = isOn
+        self.onChange = onChange
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 24)
+
+            Text(title)
+                .font(.body)
+                .foregroundColor(.white)
+
+            Spacer()
+
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(Color(red: 0.94, green: 0.26, blue: 0.42))
+                .onChange(of: isOn) { _, newValue in
+                    onChange?(newValue)
+                }
+        }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+}
+
+struct SettingsListButton: View {
+    let icon: String
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                    .foregroundColor(.white.opacity(0.6))
+                    .frame(width: 24)
+
+                Text(title)
+                    .font(.body)
+                    .foregroundColor(.white)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.4))
+            }
+        }
+        .buttonStyle(.plain)
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+}
+
+struct SettingsListRow: View {
+    let icon: String
+    let title: String
+    let value: String?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 24)
+
+            Text(title)
+                .font(.body)
+                .foregroundColor(.white)
+
+            Spacer()
+
+            if let value = value {
+                Text(value)
+                    .font(.body)
+                    .foregroundColor(.white.opacity(0.7))
+                    .lineLimit(1)
+            }
+        }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 }
 

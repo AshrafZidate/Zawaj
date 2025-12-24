@@ -77,13 +77,38 @@ class OnboardingCoordinator: ObservableObject {
     @Published var currentStep: OnboardingStep = .welcome
     @Published var navigationPath = NavigationPath()
 
+    private var authStateListener: AuthStateDidChangeListenerHandle?
+
     // MARK: - Initialization
 
     init() {
+        // Listen for auth state changes (sign out)
+        setupAuthStateListener()
+
         // Auto-login if enabled
         if AppConfig.autoLoginEnabled {
             Task {
                 await performAutoLogin()
+            }
+        }
+    }
+
+    deinit {
+        if let listener = authStateListener {
+            Auth.auth().removeStateDidChangeListener(listener)
+        }
+    }
+
+    private func setupAuthStateListener() {
+        authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            guard let self = self else { return }
+
+            // If user signed out and we're on the completed step, go back to login
+            if user == nil && self.currentStep == .completed {
+                DispatchQueue.main.async {
+                    self.reset()
+                    self.currentStep = .login
+                }
             }
         }
     }
