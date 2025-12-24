@@ -18,29 +18,19 @@ struct EmailVerificationView: View {
             GradientBackground()
 
             VStack(spacing: 0) {
-                // Header: Back button and progress bar
-                HStack {
-                    Button(action: {
-                        coordinator.previousStep()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-
-                    ProgressBar(progress: coordinator.currentStep.progress)
-                }
-                .frame(height: 44)
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
+                // Header: Progress bar (no back button - account already created)
+                ProgressBar(progress: coordinator.currentStep.progress)
+                    .frame(height: 44)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
 
                 // Content section
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Verify your email")
+                    Text(coordinator.cameFromLogin ? "Verify your email" : "Account created!")
                         .font(.largeTitle.weight(.bold))
                         .foregroundColor(.white)
 
-                    Text("We've sent a verification link to:")
+                    Text(coordinator.cameFromLogin ? "Login successful! Please verify your email. We've sent a verification link to:" : "We've sent a verification link to:")
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
 
@@ -53,7 +43,7 @@ struct EmailVerificationView: View {
                         .padding(.vertical, 14)
                         .glassEffect(.clear)
 
-                    Text("Click the link in the email to verify your account, then tap Continue below.")
+                    Text("Please confirm your email by clicking the link, then tap Continue below.")
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
 
@@ -100,27 +90,45 @@ struct EmailVerificationView: View {
                 Spacer()
 
                 // Continue button
-                GlassButtonPrimary(title: "Continue") {
-                    Task {
-                        coordinator.isLoading = true
+                VStack(spacing: 12) {
+                    GlassButtonPrimary(title: "Continue") {
+                        Task {
+                            coordinator.isLoading = true
 
-                        // Check if email is verified
-                        let isVerified = await coordinator.checkEmailVerification()
+                            // Check if email is verified
+                            let isVerified = await coordinator.checkEmailVerification()
 
-                        if isVerified {
-                            // Email verified - proceed to next step
-                            await MainActor.run {
-                                coordinator.isLoading = false
-                                coordinator.nextStep()
-                            }
-                        } else {
-                            // Not verified - show error
-                            await MainActor.run {
-                                coordinator.authenticationError = "Please verify your email before continuing. Check your inbox and click the verification link."
-                                coordinator.isLoading = false
+                            if isVerified {
+                                // Email verified - proceed to next step
+                                await MainActor.run {
+                                    coordinator.isLoading = false
+                                    coordinator.nextStep()
+                                }
+                            } else {
+                                // Not verified - show error
+                                await MainActor.run {
+                                    coordinator.authenticationError = "Please verify your email before continuing. Check your inbox and click the verification link."
+                                    coordinator.isLoading = false
+                                }
                             }
                         }
                     }
+
+                    VStack(spacing: 4) {
+                        Text("Verification not working?")
+                            .foregroundColor(.white.opacity(0.8))
+                        Button(action: {
+                            Task {
+                                await coordinator.deleteAccountAndRestartSignup()
+                            }
+                        }) {
+                            Text("Sign up with a different email")
+                                .foregroundColor(.white)
+                                .fontWeight(.semibold)
+                        }
+                        .disabled(coordinator.isLoading)
+                    }
+                    .font(.body)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)

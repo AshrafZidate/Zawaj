@@ -164,6 +164,7 @@ class OnboardingCoordinator: ObservableObject {
     @Published var authenticationError: String?
     @Published var isLoading: Bool = false
     @Published var phoneVerificationID: String?
+    @Published var cameFromLogin: Bool = false  // Track if user came from login vs signup
 
     // Services
     private let authService = AuthenticationService()
@@ -219,6 +220,7 @@ class OnboardingCoordinator: ObservableObject {
             try await authService.sendEmailVerification()
 
             await MainActor.run {
+                cameFromLogin = false
                 isLoading = false
                 nextStep() // Move to email verification step
             }
@@ -320,15 +322,21 @@ class OnboardingCoordinator: ObservableObject {
             } else {
                 // User authenticated but hasn't completed onboarding
                 // Pre-fill their email and check verification status
-                await MainActor.run {
-                    self.email = user.email ?? ""
-                    isLoading = false
+                self.email = user.email ?? ""
 
-                    // If email is verified, skip to full name step
-                    // Otherwise, send them to email verification
-                    if user.isEmailVerified {
+                // If email is verified, skip to full name step
+                // Otherwise, resend verification email and send them to email verification
+                if user.isEmailVerified {
+                    await MainActor.run {
+                        isLoading = false
                         skipToStep(.signUpFullName)
-                    } else {
+                    }
+                } else {
+                    // Resend verification email for returning users
+                    try? await authService.sendEmailVerification()
+                    await MainActor.run {
+                        cameFromLogin = true
+                        isLoading = false
                         skipToStep(.emailVerification)
                     }
                 }
@@ -453,6 +461,29 @@ class OnboardingCoordinator: ObservableObject {
             return try await firestoreService.isUsernameAvailable(username)
         } catch {
             return false
+        }
+    }
+
+    func deleteAccountAndRestartSignup() async {
+        isLoading = true
+        authenticationError = nil
+
+        do {
+            try await authService.deleteAccount()
+
+            await MainActor.run {
+                // Clear signup data
+                email = ""
+                password = ""
+                isLoading = false
+                // Navigate back to email signup
+                skipToStep(.signUpEmail)
+            }
+        } catch {
+            await MainActor.run {
+                authenticationError = error.localizedDescription
+                isLoading = false
+            }
         }
     }
 }
