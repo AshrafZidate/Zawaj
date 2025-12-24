@@ -78,6 +78,9 @@ struct ProfileView: View {
             .sheet(isPresented: $viewModel.showingAddPartner) {
                 AddPartnerView()
             }
+            .sheet(isPresented: $viewModel.showingInvitePartner) {
+                InvitePartnerSheet()
+            }
             .sheet(isPresented: $viewModel.showingChangePassword) {
                 ChangePasswordView(viewModel: viewModel)
             }
@@ -333,31 +336,42 @@ struct EditProfileFieldSheet: View {
         return isValidUsernameFormat && isUsernameAvailable == true && !isCheckingAvailability
     }
 
-    private let relationshipOptions = ["Single", "Talking", "Engaged", "Married"]
-    private let timelineOptions = ["Within 6 months", "6-12 months", "1-2 years", "2+ years", "Not sure yet"]
+    private let relationshipOptions = ["Single", "Talking Stage", "Engaged", "Married"]
+    private let timelineOptions = ["1-3 Months", "3-6 Months", "6-12 Months", "1-2 Years", "Not sure"]
+
+    @State private var showingPicker: Bool = false
 
     var body: some View {
         NavigationView {
             ZStack {
                 GradientBackground()
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        switch field {
-                        case .fullName, .username:
-                            textFieldEditor
-
-                        case .relationshipStatus:
-                            optionPicker(options: relationshipOptions)
-
-                        case .marriageTimeline:
-                            optionPicker(options: timelineOptions)
-
-                        case .topicPriorities:
-                            topicPrioritiesEditor
-                        }
+                if field == .topicPriorities {
+                    // Topic priorities needs full height for the List
+                    VStack(alignment: .leading, spacing: 0) {
+                        topicPrioritiesEditor
                     }
-                    .padding(24)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 24) {
+                            switch field {
+                            case .fullName, .username:
+                                textFieldEditor
+
+                            case .relationshipStatus:
+                                optionPicker(options: relationshipOptions)
+
+                            case .marriageTimeline:
+                                optionPicker(options: timelineOptions)
+
+                            case .topicPriorities:
+                                EmptyView()
+                            }
+                        }
+                        .padding(24)
+                    }
                 }
             }
             .navigationTitle(title)
@@ -513,77 +527,115 @@ struct EditProfileFieldSheet: View {
     }
 
     private func optionPicker(options: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Select an option")
-                .font(.subheadline)
+        let pickerTitle = field == .relationshipStatus
+            ? "Change your relationship status"
+            : "Change your marriage timeline"
+
+        return VStack(alignment: .leading, spacing: 16) {
+            Text(pickerTitle)
+                .font(.body)
                 .foregroundColor(.white.opacity(0.7))
 
-            VStack(spacing: 8) {
-                ForEach(options, id: \.self) { option in
-                    Button {
-                        selectedOption = option
-                    } label: {
-                        HStack {
-                            Text(option)
-                                .font(.body)
-                                .foregroundColor(.white)
+            // Text field that shows current selection and opens picker
+            Button {
+                showingPicker = true
+            } label: {
+                HStack {
+                    Text(selectedOption.isEmpty ? "Select an option" : selectedOption)
+                        .font(.body)
+                        .foregroundColor(selectedOption.isEmpty ? .white.opacity(0.6) : .white)
 
-                            Spacer()
+                    Spacer()
 
-                            if selectedOption == option {
-                                Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .padding(16)
-                        .background(
-                            selectedOption == option
-                                ? Color.white.opacity(0.2)
-                                : Color.white.opacity(0.1),
-                            in: RoundedRectangle(cornerRadius: 12)
-                        )
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.6))
+                }
+                .padding(.horizontal, 16)
+                .frame(height: 52)
+                .glassEffect(.clear)
+            }
+            .buttonStyle(.plain)
+
+            // Wheel picker
+            if showingPicker {
+                Picker("", selection: $selectedOption) {
+                    ForEach(options, id: \.self) { option in
+                        Text(option)
+                            .foregroundColor(.white)
+                            .tag(option)
                     }
-                    .buttonStyle(.plain)
+                }
+                .pickerStyle(.wheel)
+                .frame(height: 150)
+                .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                .onChange(of: selectedOption) { _, _ in
+                    // Auto-hide picker after selection with a small delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        withAnimation {
+                            showingPicker = false
+                        }
+                    }
                 }
             }
         }
     }
 
     private var topicPrioritiesEditor: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Drag to reorder your priorities")
-                .font(.subheadline)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Rearrange these topics by importance to you")
+                .font(.body)
                 .foregroundColor(.white.opacity(0.7))
+                .padding(.bottom, 24)
 
-            VStack(spacing: 8) {
-                ForEach(Array(topicPriorities.enumerated()), id: \.offset) { index, topic in
-                    HStack(spacing: 12) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.body)
-                            .foregroundColor(.white.opacity(0.4))
-
-                        Text("\(index + 1)")
-                            .font(.caption.weight(.bold))
-                            .foregroundColor(.white.opacity(0.6))
-                            .frame(width: 20)
-
-                        Text(topic)
-                            .font(.body)
-                            .foregroundColor(.white)
-
-                        Spacer()
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(Array(topicPriorities.enumerated()), id: \.element) { index, topic in
+                        HStack(spacing: 12) {
+                            Text("\(index + 1)")
+                                .font(.body.weight(.semibold))
+                                .foregroundColor(.white.opacity(0.6))
+                            Text(topic)
+                                .font(.body)
+                                .foregroundColor(.white)
+                            Spacer()
+                            Image(systemName: "line.3.horizontal")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                        .draggable(topic)
+                        .dropDestination(for: String.self) { items, _ in
+                            guard let droppedTopic = items.first,
+                                  let fromIndex = topicPriorities.firstIndex(of: droppedTopic),
+                                  let toIndex = topicPriorities.firstIndex(of: topic) else {
+                                return false
+                            }
+                            withAnimation {
+                                topicPriorities.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex)
+                            }
+                            return true
+                        }
                     }
-                    .padding(16)
-                    .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                }
-                .onMove { source, destination in
-                    topicPriorities.move(fromOffsets: source, toOffset: destination)
                 }
             }
-            .environment(\.editMode, .constant(.active))
         }
     }
+
+    // Default topics matching onboarding
+    private let defaultTopics = [
+        "Religious values",
+        "Family expectations",
+        "Personality and emotional compatibility",
+        "Lifestyle and goals",
+        "Finances and career plans",
+        "Views on marriage roles",
+        "Parenting views",
+        "Conflict resolution style"
+    ]
 
     private func loadCurrentValue() {
         guard let user = viewModel.currentUser else { return }
@@ -598,7 +650,12 @@ struct EditProfileFieldSheet: View {
         case .marriageTimeline:
             selectedOption = user.marriageTimeline
         case .topicPriorities:
-            topicPriorities = user.topicPriorities
+            // Use user's saved order, or default topics if empty
+            if user.topicPriorities.isEmpty {
+                topicPriorities = defaultTopics
+            } else {
+                topicPriorities = user.topicPriorities
+            }
         }
     }
 
@@ -629,14 +686,6 @@ struct EditProfileFieldSheet: View {
 struct PartnersContent: View {
     @ObservedObject var viewModel: ProfileViewModel
 
-    // Share content for invite
-    private let inviteMessage = "Download the Zawāj app so we can get to know each other better for marriage! 💍"
-    private let appStoreLink = "https://apps.apple.com/app/zawaj"
-
-    private var shareContent: String {
-        return "\(inviteMessage)\n\n\(appStoreLink)"
-    }
-
     var body: some View {
         VStack(spacing: 24) {
             // Current Partners Section
@@ -652,64 +701,14 @@ struct PartnersContent: View {
                     }
                 }
             } else {
-                VStack(spacing: 16) {
-                    Image(systemName: "person.2.slash")
-                        .font(.system(size: 60))
-                        .foregroundColor(.white.opacity(0.4))
-
-                    Text("No Partners Connected")
-                        .font(.title3.weight(.medium))
-                        .foregroundColor(.white)
-
-                    Text("Connect with someone to start answering questions together")
-                        .font(.body)
-                        .foregroundColor(.white.opacity(0.7))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-
-                    // Action Buttons
-                    VStack(spacing: 16) {
-                        // Add Zawaj Partner Button
-                        Button(action: {
-                            viewModel.showingAddPartner = true
-                        }) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "person.badge.plus")
-                                    .font(.system(size: 18, weight: .medium))
-
-                                Text("Add a Zawāj partner")
-                                    .font(.body.weight(.medium))
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(PlainButtonStyle())
-
-                        // Invite Partner Button with ShareLink
-                        ShareLink(
-                            item: shareContent,
-                            subject: Text("Join me on Zawāj"),
-                            message: Text(inviteMessage)
-                        ) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 18, weight: .medium))
-
-                                Text("Invite a partner to Zawāj")
-                                    .font(.body.weight(.medium))
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(PlainButtonStyle())
+                NoPartnerView(
+                    onAddPartner: {
+                        viewModel.showingAddPartner = true
+                    },
+                    onInvitePartner: {
+                        viewModel.showingInvitePartner = true
                     }
-                    .padding(.top, 8)
-                }
-                .padding(.vertical, 40)
+                )
             }
 
             // Pending Requests

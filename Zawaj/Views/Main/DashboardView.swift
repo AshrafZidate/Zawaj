@@ -23,7 +23,7 @@ struct DashboardView: View {
             }
             
             Tab("Archives", systemImage: "archivebox", value: 2) {
-                HistoryTabContent()
+                HistoryTabContent(viewModel: viewModel)
             }
             
             Tab("Preferences", systemImage: "gearshape", value: 3) {
@@ -33,6 +33,9 @@ struct DashboardView: View {
         .tint(Color(red: 0.94, green: 0.26, blue: 0.42))
         .sheet(isPresented: $viewModel.showingAddPartner) {
             AddPartnerView()
+        }
+        .sheet(isPresented: $viewModel.showingInvitePartner) {
+            InvitePartnerSheet()
         }
         .sheet(item: $selectedPartner) { partner in
             if let question = viewModel.todayQuestion {
@@ -69,9 +72,6 @@ struct HomeTabContent: View {
             } else {
                 ScrollView {
                     VStack(spacing: 24) {
-                        HeaderView(userName: viewModel.currentUser?.fullName.split(separator: " ").first.map(String.init))
-                            .padding(.top, 16)
-
                         if viewModel.hasPartner {
                             // Partners Section
                             VStack(alignment: .leading, spacing: 12) {
@@ -113,6 +113,9 @@ struct HomeTabContent: View {
                             NoPartnerView(
                                 onAddPartner: {
                                     viewModel.showingAddPartner = true
+                                },
+                                onInvitePartner: {
+                                    viewModel.showingInvitePartner = true
                                 }
                             )
                         }
@@ -154,8 +157,12 @@ struct QuestionsTabContent: View {
                 NoPartnerView(
                     onAddPartner: {
                         viewModel.showingAddPartner = true
+                    },
+                    onInvitePartner: {
+                        viewModel.showingInvitePartner = true
                     }
                 )
+                .padding(.horizontal, 24)
             }
         }
     }
@@ -164,10 +171,25 @@ struct QuestionsTabContent: View {
 // MARK: - Archives Tab Content
 
 struct HistoryTabContent: View {
+    @ObservedObject var viewModel: DashboardViewModel
+
     var body: some View {
         ZStack {
             GradientBackground()
-            PlaceholderView(icon: "archivebox", title: "Archives", message: "Your past answers will appear here")
+
+            if viewModel.hasPartner {
+                PlaceholderView(icon: "archivebox", title: "Archives", message: "Your past answers will appear here")
+            } else {
+                NoPartnerView(
+                    onAddPartner: {
+                        viewModel.showingAddPartner = true
+                    },
+                    onInvitePartner: {
+                        viewModel.showingInvitePartner = true
+                    }
+                )
+                .padding(.horizontal, 24)
+            }
         }
     }
 }

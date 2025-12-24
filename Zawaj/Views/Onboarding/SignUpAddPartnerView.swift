@@ -70,13 +70,13 @@ struct SignUpAddPartnerView: View {
 
                 // Action buttons
                 VStack(spacing: 16) {
-                    GlassButtonPrimary(title: "Send partner request") {
+                    GlassButtonPrimary(title: "Send partner request", icon: "paperplane.fill") {
                         // Send partner request
                         coordinator.nextStep()
                     }
                     .disabled(coordinator.partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty)
 
-                    GlassButton(title: "Invite partner to Zawāj") {
+                    GlassButton(title: "Invite partner to Zawāj", icon: "square.and.arrow.up") {
                         // Invite partner via share sheet
                         coordinator.nextStep()
                     }

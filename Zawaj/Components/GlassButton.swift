@@ -39,14 +39,21 @@ struct GlassButton: View {
 
 struct GlassButtonPrimary: View {
     let title: String
+    var icon: String? = nil
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.body.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
+            HStack(spacing: 12) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.title2)
+                }
+                Text(title)
+                    .font(.body.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
         }
         .buttonStyle(.glassProminent)
         .glassEffect(.clear)
