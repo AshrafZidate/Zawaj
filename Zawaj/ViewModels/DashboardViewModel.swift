@@ -22,7 +22,6 @@ class DashboardViewModel: ObservableObject {
 
     // Sheet states
     @Published var showingAddPartner: Bool = false
-    @Published var showingInvitePartner: Bool = false
 
     private let firestoreService = FirestoreService()
     private let authService = AuthenticationService()

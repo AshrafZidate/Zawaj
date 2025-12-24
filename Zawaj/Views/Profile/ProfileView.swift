@@ -78,9 +78,6 @@ struct ProfileView: View {
             .sheet(isPresented: $viewModel.showingAddPartner) {
                 AddPartnerView()
             }
-            .sheet(isPresented: $viewModel.showingInvitePartner) {
-                InvitePartnerSheet()
-            }
             .sheet(isPresented: $viewModel.showingChangePassword) {
                 ChangePasswordView(viewModel: viewModel)
             }
@@ -704,9 +701,6 @@ struct PartnersContent: View {
                 NoPartnerView(
                     onAddPartner: {
                         viewModel.showingAddPartner = true
-                    },
-                    onInvitePartner: {
-                        viewModel.showingInvitePartner = true
                     }
                 )
             }

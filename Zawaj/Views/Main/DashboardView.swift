@@ -34,9 +34,6 @@ struct DashboardView: View {
         .sheet(isPresented: $viewModel.showingAddPartner) {
             AddPartnerView()
         }
-        .sheet(isPresented: $viewModel.showingInvitePartner) {
-            InvitePartnerSheet()
-        }
         .sheet(item: $selectedPartner) { partner in
             if let question = viewModel.todayQuestion {
                 AnswerRevealSheet(
@@ -113,29 +110,12 @@ struct HomeTabContent: View {
                             NoPartnerView(
                                 onAddPartner: {
                                     viewModel.showingAddPartner = true
-                                },
-                                onInvitePartner: {
-                                    viewModel.showingInvitePartner = true
                                 }
                             )
                         }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
-                }
-            }
-
-            // Error alert
-            if let error = viewModel.error {
-                VStack {
-                    Spacer()
-                    Text(error)
-                        .font(.body)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 24)
                 }
             }
         }
@@ -157,9 +137,6 @@ struct QuestionsTabContent: View {
                 NoPartnerView(
                     onAddPartner: {
                         viewModel.showingAddPartner = true
-                    },
-                    onInvitePartner: {
-                        viewModel.showingInvitePartner = true
                     }
                 )
                 .padding(.horizontal, 24)
@@ -183,9 +160,6 @@ struct HistoryTabContent: View {
                 NoPartnerView(
                     onAddPartner: {
                         viewModel.showingAddPartner = true
-                    },
-                    onInvitePartner: {
-                        viewModel.showingInvitePartner = true
                     }
                 )
                 .padding(.horizontal, 24)

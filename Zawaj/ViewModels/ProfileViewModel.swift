@@ -36,7 +36,6 @@ class ProfileViewModel: ObservableObject {
     @Published var showingDeleteAccountAlert: Bool = false
     @Published var showingDisconnectPartnerAlert: Bool = false
     @Published var showingAddPartner: Bool = false
-    @Published var showingInvitePartner: Bool = false
 
     private let authService = AuthenticationService()
     private let firestoreService = FirestoreService()

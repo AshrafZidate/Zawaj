@@ -15,6 +15,14 @@ struct AddPartnerView: View {
     @State private var showingErrorAlert: Bool = false
     @State private var showingSuccessAlert: Bool = false
 
+    // Share content for invite
+    private let inviteMessage = "Download the Zawaj app so we can get to know each other better for marriage!"
+    private let appStoreLink = "https://apps.apple.com/app/zawaj" // TODO: Replace with actual App Store link
+
+    private var shareContent: String {
+        return "\(inviteMessage)\n\n\(appStoreLink)"
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -60,19 +68,35 @@ struct AddPartnerView: View {
 
                     Spacer()
 
-                    // Send partner request button
-                    GlassButtonPrimary(title: "Send partner request", icon: "paperplane.fill") {
-                        Task {
-                            await viewModel.searchAndSendRequest(query: partnerUsername)
-                            if viewModel.error != nil {
-                                showingErrorAlert = true
-                            } else if viewModel.requestSent {
-                                showingSuccessAlert = true
+                    // Action buttons
+                    VStack(spacing: 16) {
+                        GlassButtonPrimary(title: "Send partner request", icon: "paperplane.fill") {
+                            Task {
+                                await viewModel.searchAndSendRequest(query: partnerUsername)
+                                if viewModel.error != nil {
+                                    showingErrorAlert = true
+                                } else if viewModel.requestSent {
+                                    showingSuccessAlert = true
+                                }
                             }
                         }
+                        .disabled(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isSearching)
+                        .opacity(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1.0)
+
+                        ShareLink(item: shareContent) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.title2)
+                                Text("Invite partner to Zawāj")
+                                    .font(.body.weight(.semibold))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                        }
+                        .tint(nil)
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear)
                     }
-                    .disabled(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isSearching)
-                    .opacity(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1.0)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                 }
