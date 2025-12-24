@@ -85,11 +85,28 @@ class OnboardingCoordinator: ObservableObject {
         // Listen for auth state changes (sign out)
         setupAuthStateListener()
 
-        // Auto-login if enabled
-        if AppConfig.autoLoginEnabled {
-            Task {
-                await performAutoLogin()
+        // Check if user is already logged in, or perform auto-login if enabled
+        Task {
+            await checkExistingSession()
+        }
+    }
+
+    @MainActor
+    private func checkExistingSession() async {
+        // Check if there's an existing Firebase user session
+        if let currentUser = Auth.auth().currentUser {
+            // User is already signed in - check if they have a profile
+            let firestoreService = FirestoreService()
+            if let _ = try? await firestoreService.getUserProfile(userId: currentUser.uid) {
+                // Profile exists, go directly to completed
+                currentStep = .completed
+                return
             }
+        }
+
+        // No existing session - try auto-login if enabled
+        if AppConfig.autoLoginEnabled {
+            await performAutoLogin()
         }
     }
 

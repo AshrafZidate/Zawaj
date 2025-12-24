@@ -12,18 +12,24 @@ struct AppConfig {
 
     /// Enable automatic login for testing with a real Firebase account
     /// Set to false before production release
-    static let autoLoginEnabled = false
+    /// Uses credentials from DeveloperConfig.testAccounts[0]
+    static var autoLoginEnabled: Bool {
+        DeveloperConfig.isEnabled && DeveloperConfig.autoLoginEnabled
+    }
 
-    /// Credentials for automatic login
-    /// IMPORTANT: Use a real test account email and password
-    /// Never commit real user credentials to git!
-    static let autoLoginEmail = "ashzidate@hotmail.co.uk"  // Replace with your test account
-    static let autoLoginPassword = "123456"  // Replace with your test password
+    /// Credentials for automatic login - uses first test account from DeveloperConfig
+    static var autoLoginEmail: String {
+        DeveloperConfig.testAccounts.first?.email ?? ""
+    }
+
+    static var autoLoginPassword: String {
+        DeveloperConfig.testAccounts.first?.password ?? ""
+    }
 
     // MARK: - Environment
 
     /// Returns true if running in development/testing mode
     static var isTestMode: Bool {
-        return autoLoginEnabled
+        return DeveloperConfig.isEnabled
     }
 }

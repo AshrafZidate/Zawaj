@@ -657,7 +657,7 @@ struct EditProfileFieldSheet: View {
             case .fullName:
                 updates["fullName"] = textValue
             case .username:
-                updates["username"] = textValue
+                updates["username"] = textValue.lowercased()
             case .relationshipStatus:
                 updates["relationshipStatus"] = selectedOption
             case .marriageTimeline:
@@ -819,11 +819,128 @@ struct SettingsContent: View {
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
+
+                // Developer Mode - Switch Account
+                if DeveloperConfig.isEnabled {
+                    GlassButtonPrimary(title: "Switch Account") {
+                        viewModel.showingSwitchAccount = true
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
             }
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .padding(.top, -30)
+        .sheet(isPresented: $viewModel.showingSwitchAccount) {
+            SwitchAccountSheet(viewModel: viewModel)
+        }
+    }
+}
+
+// MARK: - Switch Account Sheet (Developer Mode)
+
+struct SwitchAccountSheet: View {
+    @ObservedObject var viewModel: ProfileViewModel
+    @Environment(\.dismiss) var dismiss
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationView {
+            ZStack {
+                GradientBackground()
+
+                ScrollView {
+                    VStack(spacing: 16) {
+                        Text("Select an account to switch to:")
+                            .font(.body)
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.top, 24)
+
+                        ForEach(DeveloperConfig.testAccounts, id: \.email) { account in
+                            Button {
+                                switchTo(account: account)
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(account.name)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                        Text(account.email)
+                                            .font(.caption)
+                                            .foregroundColor(.white.opacity(0.7))
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                                .padding(16)
+                                .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        if let error = errorMessage {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(.top, 8)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                }
+
+                if isLoading {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                }
+            }
+            .navigationTitle("Switch Account")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                }
+            }
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.18, green: 0.05, blue: 0.35),
+                        Color(red: 0.72, green: 0.28, blue: 0.44)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                for: .navigationBar
+            )
+        }
+    }
+
+    private func switchTo(account: (name: String, email: String, password: String)) {
+        isLoading = true
+        errorMessage = nil
+
+        Task {
+            await viewModel.switchAccount(email: account.email, password: account.password)
+
+            await MainActor.run {
+                isLoading = false
+                if viewModel.error == nil {
+                    dismiss()
+                } else {
+                    errorMessage = viewModel.error
+                }
+            }
+        }
     }
 }
 

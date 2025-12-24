@@ -36,6 +36,7 @@ class ProfileViewModel: ObservableObject {
     @Published var showingDeleteAccountAlert: Bool = false
     @Published var showingDisconnectPartnerAlert: Bool = false
     @Published var showingAddPartner: Bool = false
+    @Published var showingSwitchAccount: Bool = false
 
     private let authService = AuthenticationService()
     private let firestoreService = FirestoreService()
@@ -163,6 +164,32 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Mock Data for Development
+    // MARK: - Developer Mode
 
+    func switchAccount(email: String, password: String) async {
+        await MainActor.run {
+            self.isLoading = true
+            self.error = nil
+        }
+
+        do {
+            // Sign out current user
+            try authService.signOut()
+
+            // Sign in with new account
+            _ = try await authService.signInWithEmail(email: email, password: password)
+
+            // Load the new user's profile
+            await loadProfileData()
+
+            await MainActor.run {
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.isLoading = false
+                self.error = error.localizedDescription
+            }
+        }
+    }
 }

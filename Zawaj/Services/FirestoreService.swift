@@ -39,9 +39,13 @@ class FirestoreService {
 
     func saveUserProfile(_ user: User) async throws {
         do {
+            // Ensure username is lowercase for case-insensitive storage
+            var userToSave = user
+            userToSave.username = user.username.lowercased()
+
             // Check if username is already taken
             let usernameQuery = db.collection("users")
-                .whereField("username", isEqualTo: user.username)
+                .whereField("username", isEqualTo: userToSave.username)
                 .limit(to: 1)
 
             let usernameSnapshot = try await usernameQuery.getDocuments()
@@ -49,15 +53,15 @@ class FirestoreService {
             // If username exists and it's not the current user, throw error
             if !usernameSnapshot.isEmpty,
                let existingUser = usernameSnapshot.documents.first,
-               existingUser.documentID != user.id {
+               existingUser.documentID != userToSave.id {
                 throw FirestoreError.usernameAlreadyExists
             }
 
             // Convert User to dictionary
             let encoder = Firestore.Encoder()
-            let userData = try encoder.encode(user)
+            let userData = try encoder.encode(userToSave)
 
-            try await db.collection("users").document(user.id).setData(userData)
+            try await db.collection("users").document(userToSave.id).setData(userData)
         } catch let error as FirestoreError {
             throw error
         } catch {
@@ -97,7 +101,7 @@ class FirestoreService {
     func getUserByUsername(_ username: String) async throws -> User? {
         do {
             let querySnapshot = try await db.collection("users")
-                .whereField("username", isEqualTo: username)
+                .whereField("username", isEqualTo: username.lowercased())
                 .limit(to: 1)
                 .getDocuments()
 
@@ -171,7 +175,7 @@ class FirestoreService {
     }
 
     func sendPartnerRequest(from userId: String, senderUsername: String, to receiverUsername: String) async throws {
-        // Check if receiver exists
+        // Check if receiver exists (getUserByUsername already lowercases)
         guard let receiver = try await getUserByUsername(receiverUsername) else {
             throw FirestoreError.userNotFound
         }
@@ -179,8 +183,8 @@ class FirestoreService {
         let request = PartnerRequest(
             id: UUID().uuidString,
             senderId: userId,
-            senderUsername: senderUsername,
-            receiverUsername: receiverUsername,
+            senderUsername: senderUsername.lowercased(),
+            receiverUsername: receiverUsername.lowercased(),
             status: "pending",
             createdAt: Date(),
             respondedAt: nil
@@ -246,7 +250,7 @@ class FirestoreService {
     func getPendingPartnerRequests(for username: String) async throws -> [PartnerRequest] {
         do {
             let querySnapshot = try await db.collection("partnerRequests")
-                .whereField("receiverUsername", isEqualTo: username)
+                .whereField("receiverUsername", isEqualTo: username.lowercased())
                 .whereField("status", isEqualTo: "pending")
                 .getDocuments()
 
@@ -265,7 +269,7 @@ class FirestoreService {
 
     func isUsernameAvailable(_ username: String) async throws -> Bool {
         let querySnapshot = try await db.collection("users")
-            .whereField("username", isEqualTo: username)
+            .whereField("username", isEqualTo: username.lowercased())
             .limit(to: 1)
             .getDocuments()
 

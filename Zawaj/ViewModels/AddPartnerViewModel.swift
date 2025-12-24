@@ -32,15 +32,15 @@ class AddPartnerViewModel: ObservableObject {
             let user: User?
 
             if query.starts(with: "@") {
-                // Search by username
-                let username = String(query.dropFirst())
+                // Search by username (lowercase for case-insensitive matching)
+                let username = String(query.dropFirst()).lowercased()
                 user = try await firestoreService.getUserByUsername(username)
             } else if query.contains("@") {
                 // Search by email
                 user = try await firestoreService.getUserByEmail(query)
             } else {
-                // Try username without @
-                user = try await firestoreService.getUserByUsername(query)
+                // Try username without @ (lowercase for case-insensitive matching)
+                user = try await firestoreService.getUserByUsername(query.lowercased())
             }
 
             await MainActor.run {
@@ -85,8 +85,8 @@ class AddPartnerViewModel: ObservableObject {
             let request = PartnerRequest(
                 id: UUID().uuidString,
                 senderId: currentUserId,
-                senderUsername: currentUser.username,
-                receiverUsername: user.username,
+                senderUsername: currentUser.username.lowercased(),
+                receiverUsername: user.username.lowercased(),
                 status: "pending",
                 createdAt: Date(),
                 respondedAt: nil

@@ -143,6 +143,8 @@ struct SignUpUsernameView: View {
 
                 // Continue button - just above bottom
                 GlassButtonPrimary(title: "Continue") {
+                    // Ensure username is stored as lowercase
+                    coordinator.username = coordinator.username.lowercased()
                     coordinator.nextStep()
                 }
                 .disabled(!canContinue)
