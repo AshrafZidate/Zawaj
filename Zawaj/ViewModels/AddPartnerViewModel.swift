@@ -105,6 +105,15 @@ class AddPartnerViewModel: ObservableObject {
         }
     }
 
+    func searchAndSendRequest(query: String) async {
+        await searchForPartner(query: query)
+
+        // Only send request if user was found
+        if let user = searchResult {
+            await sendPartnerRequest(to: user)
+        }
+    }
+
     func clearSearch() {
         searchResult = nil
         error = nil

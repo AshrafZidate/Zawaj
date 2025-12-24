@@ -11,118 +11,70 @@ struct AddPartnerView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel = AddPartnerViewModel()
 
-    @State private var searchText: String = ""
+    @State private var partnerUsername: String = ""
+    @State private var showingErrorAlert: Bool = false
+    @State private var showingSuccessAlert: Bool = false
 
     var body: some View {
         NavigationView {
             ZStack {
                 GradientBackground()
 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Search Section
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Find your partner")
-                                .font(.title2.weight(.semibold))
-                                .foregroundColor(.white)
+                VStack(spacing: 0) {
+                    // Content section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Add your partner")
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundColor(.white)
 
-                            Text("Search by username or email")
-                                .font(.subheadline)
-                                .foregroundColor(.white.opacity(0.7))
+                        Text("Add your partner so you can begin your Zawāj journey together.")
+                            .font(.body)
+                            .foregroundColor(.white.opacity(0.7))
 
-                            // Search Bar
-                            HStack(spacing: 12) {
-                                Image(systemName: "magnifyingglass")
-                                    .foregroundColor(.white.opacity(0.6))
-
-                                TextField("", text: $searchText, prompt: Text("@username or email").foregroundColor(.white.opacity(0.5)))
-                                    .foregroundColor(.white)
-                                    .textInputAutocapitalization(.never)
-                                    .autocorrectionDisabled()
-
-                                if !searchText.isEmpty {
-                                    Button(action: {
-                                        searchText = ""
-                                        viewModel.clearSearch()
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.white.opacity(0.6))
-                                    }
-                                }
-                            }
-                            .padding()
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
-                            // Search Button
-                            Button(action: {
-                                Task {
-                                    await viewModel.searchForPartner(query: searchText)
-                                }
-                            }) {
-                                HStack {
-                                    if viewModel.isSearching {
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    } else {
-                                        Text("Search")
-                                            .font(.body.weight(.medium))
-                                    }
-                                }
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                                .background(
-                                    Color(red: 0.94, green: 0.26, blue: 0.42),
-                                    in: RoundedRectangle(cornerRadius: 12)
-                                )
-                            }
-                            .disabled(searchText.isEmpty || viewModel.isSearching)
-                            .opacity(searchText.isEmpty || viewModel.isSearching ? 0.5 : 1.0)
-                        }
-                        .padding(20)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
-
-                        // Search Results
-                        if let user = viewModel.searchResult {
-                            PartnerSearchResultCard(
-                                user: user,
-                                isRequestSent: viewModel.requestSent,
-                                onSendRequest: {
-                                    Task {
-                                        await viewModel.sendPartnerRequest(to: user)
-                                    }
-                                }
-                            )
-                        }
-
-                        // Error Message
-                        if let error = viewModel.error {
-                            Text(error)
+                        // Partner username text field
+                        HStack {
+                            TextField("", text: $partnerUsername, prompt: Text("Partner's username or email").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
                                 .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                        }
+                                .textFieldStyle(.plain)
+                                .textContentType(.username)
+                                .autocapitalization(.none)
+                                .autocorrectionDisabled()
 
-                        // Success Message
-                        if viewModel.requestSent {
-                            HStack(spacing: 12) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
-
-                                Text("Partner request sent successfully!")
-                                    .font(.body)
-                                    .foregroundColor(.white)
+                            if !partnerUsername.isEmpty {
+                                Button {
+                                    partnerUsername = ""
+                                    viewModel.clearSearch()
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.secondary)
+                                }
                             }
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                         }
+                        .padding(.horizontal, 16)
+                        .frame(height: 52)
+                        .glassEffect(.clear)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 24)
-                    .padding(.bottom, 40)
+
+                    Spacer()
+
+                    // Send partner request button
+                    GlassButtonPrimary(title: "Send partner request", icon: "paperplane.fill") {
+                        Task {
+                            await viewModel.searchAndSendRequest(query: partnerUsername)
+                            if viewModel.error != nil {
+                                showingErrorAlert = true
+                            } else if viewModel.requestSent {
+                                showingSuccessAlert = true
+                            }
+                        }
+                    }
+                    .disabled(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isSearching)
+                    .opacity(partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1.0)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
                 }
             }
             .navigationTitle("Add Partner")
@@ -134,6 +86,20 @@ struct AddPartnerView: View {
                     }
                     .foregroundColor(.white)
                 }
+            }
+            .alert("Unable to Send Request", isPresented: $showingErrorAlert) {
+                Button("OK", role: .cancel) {
+                    viewModel.error = nil
+                }
+            } message: {
+                Text(viewModel.error ?? "An error occurred")
+            }
+            .alert("Request Sent", isPresented: $showingSuccessAlert) {
+                Button("OK", role: .cancel) {
+                    dismiss()
+                }
+            } message: {
+                Text("Your partner request has been sent successfully!")
             }
         }
     }

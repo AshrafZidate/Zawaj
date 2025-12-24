@@ -183,7 +183,7 @@ struct SignUpPasswordView: View {
                     .scaleEffect(1.5)
             }
         }
-        .alert("Error", isPresented: $showError) {
+        .alert("Sign Up Failed", isPresented: $showError) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
             }

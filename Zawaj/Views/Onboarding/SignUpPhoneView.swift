@@ -117,7 +117,7 @@ struct SignUpPhoneView: View {
         .sheet(isPresented: $showingCountryPicker) {
             CountryCodePickerView(selectedCountryCode: $coordinator.countryCode)
         }
-        .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
+        .alert("Verification Failed", isPresented: .constant(coordinator.authenticationError != nil)) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
             }

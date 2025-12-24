@@ -144,7 +144,7 @@ struct EmailVerificationView: View {
                     .scaleEffect(1.5)
             }
         }
-        .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
+        .alert("Verification Required", isPresented: .constant(coordinator.authenticationError != nil)) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
             }

@@ -82,7 +82,7 @@ struct EnableNotificationsView: View {
                 await checkNotificationStatus()
             }
         }
-        .alert("Error", isPresented: .constant(coordinator.authenticationError != nil)) {
+        .alert("Notifications Disabled", isPresented: .constant(coordinator.authenticationError != nil)) {
             Button("OK", role: .cancel) {
                 coordinator.authenticationError = nil
             }
