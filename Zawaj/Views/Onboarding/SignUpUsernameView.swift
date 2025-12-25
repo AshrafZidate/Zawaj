@@ -153,6 +153,7 @@ struct SignUpUsernameView: View {
                 .padding(.bottom, 24)
             }
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

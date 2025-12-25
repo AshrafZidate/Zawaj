@@ -91,6 +91,7 @@ struct EnableNotificationsView: View {
                 Text(error)
             }
         }
+        .swipeBack { coordinator.previousStep() }
     }
 
     private func checkNotificationStatus() async {

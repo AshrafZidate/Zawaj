@@ -94,58 +94,34 @@ struct PartnerCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
-                // Partner Avatar/Initials
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.94, green: 0.26, blue: 0.42).opacity(0.6),
-                                Color(red: 0.82, green: 0.16, blue: 0.32).opacity(0.8)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 60, height: 60)
-                    .overlay(
-                        Text(initials)
-                            .font(.title3.weight(.bold))
-                            .foregroundColor(.white)
-                    )
-
+            HStack {
                 // Partner Info
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(partner.fullName)
-                        .font(.headline)
+                        .font(.body.weight(.medium))
                         .foregroundColor(.white)
 
-                    // Status Row
-                    HStack(spacing: 6) {
-                        Image(systemName: status.icon)
-                            .font(.caption)
-                            .foregroundColor(status.iconColor)
-
-                        Text(status.message)
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-
-                    // Relationship Status
-                    Text(partner.relationshipStatus)
+                    Text("@\(partner.username)")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.white.opacity(0.7))
                 }
 
                 Spacer()
 
-                // Chevron
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.4))
+                // Status indicator
+                HStack(spacing: 6) {
+                    Image(systemName: status.icon)
+                        .font(.caption)
+                        .foregroundColor(status.iconColor)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.4))
+                }
             }
-            .padding(16)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .glassEffect(.clear)
         }
         .buttonStyle(PlainButtonStyle())
     }

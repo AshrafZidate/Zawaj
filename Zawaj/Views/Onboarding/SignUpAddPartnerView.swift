@@ -166,6 +166,7 @@ struct SignUpAddPartnerView: View {
         } message: {
             Text("Partner request will be sent once you complete your account setup.")
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

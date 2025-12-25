@@ -38,7 +38,6 @@ struct ProfileView: View {
                     ScrollView {
                         PartnersContent(viewModel: viewModel)
                             .padding(.horizontal, 24)
-
                     }
                     .scrollIndicators(.hidden)
                     .padding(.top, -20)
@@ -80,6 +79,10 @@ struct ProfileView: View {
                     await viewModel.loadProfileData()
                 }
             }
+            .onDisappear {
+                // Reset to Profile tab when leaving Preferences
+                selectedTab = .profile
+            }
         }
     }
 }
@@ -107,72 +110,72 @@ struct ProfileContent: View {
             )
             .onTapGesture { editingField = .fullName }
 
-            // Username (Editable)
-            ProfileListRow(
-                icon: "at",
-                label: "Username",
-                value: viewModel.currentUser?.username ?? "",
-                isEditable: true
-            )
-            .onTapGesture { editingField = .username }
+                // Username (Editable)
+                ProfileListRow(
+                    icon: "at",
+                    label: "Username",
+                    value: viewModel.currentUser?.username ?? "",
+                    isEditable: true
+                )
+                .onTapGesture { editingField = .username }
 
-            // Email (Not Editable)
-            ProfileListRow(
-                icon: "envelope",
-                label: "Email",
-                value: viewModel.currentUser?.email ?? ""
-            )
+                // Email (Not Editable)
+                ProfileListRow(
+                    icon: "envelope",
+                    label: "Email",
+                    value: viewModel.currentUser?.email ?? ""
+                )
 
-            // Gender (Not Editable)
-            ProfileListRow(
-                icon: "person",
-                label: "Gender",
-                value: viewModel.currentUser?.gender ?? ""
-            )
+                // Gender (Not Editable)
+                ProfileListRow(
+                    icon: "person",
+                    label: "Gender",
+                    value: viewModel.currentUser?.gender ?? ""
+                )
 
-            // Birthday (Not Editable)
-            ProfileListRow(
-                icon: "calendar",
-                label: "Birthday",
-                value: formattedBirthday(viewModel.currentUser?.birthday)
-            )
+                // Birthday (Not Editable)
+                ProfileListRow(
+                    icon: "calendar",
+                    label: "Birthday",
+                    value: formattedBirthday(viewModel.currentUser?.birthday)
+                )
 
-            // Relationship Status (Editable)
-            ProfileListRow(
-                icon: "heart",
-                label: "Relationship Status",
-                value: viewModel.currentUser?.relationshipStatus ?? "",
-                isEditable: true
-            )
-            .onTapGesture { editingField = .relationshipStatus }
+                // Relationship Status (Editable)
+                ProfileListRow(
+                    icon: "heart",
+                    label: "Relationship Status",
+                    value: viewModel.currentUser?.relationshipStatus ?? "",
+                    isEditable: true
+                )
+                .onTapGesture { editingField = .relationshipStatus }
 
-            // Marriage Timeline (Editable)
-            ProfileListRow(
-                icon: "clock",
-                label: "Marriage Timeline",
-                value: viewModel.currentUser?.marriageTimeline ?? "",
-                isEditable: true
-            )
-            .onTapGesture { editingField = .marriageTimeline }
+                // Marriage Timeline (Editable)
+                ProfileListRow(
+                    icon: "clock",
+                    label: "Marriage Timeline",
+                    value: viewModel.currentUser?.marriageTimeline ?? "",
+                    isEditable: true
+                )
+                .onTapGesture { editingField = .marriageTimeline }
 
-            // Answer Preferences (Inline Toggle)
-            AnswerPreferenceToggleRow(viewModel: viewModel)
+                // Answer Preferences (Inline Toggle)
+                AnswerPreferenceToggleRow(viewModel: viewModel)
 
-            // Topic Priorities (Editable)
-            ProfileListRow(
-                icon: "list.star",
-                label: "Topic Priorities",
-                value: formatTopicPriorities(viewModel.currentUser?.topicPriorities),
-                isEditable: true
-            )
-            .onTapGesture { editingField = .topicPriorities }
-        }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .padding(.top, -30)
-        .sheet(item: $editingField) { field in
-            EditProfileFieldSheet(field: field, viewModel: viewModel)
-        }
+                // Topic Priorities (Editable)
+                TopicPrioritiesListRow(
+                    icon: "list.star",
+                    label: "Topic Priorities",
+                    priorities: viewModel.currentUser?.topicPriorities ?? [],
+                    isEditable: true
+                )
+                .onTapGesture { editingField = .topicPriorities }
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .padding(.top, -30)
+            .sheet(item: $editingField) { field in
+                EditProfileFieldSheet(field: field, viewModel: viewModel)
+            }
     }
 }
 
@@ -187,17 +190,17 @@ struct ProfileListRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(.system(size: 16))
                 .foregroundColor(.white.opacity(0.6))
-                .frame(width: 24)
+                .frame(width: 20)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(label)
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
 
                 Text(value.isEmpty ? "—" : value)
-                    .font(.body)
+                    .font(.subheadline)
                     .foregroundColor(.white)
             }
 
@@ -205,13 +208,71 @@ struct ProfileListRow: View {
 
             if isEditable {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white.opacity(0.4))
             }
         }
         .contentShape(Rectangle())
         .listRowBackground(Color.white.opacity(0.1))
         .listRowSeparatorTint(.white.opacity(0.2))
+        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+}
+
+// MARK: - Topic Priorities List Row
+
+struct TopicPrioritiesListRow: View {
+    let icon: String
+    let label: String
+    let priorities: [String]
+    var isEditable: Bool = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 20, alignment: .top)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+
+                if priorities.isEmpty {
+                    Text("—")
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                } else {
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(Array(priorities.enumerated()), id: \.offset) { index, topic in
+                            HStack(alignment: .top, spacing: 4) {
+                                Text("\(index + 1).")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 18, alignment: .leading)
+                                Text(topic)
+                                    .font(.subheadline)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer()
+
+            if isEditable {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.4))
+            }
+        }
+        .contentShape(Rectangle())
+        .listRowBackground(Color.white.opacity(0.1))
+        .listRowSeparatorTint(.white.opacity(0.2))
+        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 }
@@ -227,21 +288,22 @@ struct AnswerPreferenceToggleRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             labelRow
             toggleButtons
         }
         .listRowBackground(Color.white.opacity(0.1))
         .listRowSeparatorTint(.white.opacity(0.2))
+        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
     private var labelRow: some View {
         HStack(spacing: 12) {
             Image(systemName: "text.bubble")
-                .font(.system(size: 18))
+                .font(.system(size: 16))
                 .foregroundColor(.white.opacity(0.6))
-                .frame(width: 24)
+                .frame(width: 20)
 
             Text("Answer Preferences")
                 .font(.caption)
@@ -697,9 +759,13 @@ struct PartnersContent: View {
                         .font(.headline)
                         .foregroundColor(.white)
 
-                    ProfilePartnerCard(partner: partner) {
-                        viewModel.showingDisconnectPartnerAlert = true
-                    }
+                    ProfilePartnerCard(
+                        partner: partner,
+                        partnerSinceDate: nil,
+                        onSeparate: {
+                            Task { await viewModel.disconnectPartner() }
+                        }
+                    )
                 }
             } else {
                 // NoPartnerView handles showing partner requests when no partner
@@ -725,6 +791,7 @@ struct PartnersContent: View {
 struct SettingsContent: View {
     @ObservedObject var viewModel: ProfileViewModel
     @ObservedObject var coordinator: OnboardingCoordinator
+    @State private var showingSignOutAlert = false
 
     var body: some View {
         List {
@@ -741,107 +808,114 @@ struct SettingsContent: View {
                 }
                 .listRowSeparatorTint(viewModel.notificationsEnabled ? .white.opacity(0.5) : .white.opacity(0.2))
 
-                if viewModel.notificationsEnabled {
-                    SettingsListToggle(
-                        icon: "questionmark.circle",
-                        title: "Daily Questions",
-                        isOn: $viewModel.dailyQuestionNotifications
-                    )
+                    if viewModel.notificationsEnabled {
+                        SettingsListToggle(
+                            icon: "questionmark.circle",
+                            title: "Daily Questions",
+                            isOn: $viewModel.dailyQuestionNotifications
+                        )
 
-                    SettingsListToggle(
-                        icon: "person.crop.circle.badge.checkmark",
-                        title: "Partner Answered",
-                        isOn: $viewModel.partnerAnsweredNotifications
-                    )
+                        SettingsListToggle(
+                            icon: "person.crop.circle.badge.checkmark",
+                            title: "Partner Answered",
+                            isOn: $viewModel.partnerAnsweredNotifications
+                        )
 
-                    SettingsListToggle(
-                        icon: "person.crop.circle.badge.plus",
-                        title: "Partner Requests",
-                        isOn: $viewModel.partnerRequestNotifications
-                    )
+                        SettingsListToggle(
+                            icon: "person.crop.circle.badge.plus",
+                            title: "Partner Requests",
+                            isOn: $viewModel.partnerRequestNotifications
+                        )
 
-                    SettingsListToggle(
-                        icon: "clock.badge.exclamationmark",
-                        title: "Reminders",
-                        isOn: $viewModel.reminderNotifications
-                    )
+                        SettingsListToggle(
+                            icon: "clock.badge.exclamationmark",
+                            title: "Reminders",
+                            isOn: $viewModel.reminderNotifications
+                        )
 
-                    SettingsListToggle(
-                        icon: "flame",
-                        title: "Streak Alerts",
-                        isOn: $viewModel.streakNotifications
-                    )
+                        SettingsListToggle(
+                            icon: "flame",
+                            title: "Streak Alerts",
+                            isOn: $viewModel.streakNotifications
+                        )
+                    }
+                } header: {
+                    Text("Notifications")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .textCase(nil)
                 }
-            } header: {
-                Text("Notifications")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .textCase(nil)
-            }
-            .listRowBackground(Color.white.opacity(0.1))
-            .listRowSeparatorTint(.white.opacity(0.2))
+                .listRowBackground(Color.white.opacity(0.1))
+                .listRowSeparatorTint(.white.opacity(0.2))
 
-            // Account Security
-            Section {
-                SettingsListButton(icon: "key", title: "Change Password") {
-                    viewModel.showingChangePassword = true
+                // Account Security
+                Section {
+                    SettingsListButton(icon: "key", title: "Change Password") {
+                        viewModel.showingChangePassword = true
+                    }
+                } header: {
+                    Text("Account Security")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .textCase(nil)
                 }
-            } header: {
-                Text("Account Security")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .textCase(nil)
-            }
-            .listRowBackground(Color.white.opacity(0.1))
-            .listRowSeparatorTint(.white.opacity(0.2))
+                .listRowBackground(Color.white.opacity(0.1))
+                .listRowSeparatorTint(.white.opacity(0.2))
 
-            // About & Support
-            Section {
-                SettingsListRow(icon: "info.circle", title: "App Version", value: "1.0.0")
-                SettingsListButton(icon: "envelope", title: "Contact Support") {
-                    // TODO: Open email
+                // About & Support
+                Section {
+                    SettingsListRow(icon: "info.circle", title: "App Version", value: "1.0.0")
+                    SettingsListButton(icon: "envelope", title: "Contact Support") {
+                        // TODO: Open email
+                    }
+                    SettingsListButton(icon: "doc.text", title: "Privacy Policy") {
+                        // TODO: Open privacy policy
+                    }
+                    SettingsListButton(icon: "doc.text", title: "Terms of Service") {
+                        // TODO: Open terms
+                    }
+                } header: {
+                    Text("About & Support")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .textCase(nil)
                 }
-                SettingsListButton(icon: "doc.text", title: "Privacy Policy") {
-                    // TODO: Open privacy policy
-                }
-                SettingsListButton(icon: "doc.text", title: "Terms of Service") {
-                    // TODO: Open terms
-                }
-            } header: {
-                Text("About & Support")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .textCase(nil)
-            }
-            .listRowBackground(Color.white.opacity(0.1))
-            .listRowSeparatorTint(.white.opacity(0.2))
+                .listRowBackground(Color.white.opacity(0.1))
+                .listRowSeparatorTint(.white.opacity(0.2))
 
-            // Sign Out Section
-            Section {
-                VStack(spacing: 16) {
-                    GlassButtonDestructive(title: "Sign Out") {
-                        Task {
-                            await viewModel.signOut()
+                // Sign Out Section
+                Section {
+                    VStack(spacing: 16) {
+                        GlassButtonDestructive(title: "Sign Out") {
+                            showingSignOutAlert = true
+                        }
+
+                        // Developer Mode - Switch Account
+                        if DeveloperConfig.isEnabled {
+                            GlassButtonPrimary(title: "Switch Account") {
+                                viewModel.showingSwitchAccount = true
+                            }
                         }
                     }
-
-                    // Developer Mode - Switch Account
-                    if DeveloperConfig.isEnabled {
-                        GlassButtonPrimary(title: "Switch Account") {
-                            viewModel.showingSwitchAccount = true
-                        }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .padding(.top, -30)
+            .sheet(isPresented: $viewModel.showingSwitchAccount) {
+                SwitchAccountSheet(viewModel: viewModel, coordinator: coordinator)
+            }
+            .alert("Sign Out", isPresented: $showingSignOutAlert) {
+                Button("Sign Out", role: .destructive) {
+                    Task {
+                        await viewModel.signOut()
                     }
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
+            } message: {
+                Text("Are you sure you want to sign out?")
             }
-        }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .padding(.top, -30)
-        .sheet(isPresented: $viewModel.showingSwitchAccount) {
-            SwitchAccountSheet(viewModel: viewModel, coordinator: coordinator)
-        }
     }
 }
 
@@ -1194,50 +1268,47 @@ private func formattedBirthday(_ date: Date?) -> String {
     return formatter.string(from: date)
 }
 
-// Helper function to format topic priorities
-private func formatTopicPriorities(_ priorities: [String]?) -> String {
-    guard let priorities = priorities, !priorities.isEmpty else { return "" }
-    return priorities.joined(separator: ", ")
-}
 
 struct ProfilePartnerCard: View {
     let partner: User
-    let onDisconnect: () -> Void
+    let partnerSinceDate: Date?
+    let onSeparate: () -> Void
+
+    @State private var showingPartnerDetail = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack(spacing: 16) {
-                // Initials Badge
-                Circle()
-                    .fill(Color.white.opacity(0.2))
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Text(String(partner.fullName.prefix(2).uppercased()))
-                            .font(.headline)
-                            .foregroundColor(.white)
-                    )
-
-                VStack(alignment: .leading, spacing: 4) {
+        Button {
+            showingPartnerDetail = true
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(partner.fullName)
-                        .font(.headline)
+                        .font(.body.weight(.medium))
                         .foregroundColor(.white)
 
                     Text("@\(partner.username)")
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
                 }
 
                 Spacer()
 
-                Button("Disconnect") {
-                    onDisconnect()
-                }
-                .font(.caption)
-                .foregroundColor(.red)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.4))
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .glassEffect(.clear)
         }
-        .padding(20)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showingPartnerDetail) {
+            PartnerDetailView(
+                partner: partner,
+                partnerSinceDate: partnerSinceDate,
+                onSeparate: onSeparate
+            )
+        }
     }
 }
 
@@ -1273,7 +1344,6 @@ struct PendingRequestCard: View {
                 .buttonStyle(.glassProminent)
                 .tint(.green)
 
-                
                 Button {
                     Task {
                         await viewModel.declinePartnerRequest(request)
@@ -1286,7 +1356,6 @@ struct PendingRequestCard: View {
                 }
                 .buttonStyle(.glassProminent)
                 .tint(.red)
-
             }
         }
         .padding(.horizontal, 12)

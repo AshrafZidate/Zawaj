@@ -15,21 +15,11 @@ struct SignUpFullNameView: View {
             GradientBackground()
 
             VStack(spacing: 0) {
-                // Back button and progress bar - just below dynamic island
-                HStack {
-                    Button(action: {
-                        coordinator.previousStep()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-
-                    ProgressBar(progress: coordinator.currentStep.progress)
-                }
-                .frame(height: 44)
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
+                // Progress bar - just below dynamic island
+                ProgressBar(progress: coordinator.currentStep.progress)
+                    .frame(height: 44)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
 
                 // Content section
                 VStack(alignment: .leading, spacing: 16) {

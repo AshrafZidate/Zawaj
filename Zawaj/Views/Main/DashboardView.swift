@@ -49,6 +49,15 @@ struct DashboardView: View {
                 await viewModel.loadDashboardData()
             }
         }
+        .onChange(of: selectedTab) { oldTab, newTab in
+            // Reload dashboard data when switching away from Preferences tab
+            // to sync any changes made there (e.g., accepting/declining partner requests)
+            if oldTab == 3 && newTab != 3 {
+                Task {
+                    await viewModel.loadDashboardData()
+                }
+            }
+        }
         .onChange(of: coordinator.shouldNavigateToHome) { _, shouldNavigate in
             if shouldNavigate {
                 selectedTab = 0
@@ -79,6 +88,19 @@ struct HomeTabContent: View {
             } else {
                 ScrollView {
                     VStack(spacing: 24) {
+                        // Always show pending partner requests at the top if there are any
+                        if !viewModel.pendingPartnerRequests.isEmpty {
+                            PendingRequestsSection(
+                                requests: viewModel.pendingPartnerRequests,
+                                onAccept: { request in
+                                    Task { await viewModel.acceptPartnerRequest(request) }
+                                },
+                                onDecline: { request in
+                                    Task { await viewModel.declinePartnerRequest(request) }
+                                }
+                            )
+                        }
+
                         if viewModel.hasPartner {
                             // Partners Section
                             VStack(alignment: .leading, spacing: 12) {
@@ -118,16 +140,12 @@ struct HomeTabContent: View {
                             }
                         } else {
                             NoPartnerView(
-                                pendingRequests: viewModel.pendingPartnerRequests,
+                                pendingRequests: [], // Requests already shown above
                                 onAddPartner: {
                                     viewModel.showingAddPartner = true
                                 },
-                                onAcceptRequest: { request in
-                                    Task { await viewModel.acceptPartnerRequest(request) }
-                                },
-                                onDeclineRequest: { request in
-                                    Task { await viewModel.declinePartnerRequest(request) }
-                                }
+                                onAcceptRequest: { _ in },
+                                onDeclineRequest: { _ in }
                             )
                         }
                     }
@@ -196,6 +214,66 @@ struct HistoryTabContent: View {
                 .padding(.horizontal, 24)
             }
         }
+    }
+}
+
+// MARK: - Pending Requests Section
+
+struct PendingRequestsSection: View {
+    let requests: [PartnerRequest]
+    let onAccept: (PartnerRequest) -> Void
+    let onDecline: (PartnerRequest) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Partner Requests")
+                .font(.title2.weight(.bold))
+                .foregroundColor(.white)
+
+            ForEach(requests) { request in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(request.senderDisplayName)
+                            .font(.body.weight(.medium))
+                            .foregroundColor(.white)
+
+                        Text("@\(request.senderUsername)")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+
+                    Spacer()
+
+                    HStack(spacing: 8) {
+                        Button {
+                            onAccept(request)
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .font(.body.weight(.semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 32, height: 32)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.green)
+
+                        Button {
+                            onDecline(request)
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.body.weight(.semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 32, height: 32)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.red)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .glassEffect(.clear)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

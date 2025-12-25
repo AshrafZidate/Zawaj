@@ -86,6 +86,7 @@ struct SignUpTopicPrioritiesView: View {
                 .padding(.bottom, 24)
             }
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

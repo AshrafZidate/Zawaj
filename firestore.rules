@@ -19,12 +19,18 @@ service cloud.firestore {
     }
 
     // Users collection - users can read any profile (for username search) but only write their own
+    // Exception: partner connection updates are allowed when accepting a partner request
     match /users/{userId} {
       allow read: if isAuthenticated();
       allow create: if isOwner(userId) &&
                       request.resource.data.id == userId;
       allow update: if isOwner(userId) &&
                       request.resource.data.id == userId;
+      // Allow partner to update this user's partnerIds when accepting a request
+      allow update: if isAuthenticated() &&
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['partnerIds', 'partnerId', 'partnerConnectionStatus', 'updatedAt']) &&
+                      request.auth.uid in request.resource.data.partnerIds;
       allow delete: if isOwner(userId);
     }
 

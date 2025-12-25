@@ -83,6 +83,7 @@ struct SignUpBirthdayView: View {
                 .padding(.bottom, 24)
             }
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

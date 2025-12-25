@@ -73,6 +73,7 @@ struct SignUpMarriageTimelineView: View {
                 .padding(.bottom, 24)
             }
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

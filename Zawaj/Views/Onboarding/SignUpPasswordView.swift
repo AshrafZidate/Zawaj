@@ -221,6 +221,7 @@ struct SignUpPasswordView: View {
             coordinator.password = ""
             confirmPassword = ""
         }
+        .swipeBack { coordinator.previousStep() }
     }
 }
 

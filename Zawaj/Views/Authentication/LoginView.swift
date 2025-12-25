@@ -35,12 +35,12 @@ struct LoginView: View {
                             .foregroundColor(.white)
 
                         Text("الزَّواجُ")
-                            .font(.custom("Amiri", size: 32))
+                            .font(.custom("Amiri-Regular", size: 32))
                             .foregroundColor(.white)
                     }
 
                     Text("Halal connection. Sacred intention.")
-                        .font(.custom("NunitoSans", size: 20))
+                        .font(.custom("NunitoSans-Regular", size: 20))
                         .foregroundColor(.white)
                 }
 

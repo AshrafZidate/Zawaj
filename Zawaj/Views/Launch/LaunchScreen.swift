@@ -33,7 +33,7 @@ struct LaunchScreen: View {
                         .multilineTextAlignment(.center)
 
                     Text("الزَّواجُ")
-                        .font(.custom("Amiri", size: 40))
+                        .font(.custom("Amiri-Regular", size: 40))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                 }
@@ -43,7 +43,7 @@ struct LaunchScreen: View {
 
                 // Tagline
                 Text("Halal connection. Sacred intention.")
-                    .font(.custom("NunitoSans", size: 20))
+                    .font(.custom("NunitoSans-Regular", size: 20))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
