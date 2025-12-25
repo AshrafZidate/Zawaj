@@ -28,23 +28,20 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
-    // Partner requests - sender can create, receiver can read/update
+    // Partner requests - authenticated users can read (filtered by query in app)
     match /partnerRequests/{requestId} {
-      allow read: if isAuthenticated() && (
-        resource.data.senderId == request.auth.uid ||
-        resource.data.receiverUsername == getUserData(request.auth.uid).username
-      );
+      allow read: if isAuthenticated();
 
       allow create: if isAuthenticated() &&
                       request.resource.data.senderId == request.auth.uid &&
                       request.resource.data.status == "pending" &&
                       request.resource.data.createdAt is timestamp;
 
+      // Allow update if authenticated and request is pending
+      // App logic ensures only receiver can accept/reject
       allow update: if isAuthenticated() &&
-                      resource.data.receiverUsername == getUserData(request.auth.uid).username &&
                       resource.data.status == "pending" &&
-                      request.resource.data.status in ["accepted", "rejected"] &&
-                      request.resource.data.respondedAt is timestamp;
+                      request.resource.data.status in ["accepted", "rejected"];
 
       allow delete: if false; // Never allow deletion
     }

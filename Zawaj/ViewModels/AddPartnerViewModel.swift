@@ -36,8 +36,8 @@ class AddPartnerViewModel: ObservableObject {
                 let username = String(query.dropFirst()).lowercased()
                 user = try await firestoreService.getUserByUsername(username)
             } else if query.contains("@") {
-                // Search by email
-                user = try await firestoreService.getUserByEmail(query)
+                // Search by email (lowercase for case-insensitive matching)
+                user = try await firestoreService.getUserByEmail(query.lowercased())
             } else {
                 // Try username without @ (lowercase for case-insensitive matching)
                 user = try await firestoreService.getUserByUsername(query.lowercased())

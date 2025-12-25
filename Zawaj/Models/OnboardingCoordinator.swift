@@ -121,7 +121,8 @@ class OnboardingCoordinator: ObservableObject {
             guard let self = self else { return }
 
             // If user signed out and we're on the completed step, go back to login
-            if user == nil && self.currentStep == .completed {
+            // Skip if we're in the middle of switching accounts
+            if user == nil && self.currentStep == .completed && !self.isSwitchingAccounts {
                 DispatchQueue.main.async {
                     self.reset()
                     self.currentStep = .login
@@ -153,7 +154,7 @@ class OnboardingCoordinator: ObservableObject {
 
                 let testUser = User(
                     id: user.uid,
-                    email: user.email ?? AppConfig.autoLoginEmail,
+                    email: (user.email ?? AppConfig.autoLoginEmail).lowercased(),
                     phoneNumber: "",
                     isEmailVerified: true,
                     isPhoneVerified: false,
@@ -207,6 +208,8 @@ class OnboardingCoordinator: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var phoneVerificationID: String?
     @Published var cameFromLogin: Bool = false  // Track if user came from login vs signup
+    @Published var isSwitchingAccounts: Bool = false  // Prevents auth listener from redirecting during switch
+    @Published var shouldNavigateToHome: Bool = false  // Triggers navigation to home tab after account switch
 
     // Services
     private let authService = AuthenticationService()
@@ -464,7 +467,7 @@ class OnboardingCoordinator: ObservableObject {
             // Create user profile
             let user = User(
                 id: firebaseUser.uid,
-                email: email,
+                email: email.lowercased(),
                 phoneNumber: "\(countryCode)\(phoneNumber)",
                 isEmailVerified: firebaseUser.isEmailVerified,
                 isPhoneVerified: authService.isPhoneVerified(),

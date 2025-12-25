@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DashboardView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedTab: Int = 0
     @State private var selectedPartner: User?
@@ -46,6 +47,15 @@ struct DashboardView: View {
         .onAppear {
             Task {
                 await viewModel.loadDashboardData()
+            }
+        }
+        .onChange(of: coordinator.shouldNavigateToHome) { _, shouldNavigate in
+            if shouldNavigate {
+                selectedTab = 0
+                coordinator.shouldNavigateToHome = false
+                Task {
+                    await viewModel.loadDashboardData()
+                }
             }
         }
     }
@@ -181,4 +191,5 @@ struct ProfileTabContent: View {
 
 #Preview {
     DashboardView()
+        .environmentObject(OnboardingCoordinator())
 }

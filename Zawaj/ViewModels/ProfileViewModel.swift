@@ -67,7 +67,13 @@ class ProfileViewModel: ObservableObject {
                 }
             }
 
-            // TODO: Fetch pending partner requests
+            // Fetch pending partner requests
+            if !user.username.isEmpty {
+                let requests = try await firestoreService.getPendingPartnerRequests(for: user.username)
+                await MainActor.run {
+                    self.pendingPartnerRequests = requests
+                }
+            }
 
             await MainActor.run {
                 self.isLoading = false
@@ -164,12 +170,45 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Partner Requests
+
+    func acceptPartnerRequest(_ request: PartnerRequest) async {
+        guard let currentUserId = currentUser?.id else { return }
+
+        do {
+            try await firestoreService.acceptPartnerRequest(
+                requestId: request.id,
+                currentUserId: currentUserId,
+                partnerUserId: request.senderId
+            )
+            await loadProfileData() // Refresh to show new partner
+        } catch {
+            await MainActor.run {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
+    func declinePartnerRequest(_ request: PartnerRequest) async {
+        do {
+            try await firestoreService.rejectPartnerRequest(requestId: request.id)
+            await MainActor.run {
+                self.pendingPartnerRequests.removeAll { $0.id == request.id }
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
     // MARK: - Developer Mode
 
-    func switchAccount(email: String, password: String) async {
+    func switchAccount(email: String, password: String, coordinator: OnboardingCoordinator) async {
         await MainActor.run {
             self.isLoading = true
             self.error = nil
+            coordinator.isSwitchingAccounts = true
         }
 
         do {
@@ -184,11 +223,14 @@ class ProfileViewModel: ObservableObject {
 
             await MainActor.run {
                 self.isLoading = false
+                coordinator.isSwitchingAccounts = false
+                coordinator.shouldNavigateToHome = true
             }
         } catch {
             await MainActor.run {
                 self.isLoading = false
                 self.error = error.localizedDescription
+                coordinator.isSwitchingAccounts = false
             }
         }
     }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @EnvironmentObject var coordinator: OnboardingCoordinator
     @StateObject private var viewModel = ProfileViewModel()
     @State private var selectedTab: ProfileTab = .profile
 
@@ -43,7 +44,7 @@ struct ProfileView: View {
                         .padding(.bottom, 100)
                     }
                 case .settings:
-                    SettingsContent(viewModel: viewModel)
+                    SettingsContent(viewModel: viewModel, coordinator: coordinator)
                 }
             }
             .toolbar {
@@ -450,18 +451,7 @@ struct EditProfileFieldSheet: View {
                             }
                         }
 
-                    // Clear button
-                    if !textValue.isEmpty && !isCheckingAvailability {
-                        Button {
-                            textValue = ""
-                            isUsernameAvailable = nil
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    // Status indicator
+                    // Clear button and status indicator
                     if isCheckingAvailability {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -471,6 +461,15 @@ struct EditProfileFieldSheet: View {
                         Image(systemName: available ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .foregroundColor(available ? .green : .red)
                             .padding(.trailing, 16)
+                    } else if !textValue.isEmpty {
+                        Button {
+                            textValue = ""
+                            isUsernameAvailable = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.trailing, 16)
                     }
                 }
                 .frame(height: 52)
@@ -707,7 +706,7 @@ struct PartnersContent: View {
                         .padding(.horizontal, 20)
 
                     ForEach(viewModel.pendingPartnerRequests) { request in
-                        PendingRequestCard(request: request)
+                        PendingRequestCard(request: request, viewModel: viewModel)
                     }
                 }
             }
@@ -719,6 +718,7 @@ struct PartnersContent: View {
 
 struct SettingsContent: View {
     @ObservedObject var viewModel: ProfileViewModel
+    @ObservedObject var coordinator: OnboardingCoordinator
 
     var body: some View {
         List {
@@ -812,29 +812,29 @@ struct SettingsContent: View {
 
             // Sign Out Section
             Section {
-                GlassButtonDestructive(title: "Sign Out") {
-                    Task {
-                        await viewModel.signOut()
+                VStack(spacing: 16) {
+                    GlassButtonDestructive(title: "Sign Out") {
+                        Task {
+                            await viewModel.signOut()
+                        }
+                    }
+
+                    // Developer Mode - Switch Account
+                    if DeveloperConfig.isEnabled {
+                        GlassButtonPrimary(title: "Switch Account") {
+                            viewModel.showingSwitchAccount = true
+                        }
                     }
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
-
-                // Developer Mode - Switch Account
-                if DeveloperConfig.isEnabled {
-                    GlassButtonPrimary(title: "Switch Account") {
-                        viewModel.showingSwitchAccount = true
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                }
             }
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .padding(.top, -30)
         .sheet(isPresented: $viewModel.showingSwitchAccount) {
-            SwitchAccountSheet(viewModel: viewModel)
+            SwitchAccountSheet(viewModel: viewModel, coordinator: coordinator)
         }
     }
 }
@@ -843,6 +843,7 @@ struct SettingsContent: View {
 
 struct SwitchAccountSheet: View {
     @ObservedObject var viewModel: ProfileViewModel
+    @ObservedObject var coordinator: OnboardingCoordinator
     @Environment(\.dismiss) var dismiss
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -930,7 +931,7 @@ struct SwitchAccountSheet: View {
         errorMessage = nil
 
         Task {
-            await viewModel.switchAccount(email: account.email, password: account.password)
+            await viewModel.switchAccount(email: account.email, password: account.password, coordinator: coordinator)
 
             await MainActor.run {
                 isLoading = false
@@ -1236,6 +1237,7 @@ struct ProfilePartnerCard: View {
 
 struct PendingRequestCard: View {
     let request: PartnerRequest
+    @ObservedObject var viewModel: ProfileViewModel
 
     var body: some View {
         HStack {
@@ -1253,7 +1255,9 @@ struct PendingRequestCard: View {
 
             HStack(spacing: 12) {
                 Button("Accept") {
-                    // TODO: Accept request
+                    Task {
+                        await viewModel.acceptPartnerRequest(request)
+                    }
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.white)
@@ -1262,7 +1266,9 @@ struct PendingRequestCard: View {
                 .background(Color.green, in: RoundedRectangle(cornerRadius: 8))
 
                 Button("Decline") {
-                    // TODO: Decline request
+                    Task {
+                        await viewModel.declinePartnerRequest(request)
+                    }
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.white)
@@ -1338,4 +1344,5 @@ struct TopicPrioritiesEditor: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(OnboardingCoordinator())
 }
