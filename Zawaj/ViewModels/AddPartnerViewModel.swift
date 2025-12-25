@@ -82,9 +82,34 @@ class AddPartnerViewModel: ObservableObject {
                 }
             }
 
+            // Check if a pending request already exists from current user
+            let existingOutgoingRequest = try await firestoreService.hasPendingPartnerRequest(
+                from: currentUser.username,
+                to: user.username
+            )
+            if existingOutgoingRequest {
+                await MainActor.run {
+                    self.error = "You already have a pending request to this user"
+                }
+                return
+            }
+
+            // Check if the target user has already sent a request to current user
+            let existingIncomingRequest = try await firestoreService.hasPendingPartnerRequest(
+                from: user.username,
+                to: currentUser.username
+            )
+            if existingIncomingRequest {
+                await MainActor.run {
+                    self.error = "This user has already sent you a request. Please accept their request in the Partners tab."
+                }
+                return
+            }
+
             let request = PartnerRequest(
                 id: UUID().uuidString,
                 senderId: currentUserId,
+                senderFullName: currentUser.fullName,
                 senderUsername: currentUser.username.lowercased(),
                 receiverUsername: user.username.lowercased(),
                 status: "pending",

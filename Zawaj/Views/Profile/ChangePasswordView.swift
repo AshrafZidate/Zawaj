@@ -238,6 +238,7 @@ struct ChangePasswordView: View {
                 ),
                 for: .navigationBar
             )
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .alert("Password Change Failed", isPresented: $showError) {
                 Button("OK", role: .cancel) {
                     errorMessage = nil

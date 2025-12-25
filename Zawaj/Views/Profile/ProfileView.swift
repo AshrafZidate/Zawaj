@@ -36,13 +36,12 @@ struct ProfileView: View {
                     ProfileContent(viewModel: viewModel)
                 case .partners:
                     ScrollView {
-                        VStack(spacing: 24) {
-                            PartnersContent(viewModel: viewModel)
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 24)
-                        .padding(.bottom, 100)
+                        PartnersContent(viewModel: viewModel)
+                            .padding(.horizontal, 24)
+
                     }
+                    .scrollIndicators(.hidden)
+                    .padding(.top, -20)
                 case .settings:
                     SettingsContent(viewModel: viewModel, coordinator: coordinator)
                 }
@@ -59,6 +58,7 @@ struct ProfileView: View {
                 }
             }
             .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+            .preferredColorScheme(.dark)
             .alert("Disconnect Partner", isPresented: $viewModel.showingDisconnectPartnerAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Disconnect", role: .destructive) {
@@ -676,14 +676,26 @@ struct PartnersContent: View {
     @ObservedObject var viewModel: ProfileViewModel
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Partner Requests (at the top)
+            if !viewModel.pendingPartnerRequests.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Partner Requests")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    ForEach(viewModel.pendingPartnerRequests) { request in
+                        PendingRequestCard(request: request, viewModel: viewModel)
+                    }
+                }
+            }
+
             // Current Partners Section
             if let partner = viewModel.partner {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text("Connected Partners")
                         .font(.headline)
                         .foregroundColor(.white)
-                        .padding(.horizontal, 20)
 
                     ProfilePartnerCard(partner: partner) {
                         viewModel.showingDisconnectPartnerAlert = true
@@ -695,20 +707,6 @@ struct PartnersContent: View {
                         viewModel.showingAddPartner = true
                     }
                 )
-            }
-
-            // Pending Requests
-            if !viewModel.pendingPartnerRequests.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Pending Requests (\(viewModel.pendingPartnerRequests.count))")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-
-                    ForEach(viewModel.pendingPartnerRequests) { request in
-                        PendingRequestCard(request: request, viewModel: viewModel)
-                    }
-                }
             }
         }
     }
@@ -1241,44 +1239,51 @@ struct PendingRequestCard: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("@\(request.senderUsername)")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(request.senderDisplayName)
                     .font(.body.weight(.medium))
                     .foregroundColor(.white)
 
-                Text("Sent \(request.createdAt, style: .relative) ago")
+                Text("@\(request.senderUsername)")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.white.opacity(0.7))
             }
 
             Spacer()
 
-            HStack(spacing: 12) {
-                Button("Accept") {
+            HStack(spacing: 8) {
+                Button {
                     Task {
                         await viewModel.acceptPartnerRequest(request)
                     }
+                } label: {
+                    Image(systemName: "checkmark")
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
                 }
-                .font(.caption.weight(.medium))
-                .foregroundColor(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.green, in: RoundedRectangle(cornerRadius: 8))
+                .buttonStyle(.glassProminent)
+                .tint(.green)
 
-                Button("Decline") {
+                
+                Button {
                     Task {
                         await viewModel.declinePartnerRequest(request)
                     }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
                 }
-                .font(.caption.weight(.medium))
-                .foregroundColor(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.red.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
+                .buttonStyle(.glassProminent)
+                .tint(.red)
+
             }
         }
-        .padding(16)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .glassEffect(.clear)
     }
 }
 

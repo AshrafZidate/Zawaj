@@ -111,6 +111,19 @@ struct AddPartnerView: View {
                     .foregroundColor(.white)
                 }
             }
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.18, green: 0.05, blue: 0.35),
+                        Color(red: 0.72, green: 0.28, blue: 0.44)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                for: .navigationBar
+            )
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .alert("Unable to Send Request", isPresented: $showingErrorAlert) {
                 Button("OK", role: .cancel) {
                     viewModel.error = nil

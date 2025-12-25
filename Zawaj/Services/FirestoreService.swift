@@ -174,7 +174,7 @@ class FirestoreService {
         }
     }
 
-    func sendPartnerRequest(from userId: String, senderUsername: String, to receiverUsername: String) async throws {
+    func sendPartnerRequest(from userId: String, senderFullName: String, senderUsername: String, to receiverUsername: String) async throws {
         // Check if receiver exists (getUserByUsername already lowercases)
         guard let receiver = try await getUserByUsername(receiverUsername) else {
             throw FirestoreError.userNotFound
@@ -183,6 +183,7 @@ class FirestoreService {
         let request = PartnerRequest(
             id: UUID().uuidString,
             senderId: userId,
+            senderFullName: senderFullName,
             senderUsername: senderUsername.lowercased(),
             receiverUsername: receiverUsername.lowercased(),
             status: "pending",
@@ -263,6 +264,16 @@ class FirestoreService {
         } catch {
             throw FirestoreError.unknown(error.localizedDescription)
         }
+    }
+
+    func hasPendingPartnerRequest(from senderUsername: String, to receiverUsername: String) async throws -> Bool {
+        let querySnapshot = try await db.collection("partnerRequests")
+            .whereField("senderUsername", isEqualTo: senderUsername.lowercased())
+            .whereField("receiverUsername", isEqualTo: receiverUsername.lowercased())
+            .whereField("status", isEqualTo: "pending")
+            .getDocuments()
+
+        return !querySnapshot.documents.isEmpty
     }
 
     // MARK: - Username Validation
