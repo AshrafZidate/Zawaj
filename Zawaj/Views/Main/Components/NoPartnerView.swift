@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct NoPartnerView: View {
+    let pendingRequests: [PartnerRequest]
     let onAddPartner: () -> Void
+    let onAcceptRequest: (PartnerRequest) -> Void
+    let onDeclineRequest: (PartnerRequest) -> Void
 
     // Share content for invite
     private let inviteMessage = "Download the Zawaj app so we can get to know each other better for marriage!"
@@ -20,11 +23,29 @@ struct NoPartnerView: View {
 
     var body: some View {
         VStack(spacing: 24) {
+            // Partner Requests Section
+            if !pendingRequests.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Partner Requests")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    ForEach(pendingRequests) { request in
+                        NoPartnerRequestCard(
+                            request: request,
+                            onAccept: { onAcceptRequest(request) },
+                            onDecline: { onDeclineRequest(request) }
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             // Icon
             Image(systemName: "person.2.slash")
                 .font(.system(size: 80))
                 .foregroundColor(.white.opacity(0.4))
-                .padding(.top, 60)
+                .padding(.top, pendingRequests.isEmpty ? 60 : 20)
 
             // Message
             VStack(spacing: 12) {
@@ -67,10 +88,66 @@ struct NoPartnerView: View {
     }
 }
 
+// MARK: - Request Card for NoPartnerView
+
+private struct NoPartnerRequestCard: View {
+    let request: PartnerRequest
+    let onAccept: () -> Void
+    let onDecline: () -> Void
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(request.senderDisplayName)
+                    .font(.body.weight(.medium))
+                    .foregroundColor(.white)
+
+                Text("@\(request.senderUsername)")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+
+            Spacer()
+
+            HStack(spacing: 8) {
+                Button {
+                    onAccept()
+                } label: {
+                    Image(systemName: "checkmark")
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(.green)
+
+                Button {
+                    onDecline()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(.red)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .glassEffect(.clear)
+    }
+}
+
 #Preview {
     ZStack {
         GradientBackground()
-        NoPartnerView(onAddPartner: {})
-            .padding(.horizontal, 24)
+        NoPartnerView(
+            pendingRequests: [],
+            onAddPartner: {},
+            onAcceptRequest: { _ in },
+            onDeclineRequest: { _ in }
+        )
+        .padding(.horizontal, 24)
     }
 }

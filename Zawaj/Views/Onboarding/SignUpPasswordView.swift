@@ -67,16 +67,27 @@ struct SignUpPasswordView: View {
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
 
+                    // Hidden email field to help iOS AutoFill suggest strong passwords
+                    TextField("", text: .constant(coordinator.email))
+                        .textContentType(.username)
+                        .autocapitalization(.none)
+                        .keyboardType(.emailAddress)
+                        .frame(height: 1)
+                        .opacity(0.01)
+                        .disabled(true)
+
                     // Password text field with show/hide toggle
                     HStack {
                         if isPasswordVisible {
                             TextField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
+                                .foregroundColor(.white)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
                         } else {
                             SecureField("", text: $coordinator.password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
+                                .foregroundColor(.white)
                                 .textFieldStyle(.plain)
                                 .textContentType(.newPassword)
                         }
@@ -108,13 +119,15 @@ struct SignUpPasswordView: View {
                         if isConfirmPasswordVisible {
                             TextField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
+                                .foregroundColor(.white)
                                 .textFieldStyle(.plain)
-                                .textContentType(.newPassword)
+                                .textContentType(.password)
                         } else {
                             SecureField("", text: $confirmPassword, prompt: Text("Confirm Password").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
+                                .foregroundColor(.white)
                                 .textFieldStyle(.plain)
-                                .textContentType(.newPassword)
+                                .textContentType(.password)
                         }
 
                         if !confirmPassword.isEmpty {

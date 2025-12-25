@@ -19,6 +19,7 @@ class DashboardViewModel: ObservableObject {
     @Published var partnerAnswered: Bool = false // Deprecated: kept for backward compatibility
     @Published var isLoading: Bool = false
     @Published var error: String?
+    @Published var pendingPartnerRequests: [PartnerRequest] = []
 
     // Sheet states
     @Published var showingAddPartner: Bool = false
@@ -87,11 +88,15 @@ class DashboardViewModel: ObservableObject {
                 answersDict[partner.id] = partnerHasAnswered
             }
 
+            // Load pending partner requests
+            let pendingRequests = try await firestoreService.getPendingPartnerRequests(for: user.username)
+
             await MainActor.run {
                 self.todayQuestion = question
                 self.userAnswered = userHasAnswered
                 self.partnerAnswers = answersDict
                 self.partnerAnswered = answersDict.values.contains(true) // Backward compatibility
+                self.pendingPartnerRequests = pendingRequests
                 self.isLoading = false
             }
         } catch {
@@ -161,4 +166,57 @@ class DashboardViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Partner Requests
+
+    func loadPendingPartnerRequests() async {
+        guard let username = currentUser?.username else { return }
+
+        do {
+            let requests = try await firestoreService.getPendingPartnerRequests(for: username)
+            await MainActor.run {
+                self.pendingPartnerRequests = requests
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to load partner requests: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    func acceptPartnerRequest(_ request: PartnerRequest) async {
+        guard let userId = authService.getCurrentUser()?.uid else { return }
+
+        do {
+            try await firestoreService.acceptPartnerRequest(
+                requestId: request.id,
+                currentUserId: userId,
+                partnerUserId: request.senderId
+            )
+
+            await MainActor.run {
+                self.pendingPartnerRequests.removeAll { $0.id == request.id }
+            }
+
+            // Reload dashboard to show new partner
+            await loadDashboardData()
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to accept request: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    func declinePartnerRequest(_ request: PartnerRequest) async {
+        do {
+            try await firestoreService.rejectPartnerRequest(requestId: request.id)
+
+            await MainActor.run {
+                self.pendingPartnerRequests.removeAll { $0.id == request.id }
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to decline request: \(error.localizedDescription)"
+            }
+        }
+    }
 }

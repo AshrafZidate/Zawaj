@@ -102,6 +102,7 @@ struct LoginView: View {
                     HStack {
                         TextField("", text: $email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
                             .autocapitalization(.none)
                             .autocorrectionDisabled()
@@ -124,6 +125,7 @@ struct LoginView: View {
                     HStack {
                         SecureField("", text: $password, prompt: Text("Password").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
 
                         if !password.isEmpty {

@@ -677,21 +677,21 @@ struct PartnersContent: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Partner Requests (at the top)
-            if !viewModel.pendingPartnerRequests.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Partner Requests")
-                        .font(.headline)
-                        .foregroundColor(.white)
-
-                    ForEach(viewModel.pendingPartnerRequests) { request in
-                        PendingRequestCard(request: request, viewModel: viewModel)
-                    }
-                }
-            }
-
             // Current Partners Section
             if let partner = viewModel.partner {
+                // Show Partner Requests at top when user has a partner
+                if !viewModel.pendingPartnerRequests.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Partner Requests")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        ForEach(viewModel.pendingPartnerRequests) { request in
+                            PendingRequestCard(request: request, viewModel: viewModel)
+                        }
+                    }
+                }
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Connected Partners")
                         .font(.headline)
@@ -702,9 +702,17 @@ struct PartnersContent: View {
                     }
                 }
             } else {
+                // NoPartnerView handles showing partner requests when no partner
                 NoPartnerView(
+                    pendingRequests: viewModel.pendingPartnerRequests,
                     onAddPartner: {
                         viewModel.showingAddPartner = true
+                    },
+                    onAcceptRequest: { request in
+                        Task { await viewModel.acceptPartnerRequest(request) }
+                    },
+                    onDeclineRequest: { request in
+                        Task { await viewModel.declinePartnerRequest(request) }
                     }
                 )
             }

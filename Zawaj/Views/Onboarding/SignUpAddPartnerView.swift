@@ -10,6 +10,11 @@ import SwiftUI
 struct SignUpAddPartnerView: View {
     @EnvironmentObject var coordinator: OnboardingCoordinator
 
+    @State private var isValidating: Bool = false
+    @State private var errorMessage: String?
+    @State private var showingErrorAlert: Bool = false
+    @State private var showingSuccessAlert: Bool = false
+
     // Share content for invite
     private let inviteMessage = "Download the Zawaj app so we can get to know each other better for marriage!"
     private let appStoreLink = "https://apps.apple.com/app/zawaj" // TODO: Replace with actual App Store link
@@ -53,6 +58,7 @@ struct SignUpAddPartnerView: View {
                     HStack {
                         TextField("", text: $coordinator.partnerUsername, prompt: Text("Partner's username or email").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
                             .textContentType(.username)
                             .autocapitalization(.none)
@@ -70,6 +76,33 @@ struct SignUpAddPartnerView: View {
                     .padding(.horizontal, 16)
                     .frame(height: 52)
                     .glassEffect(.clear)
+
+                    // Show queued partners
+                    if !coordinator.pendingPartnerUsernames.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Partners to add:")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.7))
+
+                            ForEach(coordinator.pendingPartnerUsernames, id: \.userId) { partner in
+                                HStack {
+                                    Image(systemName: "person.fill.checkmark")
+                                        .foregroundColor(.green)
+                                    Text("@\(partner.username)")
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Button {
+                                        coordinator.pendingPartnerUsernames.removeAll { $0.userId == partner.userId }
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.white.opacity(0.6))
+                                    }
+                                }
+                                .font(.subheadline)
+                            }
+                        }
+                        .padding(.top, 8)
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
@@ -78,11 +111,20 @@ struct SignUpAddPartnerView: View {
 
                 // Action buttons
                 VStack(spacing: 16) {
-                    GlassButtonPrimary(title: "Send partner request", icon: "paperplane.fill") {
-                        // Send partner request
-                        coordinator.nextStep()
+                    GlassButtonPrimary(title: "Add partner", icon: "plus") {
+                        Task {
+                            isValidating = true
+                            if let error = await coordinator.validateAndQueuePartner(query: coordinator.partnerUsername) {
+                                errorMessage = error
+                                showingErrorAlert = true
+                            } else {
+                                showingSuccessAlert = true
+                            }
+                            isValidating = false
+                        }
                     }
-                    .disabled(coordinator.partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(coordinator.partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty || isValidating)
+                    .opacity(coordinator.partnerUsername.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1.0)
 
                     ShareLink(item: shareContent) {
                         HStack(spacing: 12) {
@@ -98,14 +140,31 @@ struct SignUpAddPartnerView: View {
                     .buttonStyle(.glass)
                     .glassEffect(.clear)
 
-                    GlassButton(title: "I don't have a partner") {
-                        // Skip partner connection
+                    GlassButton(title: coordinator.pendingPartnerUsernames.isEmpty ? "I don't have a partner" : "Continue") {
                         coordinator.nextStep()
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }
+        }
+        .alert("Unable to Add Partner", isPresented: $showingErrorAlert) {
+            Button("OK", role: .cancel) {
+                errorMessage = nil
+            }
+        } message: {
+            Text(errorMessage ?? "An error occurred")
+        }
+        .alert("Partner Added", isPresented: $showingSuccessAlert) {
+            Button("Add Another") {
+                coordinator.partnerUsername = ""
+            }
+            Button("Continue", role: .cancel) {
+                coordinator.partnerUsername = ""
+                coordinator.nextStep()
+            }
+        } message: {
+            Text("Partner request will be sent once you complete your account setup.")
         }
     }
 }

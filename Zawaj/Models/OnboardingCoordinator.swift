@@ -202,6 +202,7 @@ class OnboardingCoordinator: ObservableObject {
     @Published var partnerUsername: String = ""
     @Published var partnerConnected: Bool = false
     @Published var answerPreference: String = ""
+    @Published var pendingPartnerUsernames: [(username: String, userId: String)] = []  // Partners to add after onboarding
 
     // Authentication state
     @Published var authenticationError: String?
@@ -249,6 +250,7 @@ class OnboardingCoordinator: ObservableObject {
         topicPriorities = []
         partnerUsername = ""
         partnerConnected = false
+        pendingPartnerUsernames = []
         authenticationError = nil
         isLoading = false
         phoneVerificationID = nil
@@ -489,6 +491,9 @@ class OnboardingCoordinator: ObservableObject {
             // Save to Firestore
             try await firestoreService.saveUserProfile(user)
 
+            // Send any queued partner requests
+            await sendQueuedPartnerRequests(userId: firebaseUser.uid)
+
             await MainActor.run {
                 isLoading = false
                 skipToStep(.accountSetupLoading)
@@ -506,6 +511,86 @@ class OnboardingCoordinator: ObservableObject {
             return try await firestoreService.isUsernameAvailable(username)
         } catch {
             return false
+        }
+    }
+
+    // MARK: - Partner Request During Signup
+
+    /// Validates a partner username/email and queues it for sending after onboarding completes
+    /// Returns an error message if validation fails, nil if successful
+    func validateAndQueuePartner(query: String) async -> String? {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespaces)
+        guard !trimmedQuery.isEmpty else {
+            return "Please enter a username or email"
+        }
+
+        do {
+            // Search by username or email
+            let user: User?
+
+            if trimmedQuery.starts(with: "@") {
+                let usernameToSearch = String(trimmedQuery.dropFirst()).lowercased()
+                user = try await firestoreService.getUserByUsername(usernameToSearch)
+            } else if trimmedQuery.contains("@") {
+                user = try await firestoreService.getUserByEmail(trimmedQuery.lowercased())
+            } else {
+                user = try await firestoreService.getUserByUsername(trimmedQuery.lowercased())
+            }
+
+            guard let foundUser = user else {
+                return "No user found with that username or email"
+            }
+
+            // Check if trying to add themselves (compare by email since user doesn't have profile yet)
+            if foundUser.email.lowercased() == email.lowercased() {
+                return "You cannot add yourself as a partner"
+            }
+
+            // Check if genders are opposite
+            if !gender.isEmpty && !foundUser.gender.isEmpty {
+                if gender.lowercased() == foundUser.gender.lowercased() {
+                    return "You can only partner with someone of the opposite gender"
+                }
+            }
+
+            // Check if already queued
+            if pendingPartnerUsernames.contains(where: { $0.userId == foundUser.id }) {
+                return "You have already added this partner"
+            }
+
+            // Add to pending list
+            await MainActor.run {
+                pendingPartnerUsernames.append((username: foundUser.username, userId: foundUser.id))
+            }
+
+            return nil // Success
+        } catch {
+            return "Error searching for user: \(error.localizedDescription)"
+        }
+    }
+
+    /// Sends all queued partner requests after profile is created
+    private func sendQueuedPartnerRequests(userId: String) async {
+        guard !pendingPartnerUsernames.isEmpty else { return }
+
+        for partner in pendingPartnerUsernames {
+            let request = PartnerRequest(
+                id: UUID().uuidString,
+                senderId: userId,
+                senderFullName: fullName,
+                senderUsername: username.lowercased(),
+                receiverUsername: partner.username.lowercased(),
+                status: "pending",
+                createdAt: Date(),
+                respondedAt: nil
+            )
+
+            do {
+                try await firestoreService.sendPartnerRequest(request: request, receiverId: partner.userId)
+                print("✅ Partner request sent to \(partner.username)")
+            } catch {
+                print("⚠️ Failed to send partner request to \(partner.username): \(error.localizedDescription)")
+            }
         }
     }
 

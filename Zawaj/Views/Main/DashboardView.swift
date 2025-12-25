@@ -118,8 +118,15 @@ struct HomeTabContent: View {
                             }
                         } else {
                             NoPartnerView(
+                                pendingRequests: viewModel.pendingPartnerRequests,
                                 onAddPartner: {
                                     viewModel.showingAddPartner = true
+                                },
+                                onAcceptRequest: { request in
+                                    Task { await viewModel.acceptPartnerRequest(request) }
+                                },
+                                onDeclineRequest: { request in
+                                    Task { await viewModel.declinePartnerRequest(request) }
                                 }
                             )
                         }
@@ -145,8 +152,15 @@ struct QuestionsTabContent: View {
                 QuestionsView(viewModel: viewModel)
             } else {
                 NoPartnerView(
+                    pendingRequests: viewModel.pendingPartnerRequests,
                     onAddPartner: {
                         viewModel.showingAddPartner = true
+                    },
+                    onAcceptRequest: { request in
+                        Task { await viewModel.acceptPartnerRequest(request) }
+                    },
+                    onDeclineRequest: { request in
+                        Task { await viewModel.declinePartnerRequest(request) }
                     }
                 )
                 .padding(.horizontal, 24)
@@ -168,8 +182,15 @@ struct HistoryTabContent: View {
                 PlaceholderView(icon: "archivebox", title: "Archives", message: "Your past answers will appear here")
             } else {
                 NoPartnerView(
+                    pendingRequests: viewModel.pendingPartnerRequests,
                     onAddPartner: {
                         viewModel.showingAddPartner = true
+                    },
+                    onAcceptRequest: { request in
+                        Task { await viewModel.acceptPartnerRequest(request) }
+                    },
+                    onDeclineRequest: { request in
+                        Task { await viewModel.declinePartnerRequest(request) }
                     }
                 )
                 .padding(.horizontal, 24)

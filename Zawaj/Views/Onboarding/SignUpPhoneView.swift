@@ -65,8 +65,9 @@ struct SignUpPhoneView: View {
 
                         // Phone number field
                         HStack {
-                            TextField("", text: $coordinator.phoneNumber, prompt: Text("Phone Number").foregroundColor(.secondary))
+                            TextField("", text: $coordinator.phoneNumber, prompt: Text("Phone Number").foregroundColor(.white.opacity(0.6)))
                                 .font(.body)
+                                .foregroundColor(.white)
                                 .textFieldStyle(.plain)
                                 .keyboardType(.phonePad)
 

@@ -66,11 +66,13 @@ struct ChangePasswordView: View {
                                 if isCurrentPasswordVisible {
                                     TextField("", text: $currentPassword, prompt: Text("Enter current password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.password)
                                 } else {
                                     SecureField("", text: $currentPassword, prompt: Text("Enter current password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.password)
                                 }
@@ -108,11 +110,13 @@ struct ChangePasswordView: View {
                                 if isNewPasswordVisible {
                                     TextField("", text: $newPassword, prompt: Text("Enter new password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.newPassword)
                                 } else {
                                     SecureField("", text: $newPassword, prompt: Text("Enter new password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.newPassword)
                                 }
@@ -150,11 +154,13 @@ struct ChangePasswordView: View {
                                 if isConfirmPasswordVisible {
                                     TextField("", text: $confirmPassword, prompt: Text("Confirm new password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.newPassword)
                                 } else {
                                     SecureField("", text: $confirmPassword, prompt: Text("Confirm new password").foregroundColor(.white.opacity(0.6)))
                                         .font(.body)
+                                        .foregroundColor(.white)
                                         .textFieldStyle(.plain)
                                         .textContentType(.newPassword)
                                 }

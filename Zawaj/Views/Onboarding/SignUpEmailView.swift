@@ -50,7 +50,9 @@ struct SignUpEmailView: View {
                     HStack {
                         TextField("", text: $coordinator.email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
+                            .textContentType(.emailAddress)
                             .autocapitalization(.none)
                             .autocorrectionDisabled()
                             .keyboardType(.emailAddress)

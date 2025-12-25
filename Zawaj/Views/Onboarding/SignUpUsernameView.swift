@@ -63,6 +63,7 @@ struct SignUpUsernameView: View {
 
                         TextField("", text: $coordinator.username, prompt: Text("username").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
                             .textContentType(.username)
                             .autocapitalization(.none)

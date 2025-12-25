@@ -45,6 +45,7 @@ struct SignUpFullNameView: View {
                     HStack {
                         TextField("", text: $coordinator.fullName, prompt: Text("Full Name").foregroundColor(.white.opacity(0.6)))
                             .font(.body)
+                            .foregroundColor(.white)
                             .textFieldStyle(.plain)
                             .textContentType(.name)
                             .autocapitalization(.words)
