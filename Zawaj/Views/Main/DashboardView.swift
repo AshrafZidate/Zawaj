@@ -12,15 +12,16 @@ struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedTab: Int = 0
     @State private var selectedPartner: User?
+    @State private var selectedPartnerForQuestions: User?
 
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Home", systemImage: "house", value: 0) {
-                HomeTabContent(viewModel: viewModel, selectedTab: $selectedTab, selectedPartner: $selectedPartner)
+                HomeTabContent(viewModel: viewModel, selectedTab: $selectedTab, selectedPartner: $selectedPartner, selectedPartnerForQuestions: $selectedPartnerForQuestions)
             }
-            
+
             Tab("Questions", systemImage: "questionmark.bubble", value: 1) {
-                QuestionsTabContent(viewModel: viewModel)
+                QuestionsTabContent(viewModel: viewModel, selectedPartnerForQuestions: $selectedPartnerForQuestions)
             }
             
             Tab("Archives", systemImage: "archivebox", value: 2) {
@@ -76,83 +77,140 @@ struct HomeTabContent: View {
     @ObservedObject var viewModel: DashboardViewModel
     @Binding var selectedTab: Int
     @Binding var selectedPartner: User?
+    @Binding var selectedPartnerForQuestions: User?
+
+    // Share content for invite
+    private let inviteMessage = "Download the Zawaj app so we can get to know each other better for marriage!"
+    private let appStoreLink = "https://apps.apple.com/app/zawaj" // TODO: Replace with actual App Store link
+
+    private var shareContent: String {
+        return "\(inviteMessage)\n\n\(appStoreLink)"
+    }
+
+    // Sort partners by answer status priority, then by connection order
+    private var sortedPartners: [User] {
+        viewModel.partners.sorted { partner1, partner2 in
+            let status1 = statusPriority(for: partner1)
+            let status2 = statusPriority(for: partner2)
+
+            if status1 != status2 {
+                return status1 < status2
+            }
+
+            // Same status - maintain original order (connection order)
+            guard let index1 = viewModel.partners.firstIndex(where: { $0.id == partner1.id }),
+                  let index2 = viewModel.partners.firstIndex(where: { $0.id == partner2.id }) else {
+                return false
+            }
+            return index1 < index2
+        }
+    }
+
+    // Priority: 1 = Both answered, 2 = Partner answered (user needs to), 3 = Both unanswered, 4 = User answered (waiting)
+    private func statusPriority(for partner: User) -> Int {
+        let partnerAnswered = viewModel.partnerAnswers[partner.id] ?? false
+
+        if viewModel.userAnswered && partnerAnswered {
+            return 1 // Both answered - review ready
+        } else if !viewModel.userAnswered && partnerAnswered {
+            return 2 // Partner answered, user needs to answer
+        } else if !viewModel.userAnswered && !partnerAnswered {
+            return 3 // Both unanswered
+        } else {
+            return 4 // User answered, waiting for partner
+        }
+    }
 
     var body: some View {
-        ZStack {
-            GradientBackground()
+        NavigationStack {
+            ZStack {
+                GradientBackground()
 
-            if viewModel.isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.5)
-            } else {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Always show pending partner requests at the top if there are any
-                        if !viewModel.pendingPartnerRequests.isEmpty {
-                            PendingRequestsSection(
-                                requests: viewModel.pendingPartnerRequests,
-                                onAccept: { request in
-                                    Task { await viewModel.acceptPartnerRequest(request) }
-                                },
-                                onDecline: { request in
-                                    Task { await viewModel.declinePartnerRequest(request) }
-                                }
-                            )
-                        }
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            // Always show pending partner requests at the top if there are any
+                            if !viewModel.pendingPartnerRequests.isEmpty {
+                                PendingRequestsSection(
+                                    requests: viewModel.pendingPartnerRequests,
+                                    onAccept: { request in
+                                        Task { await viewModel.acceptPartnerRequest(request) }
+                                    },
+                                    onDecline: { request in
+                                        Task { await viewModel.declinePartnerRequest(request) }
+                                    }
+                                )
+                            }
 
-                        if viewModel.hasPartner {
-                            // Partners Section
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Your Partners")
-                                    .font(.title2.weight(.bold))
-                                    .foregroundColor(.white)
+                            if viewModel.hasPartner {
+                                // Partners Section
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("Your Partners")
+                                        .font(.title2.weight(.bold))
+                                        .foregroundColor(.white)
 
-                                ForEach(viewModel.partners) { partner in
-                                    PartnerCard(
-                                        partner: partner,
-                                        userAnswered: viewModel.userAnswered,
-                                        partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false,
-                                        onTap: {
-                                            let status = PartnerAnswerStatus.determine(
-                                                userAnswered: viewModel.userAnswered,
-                                                partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false
-                                            )
+                                    ForEach(sortedPartners) { partner in
+                                        PartnerCard(
+                                            partner: partner,
+                                            userAnswered: viewModel.userAnswered,
+                                            partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false,
+                                            todayTopic: viewModel.todayQuestion?.topic,
+                                            onTap: {
+                                                let status = PartnerAnswerStatus.determine(
+                                                    userAnswered: viewModel.userAnswered,
+                                                    partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false
+                                                )
 
-                                            if status == .reviewAnswers {
-                                                selectedPartner = partner
-                                            } else {
-                                                selectedTab = 1
+                                                if status == .reviewAnswers {
+                                                    selectedPartner = partner
+                                                } else {
+                                                    selectedPartnerForQuestions = partner
+                                                    selectedTab = 1
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
+                            } else {
+                                NoPartnerView(
+                                    pendingRequests: [], // Requests already shown above
+                                    onAddPartner: {
+                                        viewModel.showingAddPartner = true
+                                    },
+                                    onAcceptRequest: { _ in },
+                                    onDeclineRequest: { _ in }
+                                )
                             }
-
-                            // Show question card when user has a partner
-                            TodayQuestionCard(
-                                question: viewModel.todayQuestion,
-                                userAnswered: viewModel.userAnswered,
-                                partnerAnswered: viewModel.partnerAnswered,
-                                partnerName: viewModel.partner?.fullName.split(separator: " ").first.map(String.init)
-                            ) {
-                                selectedTab = 1
-                            }
-                        } else {
-                            NoPartnerView(
-                                pendingRequests: [], // Requests already shown above
-                                onAddPartner: {
-                                    viewModel.showingAddPartner = true
-                                },
-                                onAcceptRequest: { _ in },
-                                onDeclineRequest: { _ in }
-                            )
                         }
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 24)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 24)
                 }
             }
+            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+            .toolbar {
+                if viewModel.hasPartner {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        ShareLink(item: shareContent) {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundColor(.white)
+                        }
+
+                        Button {
+                            viewModel.showingAddPartner = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Zawāj")
+            .toolbarTitleDisplayMode(.inline)
         }
     }
 }
@@ -161,13 +219,14 @@ struct HomeTabContent: View {
 
 struct QuestionsTabContent: View {
     @ObservedObject var viewModel: DashboardViewModel
+    @Binding var selectedPartnerForQuestions: User?
 
     var body: some View {
         ZStack {
             GradientBackground()
 
             if viewModel.hasPartner {
-                QuestionsView(viewModel: viewModel)
+                QuestionsView(viewModel: viewModel, selectedPartnerForQuestions: $selectedPartnerForQuestions)
             } else {
                 NoPartnerView(
                     pendingRequests: viewModel.pendingPartnerRequests,

@@ -9,15 +9,98 @@ import SwiftUI
 
 struct QuestionsView: View {
     @ObservedObject var viewModel: DashboardViewModel
-    @State private var selectedPartner: User?
-    @State private var showingAnswerReveal: Bool = false
+    @Binding var selectedPartnerForQuestions: User?
+    @State private var selectedPartnerId: String?
+    @State private var selectedPartnerForReveal: User?
+    @State private var tabViewId: UUID = UUID()
+
+    // Partners ordered by connection order (who they partnered with first)
+    private var sortedPartners: [User] {
+        viewModel.partners
+    }
+
+    private var currentPartnerIndex: Int {
+        guard let selectedId = selectedPartnerId else { return 0 }
+        return sortedPartners.firstIndex(where: { $0.id == selectedId }) ?? 0
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Page indicator dots
+            if sortedPartners.count > 1 {
+                HStack(spacing: 8) {
+                    ForEach(sortedPartners) { partner in
+                        Circle()
+                            .fill(partner.id == selectedPartnerId ? Color.white : Color.white.opacity(0.3))
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                .padding(.top, 16)
+                .padding(.bottom, 8)
+            }
+
+            // Paged partner content
+            TabView(selection: $selectedPartnerId) {
+                ForEach(sortedPartners) { partner in
+                    PartnerQuestionPage(
+                        viewModel: viewModel,
+                        partner: partner,
+                        onViewAnswer: {
+                            selectedPartnerForReveal = partner
+                        }
+                    )
+                    .tag(partner.id as String?)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .id(tabViewId)
+        }
+        .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            if selectedPartnerId == nil, let firstPartner = sortedPartners.first {
+                selectedPartnerId = firstPartner.id
+            }
+        }
+        .onChange(of: selectedPartnerForQuestions) { _, partner in
+            if let partner = partner {
+                selectedPartnerId = partner.id
+                tabViewId = UUID()
+                selectedPartnerForQuestions = nil
+            }
+        }
+        .sheet(item: $selectedPartnerForReveal) { partner in
+            if let question = viewModel.todayQuestion {
+                AnswerRevealSheet(
+                    viewModel: viewModel,
+                    question: question,
+                    partner: partner
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Partner Question Page
+
+struct PartnerQuestionPage: View {
+    @ObservedObject var viewModel: DashboardViewModel
+    let partner: User
+    let onViewAnswer: () -> Void
+
+    private var partnerAnswered: Bool {
+        viewModel.partnerAnswers[partner.id] ?? false
+    }
+
+    private var status: PartnerAnswerStatus {
+        PartnerAnswerStatus.determine(userAnswered: viewModel.userAnswered, partnerAnswered: partnerAnswered)
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Header
+                // Partner Header
                 VStack(spacing: 8) {
-                    Text("Today's Question")
+                    Text(partner.fullName)
                         .font(.title2.weight(.bold))
                         .foregroundColor(.white)
 
@@ -27,47 +110,25 @@ struct QuestionsView: View {
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
-                .padding(.top, 16)
+                .padding(.top, 32)
 
                 // Question Card
                 if let question = viewModel.todayQuestion {
                     QuestionCard(question: question)
                 }
 
-                // Partner Cards - show each partner's status
-                if !viewModel.partners.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Partners")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 24)
+                // Status-based content
+                switch status {
+                case .reviewAnswers:
+                    // Both answered - show review button
+                    ReviewReadyView(partner: partner, onViewAnswer: onViewAnswer)
 
-                        ForEach(viewModel.partners) { partner in
-                            PartnerQuestionStatusCard(
-                                partner: partner,
-                                userAnswered: viewModel.userAnswered,
-                                partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false,
-                                onAnswerQuestion: {
-                                    // Scroll to answer section
-                                },
-                                onViewAnswer: {
-                                    selectedPartner = partner
-                                    showingAnswerReveal = true
-                                }
-                            )
-                        }
-                    }
-                }
+                case .waitingForPartner:
+                    // User answered, waiting for partner
+                    WaitingForPartnerView(partner: partner)
 
-                // Answer Section - based on user's answer status
-                if viewModel.userAnswered {
-                    // User has answered - show waiting or review state
-                    WaitingForPartnersView(
-                        partners: viewModel.partners,
-                        partnerAnswers: viewModel.partnerAnswers
-                    )
-                } else {
-                    // User hasn't answered - show answer input
+                case .answerToUnlock, .answerBoth:
+                    // User needs to answer
                     if let question = viewModel.todayQuestion {
                         AnswerInputSection(
                             question: question,
@@ -78,20 +139,97 @@ struct QuestionsView: View {
                             }
                         )
                     }
+
+                case .newQuestionsTomorrow:
+                    // All done for today
+                    NewQuestionsTomorrowView()
                 }
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 100)
         }
-        .sheet(item: $selectedPartner) { partner in
-            if let question = viewModel.todayQuestion {
-                AnswerRevealSheet(
-                    viewModel: viewModel,
-                    question: question,
-                    partner: partner
-                )
+    }
+}
+
+// MARK: - Review Ready View
+
+struct ReviewReadyView: View {
+    let partner: User
+    let onViewAnswer: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.green)
+
+            Text("Both answered!")
+                .font(.title3.weight(.semibold))
+                .foregroundColor(.white)
+
+            Text("See how \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) answered")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+
+            GlassButtonPrimary(title: "View Answers") {
+                onViewAnswer()
             }
+            .padding(.top, 8)
         }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+// MARK: - Waiting For Partner View
+
+struct WaitingForPartnerView: View {
+    let partner: User
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "clock.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.blue)
+
+            Text("Waiting for \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName)")
+                .font(.title3.weight(.semibold))
+                .foregroundColor(.white)
+
+            Text("You've answered! We'll notify you when they respond.")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+// MARK: - New Questions Tomorrow View
+
+struct NewQuestionsTomorrowView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "moon.stars.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.purple)
+
+            Text("All done for today!")
+                .font(.title3.weight(.semibold))
+                .foregroundColor(.white)
+
+            Text("New questions will be available tomorrow.")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 }
 
@@ -356,6 +494,6 @@ struct WaitingForPartnersView: View {
 #Preview {
     ZStack {
         GradientBackground()
-        QuestionsView(viewModel: DashboardViewModel())
+        QuestionsView(viewModel: DashboardViewModel(), selectedPartnerForQuestions: .constant(nil))
     }
 }

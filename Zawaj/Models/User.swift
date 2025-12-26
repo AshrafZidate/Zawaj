@@ -14,7 +14,7 @@ enum PartnerStatus: String, Codable {
     case rejected = "rejected"
 }
 
-struct User: Codable, Identifiable {
+struct User: Codable, Identifiable, Equatable {
     let id: String // Firebase UID
     var email: String
     var phoneNumber: String

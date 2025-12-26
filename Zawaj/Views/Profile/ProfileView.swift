@@ -12,6 +12,14 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var selectedTab: ProfileTab = .profile
 
+    // Share content for invite
+    private let inviteMessage = "Download the Zawaj app so we can get to know each other better for marriage!"
+    private let appStoreLink = "https://apps.apple.com/app/zawaj" // TODO: Replace with actual App Store link
+
+    private var shareContent: String {
+        return "\(inviteMessage)\n\n\(appStoreLink)"
+    }
+
     enum ProfileTab: String, CaseIterable {
         case profile = "Profile"
         case partners = "Partners"
@@ -53,7 +61,23 @@ struct ProfileView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 250)
+                    .frame(width: 250, height: 32)
+                }
+
+                if !viewModel.partners.isEmpty {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        ShareLink(item: shareContent) {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundColor(.white)
+                        }
+
+                        Button {
+                            viewModel.showingAddPartner = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .foregroundColor(.white)
+                        }
+                    }
                 }
             }
             .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
@@ -740,8 +764,8 @@ struct PartnersContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Current Partners Section
-            if let partner = viewModel.partner {
-                // Show Partner Requests at top when user has a partner
+            if !viewModel.partners.isEmpty {
+                // Show Partner Requests at top when user has partners
                 if !viewModel.pendingPartnerRequests.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Partner Requests")
@@ -759,13 +783,15 @@ struct PartnersContent: View {
                         .font(.headline)
                         .foregroundColor(.white)
 
-                    ProfilePartnerCard(
-                        partner: partner,
-                        partnerSinceDate: nil,
-                        onSeparate: {
-                            Task { await viewModel.disconnectPartner() }
-                        }
-                    )
+                    ForEach(viewModel.partners) { partner in
+                        ProfilePartnerCard(
+                            partner: partner,
+                            partnerSinceDate: nil,
+                            onSeparate: {
+                                Task { await viewModel.disconnectPartner(partnerId: partner.id) }
+                            }
+                        )
+                    }
                 }
             } else {
                 // NoPartnerView handles showing partner requests when no partner

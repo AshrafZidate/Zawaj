@@ -76,20 +76,24 @@ struct PartnerCard: View {
     let partner: User
     let userAnswered: Bool
     let partnerAnswered: Bool
+    let todayTopic: String?
     let onTap: () -> Void
 
     private var status: PartnerAnswerStatus {
         PartnerAnswerStatus.determine(userAnswered: userAnswered, partnerAnswered: partnerAnswered)
     }
 
-    private var initials: String {
-        let components = partner.fullName.split(separator: " ")
-        if components.count >= 2 {
-            return "\(components[0].prefix(1))\(components[1].prefix(1))".uppercased()
-        } else if let first = components.first {
-            return String(first.prefix(2)).uppercased()
+    private var topicText: String {
+        guard let topic = todayTopic else {
+            return "No topic today"
         }
-        return "?"
+
+        switch status {
+        case .reviewAnswers, .newQuestionsTomorrow:
+            return "Today's topic was \(topic)"
+        default:
+            return "Today's topic is \(topic)"
+        }
     }
 
     var body: some View {
@@ -101,7 +105,7 @@ struct PartnerCard: View {
                         .font(.body.weight(.medium))
                         .foregroundColor(.white)
 
-                    Text("@\(partner.username)")
+                    Text(topicText)
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
                 }
@@ -111,19 +115,30 @@ struct PartnerCard: View {
                 // Status indicator
                 HStack(spacing: 6) {
                     Image(systemName: status.icon)
-                        .font(.caption)
+                        .font(.system(size: 18))
                         .foregroundColor(status.iconColor)
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.white.opacity(0.4))
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
             .glassEffect(.clear)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(PartnerCardButtonStyle())
+    }
+}
+
+// MARK: - Partner Card Button Style
+
+struct PartnerCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -141,6 +156,7 @@ struct PartnerCard: View {
                 ),
                 userAnswered: false,
                 partnerAnswered: false,
+                todayTopic: "Religious values",
                 onTap: {}
             )
 
@@ -153,6 +169,7 @@ struct PartnerCard: View {
                 ),
                 userAnswered: false,
                 partnerAnswered: true,
+                todayTopic: "Family expectations",
                 onTap: {}
             )
 
@@ -165,6 +182,7 @@ struct PartnerCard: View {
                 ),
                 userAnswered: true,
                 partnerAnswered: false,
+                todayTopic: "Lifestyle and goals",
                 onTap: {}
             )
 
@@ -177,6 +195,7 @@ struct PartnerCard: View {
                 ),
                 userAnswered: true,
                 partnerAnswered: true,
+                todayTopic: "Conflict resolution",
                 onTap: {}
             )
         }

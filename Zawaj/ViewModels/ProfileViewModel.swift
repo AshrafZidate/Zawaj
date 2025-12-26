@@ -13,7 +13,8 @@ import Combine
 class ProfileViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var currentUser: User?
-    @Published var partner: User?
+    @Published var partner: User? // Kept for backward compatibility
+    @Published var partners: [User] = []
     @Published var pendingPartnerRequests: [PartnerRequest] = []
     @Published var isLoading: Bool = false
     @Published var error: String?
@@ -59,11 +60,26 @@ class ProfileViewModel: ObservableObject {
                 self.currentUser = user
             }
 
-            // Fetch partner if connected
-            if user.partnerConnectionStatus == .connected, let partnerId = user.partnerId {
+            // Fetch all partners
+            if !user.partnerIds.isEmpty {
+                var fetchedPartners: [User] = []
+                for partnerId in user.partnerIds {
+                    if let partnerUser = try? await firestoreService.getUserProfile(userId: partnerId) {
+                        fetchedPartners.append(partnerUser)
+                    }
+                }
+                await MainActor.run {
+                    self.partners = fetchedPartners
+                    self.partner = fetchedPartners.first // Keep for backward compatibility
+                }
+            } else if user.partnerConnectionStatus == .connected, let partnerId = user.partnerId {
+                // Fallback to deprecated partnerId for backward compatibility
                 let partnerUser = try? await firestoreService.getUserProfile(userId: partnerId)
                 await MainActor.run {
                     self.partner = partnerUser
+                    if let partnerUser = partnerUser {
+                        self.partners = [partnerUser]
+                    }
                 }
             }
 
@@ -104,14 +120,25 @@ class ProfileViewModel: ObservableObject {
         // For now, just update local state
     }
 
-    func disconnectPartner() async {
+    func disconnectPartner(partnerId: String? = nil) async {
         guard let _ = currentUser?.id else { return }
 
-        // TODO: Implement partner disconnect logic
+        // TODO: Implement partner disconnect logic in Firestore
         await MainActor.run {
-            self.partner = nil
-            self.currentUser?.partnerId = nil
-            self.currentUser?.partnerConnectionStatus = .none
+            if let partnerId = partnerId {
+                // Remove specific partner
+                self.partners.removeAll { $0.id == partnerId }
+                self.currentUser?.partnerIds.removeAll { $0 == partnerId }
+                if self.partner?.id == partnerId {
+                    self.partner = self.partners.first
+                }
+            } else {
+                // Remove all partners (legacy behavior)
+                self.partner = nil
+                self.partners = []
+                self.currentUser?.partnerId = nil
+                self.currentUser?.partnerConnectionStatus = .none
+            }
         }
     }
 
