@@ -278,78 +278,229 @@ class FirestoreService {
         }
     }
 
-    // MARK: - Answers
+    // MARK: - Partnership Progress
 
-    func submitAnswer(_ answer: Answer) async throws {
-        do {
-            let encoder = Firestore.Encoder()
-            let answerData = try encoder.encode(answer)
+    /// Gets or creates partnership progress for a given partnership
+    func getOrCreatePartnershipProgress(
+        partnershipId: String,
+        userIds: [String],
+        combinedTopicOrder: [Int]
+    ) async throws -> PartnershipProgress {
+        let docRef = db.collection("partnership_progress").document(partnershipId)
+        let document = try await docRef.getDocument()
 
-            // Use a composite ID of userId_questionId for easy querying
-            let documentId = "\(answer.userId)_\(answer.questionId)"
-            try await db.collection("answers").document(documentId).setData(answerData)
-        } catch {
-            throw FirestoreError.unknown(error.localizedDescription)
+        if document.exists {
+            // Return existing progress
+            let decoder = Firestore.Decoder()
+            return try decoder.decode(PartnershipProgress.self, from: document.data() ?? [:])
         }
+
+        // Create new progress
+        let newProgress = PartnershipProgress(
+            id: partnershipId.hashValue,
+            partnershipId: partnershipId,
+            userIds: userIds,
+            combinedTopicOrder: combinedTopicOrder,
+            currentRound: 1,
+            completedSubtopics: [],
+            isComplete: false,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+
+        let encoder = Firestore.Encoder()
+        let progressData = try encoder.encode(newProgress)
+        try await docRef.setData(progressData)
+
+        return newProgress
     }
 
-    func getAnswer(userId: String, questionId: String) async throws -> Answer? {
-        do {
-            let documentId = "\(userId)_\(questionId)"
+    /// Gets partnership progress for a partnership ID
+    func getPartnershipProgress(partnershipId: String) async throws -> PartnershipProgress? {
+        let document = try await db.collection("partnership_progress")
+            .document(partnershipId)
+            .getDocument()
+
+        guard document.exists else { return nil }
+
+        let decoder = Firestore.Decoder()
+        return try decoder.decode(PartnershipProgress.self, from: document.data() ?? [:])
+    }
+
+    /// Updates partnership progress
+    func updatePartnershipProgress(_ progress: PartnershipProgress) async throws {
+        var updatedProgress = progress
+        updatedProgress.updatedAt = Date()
+
+        let encoder = Firestore.Encoder()
+        let progressData = try encoder.encode(updatedProgress)
+
+        try await db.collection("partnership_progress")
+            .document(progress.partnershipId)
+            .setData(progressData)
+    }
+
+    /// Marks a subtopic as completed for a partnership
+    func markSubtopicCompleted(partnershipId: String, subtopicId: Int) async throws {
+        try await db.collection("partnership_progress")
+            .document(partnershipId)
+            .updateData([
+                "completed_subtopics": FieldValue.arrayUnion([subtopicId]),
+                "updated_at": Timestamp(date: Date())
+            ])
+    }
+
+    /// Increments the current round for a partnership
+    func incrementPartnershipRound(partnershipId: String) async throws {
+        try await db.collection("partnership_progress")
+            .document(partnershipId)
+            .updateData([
+                "current_round": FieldValue.increment(Int64(1)),
+                "updated_at": Timestamp(date: Date())
+            ])
+    }
+
+    /// Marks partnership as complete
+    func markPartnershipComplete(partnershipId: String) async throws {
+        try await db.collection("partnership_progress")
+            .document(partnershipId)
+            .updateData([
+                "is_complete": true,
+                "updated_at": Timestamp(date: Date())
+            ])
+    }
+
+    /// Updates the combined topic order for a partnership (when rankings change)
+    func updateCombinedTopicOrder(partnershipId: String, newOrder: [Int]) async throws {
+        try await db.collection("partnership_progress")
+            .document(partnershipId)
+            .updateData([
+                "combined_topic_order": newOrder,
+                "updated_at": Timestamp(date: Date())
+            ])
+    }
+
+    // MARK: - Daily Subtopic Assignments
+
+    /// Gets or creates today's subtopic assignment for a partnership
+    func getTodaySubtopicAssignment(partnershipId: String) async throws -> DailySubtopicAssignment? {
+        let today = formatDate(Date())
+        let documentId = "\(partnershipId)_\(today)"
+
+        let document = try await db.collection("daily_subtopic_assignments")
+            .document(documentId)
+            .getDocument()
+
+        guard document.exists else { return nil }
+
+        let decoder = Firestore.Decoder()
+        return try decoder.decode(DailySubtopicAssignment.self, from: document.data() ?? [:])
+    }
+
+    /// Creates a daily subtopic assignment
+    func createDailySubtopicAssignment(
+        partnershipId: String,
+        subtopicId: Int
+    ) async throws -> DailySubtopicAssignment {
+        let today = formatDate(Date())
+        let documentId = "\(partnershipId)_\(today)"
+
+        let assignment = DailySubtopicAssignment(
+            id: documentId.hashValue,
+            partnershipId: partnershipId,
+            date: today,
+            subtopicId: subtopicId,
+            createdAt: Date()
+        )
+
+        let encoder = Firestore.Encoder()
+        let assignmentData = try encoder.encode(assignment)
+
+        try await db.collection("daily_subtopic_assignments")
+            .document(documentId)
+            .setData(assignmentData)
+
+        return assignment
+    }
+
+    // MARK: - Answers (Updated)
+
+    /// Gets all answers for a user in a specific subtopic
+    func getAnswersForSubtopic(userId: String, subtopicId: Int, questionIds: [Int]) async throws -> [Int: Answer] {
+        var answers: [Int: Answer] = [:]
+
+        for questionId in questionIds {
+            let documentId = Answer.createDocumentId(userId: userId, questionId: questionId)
             let document = try await db.collection("answers").document(documentId).getDocument()
 
-            guard document.exists else {
-                return nil
-            }
-
-            let decoder = Firestore.Decoder()
-            let answer = try decoder.decode(Answer.self, from: document.data() ?? [:])
-            return answer
-        } catch {
-            throw FirestoreError.unknown(error.localizedDescription)
-        }
-    }
-
-    func hasUserAnswered(userId: String, questionId: String) async throws -> Bool {
-        let answer = try await getAnswer(userId: userId, questionId: questionId)
-        return answer != nil
-    }
-
-    func getUserAnswersForQuestion(questionId: String, userIds: [String]) async throws -> [String: Answer] {
-        var answers: [String: Answer] = [:]
-
-        for userId in userIds {
-            if let answer = try await getAnswer(userId: userId, questionId: questionId) {
-                answers[userId] = answer
+            if document.exists {
+                let decoder = Firestore.Decoder()
+                let answer = try decoder.decode(Answer.self, from: document.data() ?? [:])
+                answers[questionId] = answer
             }
         }
 
         return answers
     }
 
-    // MARK: - Daily Questions
+    /// Submits an answer (updated for new Answer model)
+    func submitAnswer(
+        userId: String,
+        questionId: Int,
+        partnershipId: String,
+        answerText: String,
+        selectedOptions: [String]? = nil
+    ) async throws {
+        let documentId = Answer.createDocumentId(userId: userId, questionId: questionId)
 
-    func getTodayQuestion() async throws -> DailyQuestion? {
-        do {
-            let calendar = Calendar.current
-            let today = calendar.startOfDay(for: Date())
-            let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+        let answer = Answer(
+            id: documentId.hashValue,
+            userId: userId,
+            questionId: questionId,
+            partnershipId: partnershipId,
+            answerText: answerText,
+            selectedOptions: selectedOptions,
+            submittedAt: Date()
+        )
 
-            let querySnapshot = try await db.collection("dailyQuestions")
-                .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
-                .whereField("date", isLessThan: Timestamp(date: tomorrow))
-                .limit(to: 1)
-                .getDocuments()
+        let encoder = Firestore.Encoder()
+        let answerData = try encoder.encode(answer)
 
-            guard let document = querySnapshot.documents.first else {
-                return nil
+        try await db.collection("answers").document(documentId).setData(answerData)
+    }
+
+    /// Gets a specific answer by user and question ID
+    func getAnswer(userId: String, questionId: Int) async throws -> Answer? {
+        let documentId = Answer.createDocumentId(userId: userId, questionId: questionId)
+        let document = try await db.collection("answers").document(documentId).getDocument()
+
+        guard document.exists else { return nil }
+
+        let decoder = Firestore.Decoder()
+        return try decoder.decode(Answer.self, from: document.data() ?? [:])
+    }
+
+    /// Checks if both partners have answered all questions in a subtopic
+    func haveBothPartnersCompletedSubtopic(
+        partnerIds: [String],
+        questionIds: [Int]
+    ) async throws -> Bool {
+        for partnerId in partnerIds {
+            for questionId in questionIds {
+                let answer = try await getAnswer(userId: partnerId, questionId: questionId)
+                if answer == nil {
+                    return false
+                }
             }
-
-            let decoder = Firestore.Decoder()
-            let question = try decoder.decode(DailyQuestion.self, from: document.data())
-            return question
-        } catch {
-            throw FirestoreError.unknown(error.localizedDescription)
         }
+        return true
+    }
+
+    // MARK: - Helper Methods
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
 }

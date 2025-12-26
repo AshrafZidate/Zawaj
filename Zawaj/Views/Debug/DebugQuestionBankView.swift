@@ -4,6 +4,9 @@
 //
 //  Created on 2025-12-22.
 //
+//  DEPRECATED: Question bank upload is now handled via Node.js script (upload-questions.js)
+//  This view is kept for viewing Firestore data and debugging purposes.
+//
 
 import SwiftUI
 import Combine
@@ -28,78 +31,108 @@ struct DebugQuestionBankView: View {
                             .font(.title.weight(.bold))
                             .foregroundColor(.white)
 
-                        Text("Development utilities")
+                        Text("View Firestore data")
                             .font(.subheadline)
                             .foregroundColor(.white.opacity(0.7))
                     }
                     .padding(.top, 40)
 
-                    // Question Bank Info
-                    if let questionBank = viewModel.questionBank {
+                    // Stats from Firestore
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .padding()
+                    } else {
                         VStack(alignment: .leading, spacing: 16) {
-                            InfoRow(label: "Total Questions", value: "\(questionBank.questions.count)")
-                            InfoRow(label: "Version", value: questionBank.metadata.version)
-                            InfoRow(label: "Topics", value: "\(questionBank.metadata.topics.count)")
+                            InfoRow(label: "Topics", value: "\(viewModel.topicCount)")
+                            InfoRow(label: "Subtopics", value: "\(viewModel.subtopicCount)")
+                            InfoRow(label: "Questions", value: "\(viewModel.questionCount)")
 
-                            Divider()
-                                .background(Color.white.opacity(0.3))
+                            if !viewModel.topics.isEmpty {
+                                Divider()
+                                    .background(Color.white.opacity(0.3))
 
-                            Text("Questions Preview")
-                                .font(.headline)
-                                .foregroundColor(.white)
+                                Text("Topics")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
 
-                            ForEach(questionBank.questions.prefix(3), id: \.id) { question in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(question.topic)
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.6))
-                                    Text(question.questionText)
-                                        .font(.body)
-                                        .foregroundColor(.white)
+                                ForEach(viewModel.topics) { topic in
+                                    HStack {
+                                        Text("\(topic.order).")
+                                            .font(.caption)
+                                            .foregroundColor(.white.opacity(0.6))
+                                        Text(topic.name)
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                        Spacer()
+                                        if !topic.isRankable {
+                                            Text("(Non-rankable)")
+                                                .font(.caption)
+                                                .foregroundColor(.white.opacity(0.5))
+                                        }
+                                    }
+                                    .padding(.vertical, 4)
                                 }
-                                .padding(.vertical, 8)
+                            }
+
+                            if !viewModel.sampleQuestions.isEmpty {
+                                Divider()
+                                    .background(Color.white.opacity(0.3))
+
+                                Text("Sample Questions")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+
+                                ForEach(viewModel.sampleQuestions) { question in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text("Q\(question.id)")
+                                                .font(.caption.weight(.bold))
+                                                .foregroundColor(.white.opacity(0.6))
+                                            Text(question.questionType == .singleChoice ? "Single" : "Multi")
+                                                .font(.caption)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(
+                                                    question.questionType == .singleChoice ?
+                                                    Color.blue.opacity(0.3) : Color.purple.opacity(0.3),
+                                                    in: Capsule()
+                                                )
+                                                .foregroundColor(.white)
+                                        }
+                                        Text(question.questionText)
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                            .lineLimit(2)
+                                    }
+                                    .padding(.vertical, 8)
+                                }
                             }
                         }
                         .padding(20)
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
                     }
 
-                    // Upload Button
+                    // Refresh Button
                     Button(action: {
                         Task {
-                            await viewModel.uploadToFirestore()
+                            await viewModel.loadFromFirestore()
                         }
                     }) {
                         HStack(spacing: 12) {
-                            if viewModel.isUploading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            } else {
-                                Image(systemName: "cloud.fill")
-                                    .font(.system(size: 20))
-                            }
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 20))
 
-                            Text(viewModel.isUploading ? "Uploading..." : "Upload to Firestore")
+                            Text("Refresh from Firestore")
                                 .font(.body.weight(.semibold))
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(
-                            viewModel.isUploading ? Color.gray : Color(red: 0.94, green: 0.26, blue: 0.42),
+                            Color(red: 0.94, green: 0.26, blue: 0.42),
                             in: RoundedRectangle(cornerRadius: 12)
                         )
-                    }
-                    .disabled(viewModel.isUploading)
-
-                    // Status Messages
-                    if let statusMessage = viewModel.statusMessage {
-                        Text(statusMessage)
-                            .font(.body)
-                            .foregroundColor(viewModel.uploadSuccess ? .green : .white)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
 
                     if let error = viewModel.error {
@@ -111,22 +144,22 @@ struct DebugQuestionBankView: View {
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
 
-                    // Warning
+                    // Info
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 8) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.yellow)
-                            Text("Warning")
+                            Image(systemName: "info.circle.fill")
+                                .foregroundColor(.blue)
+                            Text("Upload Info")
                                 .font(.headline)
-                                .foregroundColor(.yellow)
+                                .foregroundColor(.blue)
                         }
 
-                        Text("Only upload the question bank once. Running this multiple times will overwrite existing questions in Firestore.")
+                        Text("Question bank data is uploaded via the Node.js script at /Resources/upload-questions.js. Run 'node upload-questions.js' from the Resources directory.")
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.8))
                     }
                     .padding()
-                    .background(Color.yellow.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 100)
@@ -143,7 +176,9 @@ struct DebugQuestionBankView: View {
             }
         }
         .onAppear {
-            viewModel.loadQuestionBank()
+            Task {
+                await viewModel.loadFromFirestore()
+            }
         }
     }
 }
@@ -168,42 +203,69 @@ struct InfoRow: View {
 // MARK: - ViewModel
 
 class DebugQuestionBankViewModel: ObservableObject {
-    @Published var questionBank: QuestionBankService.QuestionBankJSON?
-    @Published var isUploading: Bool = false
-    @Published var statusMessage: String?
+    @Published var topics: [Topic] = []
+    @Published var sampleQuestions: [Question] = []
+    @Published var topicCount: Int = 0
+    @Published var subtopicCount: Int = 0
+    @Published var questionCount: Int = 0
+    @Published var isLoading: Bool = false
     @Published var error: String?
-    @Published var uploadSuccess: Bool = false
 
     private let questionBankService = QuestionBankService()
 
-    func loadQuestionBank() {
-        questionBank = questionBankService.loadQuestionBankFromJSON()
-
-        if questionBank == nil {
-            error = "Failed to load question_bank.json. Make sure it's added to the Xcode project."
-        }
-    }
-
-    func uploadToFirestore() async {
+    func loadFromFirestore() async {
         await MainActor.run {
-            isUploading = true
-            statusMessage = nil
+            isLoading = true
             error = nil
-            uploadSuccess = false
         }
 
         do {
-            try await questionBankService.uploadQuestionBankToFirestore()
+            // Fetch topics
+            let fetchedTopics = try await questionBankService.fetchAllTopics()
+
+            // Fetch subtopic count
+            var totalSubtopics = 0
+            for topic in fetchedTopics {
+                let subtopics = try await questionBankService.fetchSubtopics(forTopicId: topic.id)
+                totalSubtopics += subtopics.count
+            }
+
+            // Fetch sample questions from first subtopic
+            var sampleQs: [Question] = []
+            if let firstTopic = fetchedTopics.first {
+                let subtopics = try await questionBankService.fetchSubtopics(forTopicId: firstTopic.id)
+                if let firstSubtopic = subtopics.first {
+                    sampleQs = try await questionBankService.fetchQuestions(forSubtopicId: firstSubtopic.id, gender: nil)
+                    sampleQs = Array(sampleQs.prefix(3))
+                }
+            }
+
+            // Get total question count (estimate from first few subtopics)
+            var totalQuestions = 0
+            for topic in fetchedTopics.prefix(3) {
+                let subtopics = try await questionBankService.fetchSubtopics(forTopicId: topic.id)
+                for subtopic in subtopics {
+                    let questions = try await questionBankService.fetchQuestions(forSubtopicId: subtopic.id, gender: nil)
+                    totalQuestions += questions.count
+                }
+            }
+            // Extrapolate for remaining topics
+            if fetchedTopics.count > 3 {
+                totalQuestions = totalQuestions * fetchedTopics.count / 3
+            }
 
             await MainActor.run {
-                uploadSuccess = true
-                statusMessage = "✅ Successfully uploaded \(questionBank?.questions.count ?? 0) questions to Firestore!"
-                isUploading = false
+                self.topics = fetchedTopics
+                self.sampleQuestions = sampleQs
+                self.topicCount = fetchedTopics.count
+                self.subtopicCount = totalSubtopics
+                self.questionCount = totalQuestions
+                self.isLoading = false
             }
         } catch {
             await MainActor.run {
-                self.error = "Upload failed: \(error.localizedDescription)"
-                isUploading = false
+                self.error = "Failed to load: \(error.localizedDescription)"
+                self.isLoading = false
             }
         }
     }

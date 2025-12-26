@@ -1,0 +1,5576 @@
+{
+  "topics": [
+    {
+      "id": 1,
+      "name": "Religious Values",
+      "order": 1,
+      "is_rankable": true
+    },
+    {
+      "id": 2,
+      "name": "Personality and Emotional Compatibility",
+      "order": 2,
+      "is_rankable": true
+    },
+    {
+      "id": 3,
+      "name": "Lifestyle and Long-Term Goals",
+      "order": 3,
+      "is_rankable": true
+    },
+    {
+      "id": 4,
+      "name": "Views on Marriage Roles and Responsibilities",
+      "order": 4,
+      "is_rankable": true
+    },
+    {
+      "id": 5,
+      "name": "Family Expectations, In-Laws, and Boundaries",
+      "order": 5,
+      "is_rankable": true
+    },
+    {
+      "id": 6,
+      "name": "Parenting, Children, and Family Building",
+      "order": 6,
+      "is_rankable": true
+    },
+    {
+      "id": 7,
+      "name": "Conflict Resolution, Disagreements, and Repair",
+      "order": 7,
+      "is_rankable": true
+    },
+    {
+      "id": 8,
+      "name": "Finances, Provision, and Money Attitudes",
+      "order": 8,
+      "is_rankable": true
+    },
+    {
+      "id": 9,
+      "name": "Health, Well-being, and Personal Growth",
+      "order": 9,
+      "is_rankable": false
+    },
+    {
+      "id": 10,
+      "name": "Understanding the Woman's Menstrual Cycle",
+      "order": 10,
+      "is_rankable": false
+    }
+  ],
+  "subtopics": [
+    {
+      "id": 1,
+      "topic_id": 1,
+      "name": "Core Relationship With Islam",
+      "order": 1
+    },
+    {
+      "id": 2,
+      "topic_id": 1,
+      "name": "Practice and Daily Worship",
+      "order": 2
+    },
+    {
+      "id": 3,
+      "topic_id": 1,
+      "name": "Growth, Intentions, and Direction",
+      "order": 3
+    },
+    {
+      "id": 4,
+      "topic_id": 1,
+      "name": "Halal, Haram, and Boundaries",
+      "order": 4
+    },
+    {
+      "id": 5,
+      "topic_id": 1,
+      "name": "Islamic Knowledge and Learning",
+      "order": 5
+    },
+    {
+      "id": 6,
+      "topic_id": 1,
+      "name": "Community, Environment, and Identity",
+      "order": 6
+    },
+    {
+      "id": 7,
+      "topic_id": 1,
+      "name": "Marriage, Deen, and Expectations",
+      "order": 7
+    },
+    {
+      "id": 8,
+      "topic_id": 1,
+      "name": "Differences and Deal-Breakers",
+      "order": 8
+    },
+    {
+      "id": 9,
+      "topic_id": 2,
+      "name": "Emotional Needs and Connection",
+      "order": 1
+    },
+    {
+      "id": 10,
+      "topic_id": 2,
+      "name": "Stress, Pressure, and Regulation",
+      "order": 2
+    },
+    {
+      "id": 11,
+      "topic_id": 2,
+      "name": "Communication Style",
+      "order": 3
+    },
+    {
+      "id": 12,
+      "topic_id": 2,
+      "name": "Affection and Reassurance",
+      "order": 4
+    },
+    {
+      "id": 13,
+      "topic_id": 2,
+      "name": "Temperament and Personality Fit",
+      "order": 5
+    },
+    {
+      "id": 14,
+      "topic_id": 2,
+      "name": "Conflict Triggers and Repair",
+      "order": 6
+    },
+    {
+      "id": 15,
+      "topic_id": 2,
+      "name": "Emotional Maturity and Trust",
+      "order": 7
+    },
+    {
+      "id": 16,
+      "topic_id": 3,
+      "name": "Day-to-Day Lifestyle Alignment",
+      "order": 1
+    },
+    {
+      "id": 17,
+      "topic_id": 3,
+      "name": "Social Life and Balance",
+      "order": 2
+    },
+    {
+      "id": 18,
+      "topic_id": 3,
+      "name": "Work, Ambition, and Time Priorities",
+      "order": 3
+    },
+    {
+      "id": 19,
+      "topic_id": 3,
+      "name": "Financial Lifestyle (Living Style)",
+      "order": 4
+    },
+    {
+      "id": 20,
+      "topic_id": 3,
+      "name": "Location, Living Arrangements, and Mobility",
+      "order": 5
+    },
+    {
+      "id": 21,
+      "topic_id": 3,
+      "name": "Pace of Life and Energy Levels",
+      "order": 6
+    },
+    {
+      "id": 22,
+      "topic_id": 3,
+      "name": "Planning vs Flexibility",
+      "order": 7
+    },
+    {
+      "id": 23,
+      "topic_id": 3,
+      "name": "Travel, Downtime, and Enjoyment",
+      "order": 8
+    },
+    {
+      "id": 24,
+      "topic_id": 3,
+      "name": "Seasons of Life and Change",
+      "order": 9
+    },
+    {
+      "id": 25,
+      "topic_id": 3,
+      "name": "Expectations of Marriage and the Future",
+      "order": 10
+    },
+    {
+      "id": 26,
+      "topic_id": 3,
+      "name": "Deal-Breakers and Flexibility",
+      "order": 11
+    },
+    {
+      "id": 27,
+      "topic_id": 4,
+      "name": "Core View of Marriage Roles",
+      "order": 1
+    },
+    {
+      "id": 28,
+      "topic_id": 4,
+      "name": "Leadership, Authority, and Decision-Making",
+      "order": 2
+    },
+    {
+      "id": 29,
+      "topic_id": 4,
+      "name": "Domestic Responsibilities",
+      "order": 3
+    },
+    {
+      "id": 30,
+      "topic_id": 4,
+      "name": "Independence and Personal Space",
+      "order": 4
+    },
+    {
+      "id": 31,
+      "topic_id": 4,
+      "name": "Obedience, Compromise, and Flexibility",
+      "order": 5
+    },
+    {
+      "id": 32,
+      "topic_id": 4,
+      "name": "Gender Expectations and Cultural Influence",
+      "order": 6
+    },
+    {
+      "id": 33,
+      "topic_id": 4,
+      "name": "Respect, Boundaries, and Mutual Regard",
+      "order": 7
+    },
+    {
+      "id": 34,
+      "topic_id": 4,
+      "name": "Children and Role Modelling",
+      "order": 8
+    },
+    {
+      "id": 35,
+      "topic_id": 4,
+      "name": "Deal-Breakers and Clarity",
+      "order": 9
+    },
+    {
+      "id": 36,
+      "topic_id": 5,
+      "name": "Importance of Family",
+      "order": 1
+    },
+    {
+      "id": 37,
+      "topic_id": 5,
+      "name": "Parental Influence and Authority",
+      "order": 2
+    },
+    {
+      "id": 38,
+      "topic_id": 5,
+      "name": "Living Arrangements and Proximity",
+      "order": 3
+    },
+    {
+      "id": 39,
+      "topic_id": 5,
+      "name": "In-Law Relationships",
+      "order": 4
+    },
+    {
+      "id": 40,
+      "topic_id": 5,
+      "name": "Boundaries and Privacy",
+      "order": 5
+    },
+    {
+      "id": 41,
+      "topic_id": 5,
+      "name": "Conflict Involving Family",
+      "order": 6
+    },
+    {
+      "id": 42,
+      "topic_id": 5,
+      "name": "Cultural Expectations and Pressure",
+      "order": 7
+    },
+    {
+      "id": 43,
+      "topic_id": 5,
+      "name": "Siblings and Wider Family",
+      "order": 8
+    },
+    {
+      "id": 44,
+      "topic_id": 5,
+      "name": "Loyalty, Prioritisation, and Unity",
+      "order": 9
+    },
+    {
+      "id": 45,
+      "topic_id": 5,
+      "name": "Scenarios and Reality Checks",
+      "order": 10
+    },
+    {
+      "id": 46,
+      "topic_id": 5,
+      "name": "Deal-Breakers and Clarity",
+      "order": 11
+    },
+    {
+      "id": 47,
+      "topic_id": 6,
+      "name": "Desire for Children",
+      "order": 1
+    },
+    {
+      "id": 48,
+      "topic_id": 6,
+      "name": "Parenting Philosophy and Values",
+      "order": 2
+    },
+    {
+      "id": 49,
+      "topic_id": 6,
+      "name": "Discipline and Boundaries",
+      "order": 3
+    },
+    {
+      "id": 50,
+      "topic_id": 6,
+      "name": "Roles, Sacrifices, and Responsibility",
+      "order": 4
+    },
+    {
+      "id": 51,
+      "topic_id": 6,
+      "name": "Emotional Readiness and Patience",
+      "order": 5
+    },
+    {
+      "id": 52,
+      "topic_id": 6,
+      "name": "Health, Fertility, and Reality Scenarios",
+      "order": 6
+    },
+    {
+      "id": 53,
+      "topic_id": 6,
+      "name": "Environment and Upbringing",
+      "order": 7
+    },
+    {
+      "id": 54,
+      "topic_id": 6,
+      "name": "Boundaries and External Influence",
+      "order": 8
+    },
+    {
+      "id": 55,
+      "topic_id": 6,
+      "name": "Long-Term Vision and Deal-Breakers",
+      "order": 9
+    },
+    {
+      "id": 56,
+      "topic_id": 7,
+      "name": "Core Conflict Orientation",
+      "order": 1
+    },
+    {
+      "id": 57,
+      "topic_id": 7,
+      "name": "Emotional Regulation During Conflict",
+      "order": 2
+    },
+    {
+      "id": 58,
+      "topic_id": 7,
+      "name": "Timing, Space, and Processing",
+      "order": 3
+    },
+    {
+      "id": 59,
+      "topic_id": 7,
+      "name": "Communication Under Disagreement",
+      "order": 4
+    },
+    {
+      "id": 60,
+      "topic_id": 7,
+      "name": "Apologies, Accountability, and Repair",
+      "order": 5
+    },
+    {
+      "id": 61,
+      "topic_id": 7,
+      "name": "Patterns, Triggers, and Escalation",
+      "order": 6
+    },
+    {
+      "id": 62,
+      "topic_id": 7,
+      "name": "Silent Treatment, Avoidance, and Pausing",
+      "order": 7
+    },
+    {
+      "id": 63,
+      "topic_id": 7,
+      "name": "Seeking Help and Support",
+      "order": 8
+    },
+    {
+      "id": 64,
+      "topic_id": 7,
+      "name": "Learning From Conflict",
+      "order": 9
+    },
+    {
+      "id": 65,
+      "topic_id": 7,
+      "name": "Scenarios and Safety",
+      "order": 10
+    },
+    {
+      "id": 66,
+      "topic_id": 8,
+      "name": "Core Money Mindset",
+      "order": 1
+    },
+    {
+      "id": 67,
+      "topic_id": 8,
+      "name": "Provision and Responsibility",
+      "order": 2
+    },
+    {
+      "id": 68,
+      "topic_id": 8,
+      "name": "Spending, Saving, Lifestyle",
+      "order": 3
+    },
+    {
+      "id": 69,
+      "topic_id": 8,
+      "name": "Shared vs Separate Finances",
+      "order": 4
+    },
+    {
+      "id": 70,
+      "topic_id": 8,
+      "name": "Debt, Risk, and Responsibility",
+      "order": 5
+    },
+    {
+      "id": 71,
+      "topic_id": 8,
+      "name": "Financial Stress and Conflict",
+      "order": 6
+    },
+    {
+      "id": 72,
+      "topic_id": 8,
+      "name": "Work, Sacrifice, Trade-Offs",
+      "order": 7
+    },
+    {
+      "id": 73,
+      "topic_id": 8,
+      "name": "Generosity, Zakat, Giving",
+      "order": 8
+    },
+    {
+      "id": 74,
+      "topic_id": 8,
+      "name": "Future Planning and Deal-Breakers",
+      "order": 9
+    },
+    {
+      "id": 75,
+      "topic_id": 9,
+      "name": "Overall Health Orientation",
+      "order": 1
+    },
+    {
+      "id": 76,
+      "topic_id": 9,
+      "name": "Physical Health Habits",
+      "order": 2
+    },
+    {
+      "id": 77,
+      "topic_id": 9,
+      "name": "Mental and Emotional Well-being",
+      "order": 3
+    },
+    {
+      "id": 78,
+      "topic_id": 9,
+      "name": "Support and Expectations in Marriage",
+      "order": 4
+    },
+    {
+      "id": 79,
+      "topic_id": 9,
+      "name": "Boundaries, Capacity, Burnout",
+      "order": 5
+    },
+    {
+      "id": 80,
+      "topic_id": 9,
+      "name": "Healing, Past Experiences, Growth",
+      "order": 6
+    },
+    {
+      "id": 81,
+      "topic_id": 9,
+      "name": "Seeking Help and Support Systems",
+      "order": 7
+    },
+    {
+      "id": 82,
+      "topic_id": 9,
+      "name": "Growth Mindset in Marriage",
+      "order": 8
+    },
+    {
+      "id": 83,
+      "topic_id": 9,
+      "name": "Habits, Discipline, Consistency",
+      "order": 9
+    },
+    {
+      "id": 84,
+      "topic_id": 9,
+      "name": "Difficult Seasons and Sustainability",
+      "order": 10
+    },
+    {
+      "id": 85,
+      "topic_id": 10,
+      "name": "Men's Version (Husband Perspective)",
+      "order": 1
+    },
+    {
+      "id": 86,
+      "topic_id": 10,
+      "name": "Women's Version (Wife Perspective)",
+      "order": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "subtopic_id": 1,
+      "question_text": "Which statement best describes your relationship with Islam right now?",
+      "question_type": "open_ended",
+      "options": [
+        "Islam guides almost all my decisions",
+        "Islam is very important, but I struggle with consistency",
+        "Islam is important, but not central to my daily life",
+        "Islam is mainly cultural or identity-based"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 2,
+      "subtopic_id": 1,
+      "question_text": "How do you feel about where you are religiously at this stage of life?",
+      "question_type": "single_choice",
+      "options": [
+        "At peace and content",
+        "Mostly content with some concern",
+        "Not content and struggling",
+        "Unsure or conflicted"
+      ],
+      "order": 2,
+      "gender": null,
+      "follow_ups": [
+        {
+          "answerIndices": [
+            1,
+            2,
+            3
+          ],
+          "questionId": 3
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "subtopic_id": 1,
+      "question_text": "If you feel unsettled religiously, what best explains why?",
+      "question_type": "open_ended",
+      "options": [
+        "Lack of consistency",
+        "Knowledge gaps",
+        "Life circumstances or stress",
+        "Spiritual doubts",
+        "I am still reflecting"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 4,
+      "subtopic_id": 2,
+      "question_text": "How often do you pray the five daily prayers?",
+      "question_type": "single_choice",
+      "options": [
+        "Consistently",
+        "Most days",
+        "Occasionally",
+        "Rarely"
+      ],
+      "order": 1,
+      "gender": null,
+      "follow_ups": [
+        {
+          "answerIndices": [
+            1,
+            2,
+            3
+          ],
+          "questionId": 5
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "subtopic_id": 2,
+      "question_text": "If you miss prayers, what is the most common reason?",
+      "question_type": "open_ended",
+      "options": [
+        "Time or schedule",
+        "Discipline or motivation",
+        "Habit still forming",
+        "I do not prioritise them currently"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 6,
+      "subtopic_id": 2,
+      "question_text": "How important is regular prayer in a spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Non-negotiable",
+        "Very important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 7,
+      "subtopic_id": 2,
+      "question_text": "How do you currently engage with the Qur’an?",
+      "question_type": "open_ended",
+      "options": [
+        "Regular reading and reflection",
+        "Occasional reading",
+        "Mostly during Ramadan",
+        "Rarely"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 8,
+      "subtopic_id": 2,
+      "question_text": "What role should the Qur’an play in your household?",
+      "question_type": "open_ended",
+      "options": [
+        "Central and shared",
+        "Regular but personal",
+        "Occasional reference",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 9,
+      "subtopic_id": 3,
+      "question_text": "How do you view spiritual growth within marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "A shared responsibility",
+        "Individual growth with mutual support",
+        "Important but secondary",
+        "Not something I have considered deeply"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 10,
+      "subtopic_id": 3,
+      "question_text": "Do you actively try to improve your religious practice?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, consistently",
+        "Yes, but irregularly",
+        "Occasionally",
+        "Not currently"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 11,
+      "subtopic_id": 3,
+      "question_text": "What most motivates your spiritual growth?",
+      "question_type": "open_ended",
+      "options": [
+        "Personal conviction",
+        "Accountability and akhirah",
+        "Family or community",
+        "Life events or hardship"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 12,
+      "subtopic_id": 3,
+      "question_text": "Would you marry someone more practising than you?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, comfortably",
+        "Possibly, with adjustment",
+        "No",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 13,
+      "subtopic_id": 4,
+      "question_text": "How important is halal income to you?",
+      "question_type": "open_ended",
+      "options": [
+        "Non-negotiable",
+        "Very important",
+        "Somewhat important",
+        "Not a priority"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 14,
+      "subtopic_id": 4,
+      "question_text": "Would you leave an income source if it was clearly haram?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Possibly",
+        "No"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 15,
+      "subtopic_id": 4,
+      "question_text": "How do you approach modesty in dress and behaviour?",
+      "question_type": "open_ended",
+      "options": [
+        "I actively maintain Islamic modesty",
+        "I value modesty with flexibility",
+        "I see it as personal",
+        "I do not think much about it"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 16,
+      "subtopic_id": 4,
+      "question_text": "How important is modesty in a spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Non-negotiable",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 17,
+      "subtopic_id": 4,
+      "question_text": "How do you approach gender interaction boundaries?",
+      "question_type": "open_ended",
+      "options": [
+        "Very cautious",
+        "Mindful but flexible",
+        "Generally relaxed",
+        "Not an issue for me"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 18,
+      "subtopic_id": 5,
+      "question_text": "How do you currently seek Islamic knowledge?",
+      "question_type": "open_ended",
+      "options": [
+        "Regular classes or study",
+        "Occasional self-learning",
+        "Online talks or social media",
+        "Rarely"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 19,
+      "subtopic_id": 5,
+      "question_text": "How important is ongoing Islamic learning after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 20,
+      "subtopic_id": 5,
+      "question_text": "Would you like to attend Islamic learning with your spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Maybe",
+        "No"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 21,
+      "subtopic_id": 6,
+      "question_text": "How connected do you feel to your local Muslim community?",
+      "question_type": "open_ended",
+      "options": [
+        "Very connected",
+        "Somewhat connected",
+        "Loosely connected",
+        "Not connected"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 22,
+      "subtopic_id": 6,
+      "question_text": "How important is raising a family in a visibly Muslim environment?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 23,
+      "subtopic_id": 6,
+      "question_text": "Would you prioritise living near a mosque?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Maybe",
+        "No"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 24,
+      "subtopic_id": 7,
+      "question_text": "What role should a spouse play in your religious practice?",
+      "question_type": "open_ended",
+      "options": [
+        "Actively encourage and remind",
+        "Support without pressure",
+        "Stay out of it",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 25,
+      "subtopic_id": 7,
+      "question_text": "How would you feel if your spouse reminded you of Islamic obligations?",
+      "question_type": "open_ended",
+      "options": [
+        "I would appreciate it",
+        "I would accept it sometimes",
+        "I would feel uncomfortable",
+        "I would not accept it"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 26,
+      "subtopic_id": 7,
+      "question_text": "Should marriage make practising Islam easier?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Ideally",
+        "Not necessarily",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 27,
+      "subtopic_id": 8,
+      "question_text": "Which religious differences would be difficult to accept? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Major differences in practice",
+        "Disregard for obligations",
+        "Conflicting values",
+        "None",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 28,
+      "subtopic_id": 8,
+      "question_text": "Which religious practices are non-negotiable for you? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Prayer",
+        "Halal income",
+        "Modesty",
+        "Islamic upbringing for children",
+        "None specified"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 29,
+      "subtopic_id": 8,
+      "question_text": "How do you feel about differing madhhab or scholarly opinions?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable with differences",
+        "Comfortable if aligned on fundamentals",
+        "Prefer strong alignment",
+        "Not comfortable"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 30,
+      "subtopic_id": 8,
+      "question_text": "If a religious disagreement occurred, how should it be resolved?",
+      "question_type": "open_ended",
+      "options": [
+        "Discussion and understanding",
+        "Consulting a trusted scholar",
+        "Taking the cautious opinion",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 31,
+      "subtopic_id": 9,
+      "question_text": "When you feel loved, what is usually happening? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "I feel understood",
+        "I feel cared for through actions",
+        "I feel prioritised",
+        "Quality time",
+        "Emotional safety"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 32,
+      "subtopic_id": 9,
+      "question_text": "How often do you need emotional check-ins?",
+      "question_type": "open_ended",
+      "options": [
+        "Daily",
+        "A few times a week",
+        "Weekly",
+        "Only when needed"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 33,
+      "subtopic_id": 9,
+      "question_text": "When struggling emotionally, what do you want most?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfort and reassurance",
+        "Practical solutions",
+        "Space",
+        "Dua and spiritual support"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 34,
+      "subtopic_id": 9,
+      "question_text": "What responses feel most harmful when you are upset? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Being dismissed",
+        "Being rushed",
+        "Being criticised",
+        "Being ignored",
+        "Minimising feelings"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 35,
+      "subtopic_id": 10,
+      "question_text": "When stressed, what is your natural response?",
+      "question_type": "open_ended",
+      "options": [
+        "Talk it out",
+        "Withdraw",
+        "Become irritable",
+        "Go quiet",
+        "Distract myself"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 36,
+      "subtopic_id": 10,
+      "question_text": "How long do you usually need before discussing stress calmly?",
+      "question_type": "open_ended",
+      "options": [
+        "Less than an hour",
+        "A few hours",
+        "A day",
+        "Several days"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 37,
+      "subtopic_id": 10,
+      "question_text": "How often do you reflect on your behaviour after conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Always",
+        "Often",
+        "Sometimes",
+        "Rarely"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 38,
+      "subtopic_id": 10,
+      "question_text": "How comfortable are you apologising first?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "I struggle",
+        "I rarely do"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 39,
+      "subtopic_id": 11,
+      "question_text": "When something bothers you, what do you usually do?",
+      "question_type": "open_ended",
+      "options": [
+        "Address it quickly",
+        "Wait and see",
+        "Drop hints",
+        "Keep it inside"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 40,
+      "subtopic_id": 11,
+      "question_text": "What communication style feels best from a spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Gentle",
+        "Direct",
+        "Playful",
+        "Detailed"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 41,
+      "subtopic_id": 11,
+      "question_text": "How do you prefer to resolve misunderstandings?",
+      "question_type": "open_ended",
+      "options": [
+        "Immediate discussion",
+        "Time, then talk",
+        "Writing first",
+        "Solution-focused"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 42,
+      "subtopic_id": 12,
+      "question_text": "How affectionate are you naturally?",
+      "question_type": "open_ended",
+      "options": [
+        "Very",
+        "Moderately",
+        "Not very",
+        "Depends on the person"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 43,
+      "subtopic_id": 12,
+      "question_text": "Which forms of affection feel most natural? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Verbal reassurance",
+        "Compliments",
+        "Quality time",
+        "Gestures",
+        "Physical affection"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 44,
+      "subtopic_id": 12,
+      "question_text": "How often do you need reassurance?",
+      "question_type": "open_ended",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Rarely"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 45,
+      "subtopic_id": 13,
+      "question_text": "Which best describes your temperament?",
+      "question_type": "open_ended",
+      "options": [
+        "Calm",
+        "Energetic",
+        "Serious",
+        "Sensitive",
+        "Driven"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 46,
+      "subtopic_id": 13,
+      "question_text": "How social are you?",
+      "question_type": "open_ended",
+      "options": [
+        "Very social",
+        "Moderately social",
+        "Mostly introverted",
+        "Varies"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 47,
+      "subtopic_id": 13,
+      "question_text": "How do you prefer to recharge?",
+      "question_type": "open_ended",
+      "options": [
+        "Alone time",
+        "Time with spouse",
+        "Friends or family",
+        "Activity",
+        "Entertainment"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 48,
+      "subtopic_id": 14,
+      "question_text": "What triggers you most in conflict? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Feeling unheard",
+        "Disrespected",
+        "Controlled",
+        "Criticised",
+        "Ignored"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 49,
+      "subtopic_id": 14,
+      "question_text": "What matters most in conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Being understood",
+        "Finding a solution",
+        "Restoring calm",
+        "Being right"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 50,
+      "subtopic_id": 14,
+      "question_text": "What helps repair after conflict? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Apology",
+        "Affection",
+        "Calm discussion",
+        "Space",
+        "A plan"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 51,
+      "subtopic_id": 15,
+      "question_text": "How open are you to feedback from a spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Somewhat open",
+        "Depends on tone",
+        "Not very open"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 52,
+      "subtopic_id": 15,
+      "question_text": "When wrong, what is your usual pattern?",
+      "question_type": "open_ended",
+      "options": [
+        "Admit quickly",
+        "Need time",
+        "Struggle to admit",
+        "Rarely think I am wrong"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 53,
+      "subtopic_id": 16,
+      "question_text": "Which description feels closest to how you actually live most days?",
+      "question_type": "open_ended",
+      "options": [
+        "Structured and routine-based",
+        "Balanced between routine and flexibility",
+        "Spontaneous and flexible",
+        "Busy and fast-paced",
+        "Calm and slow-paced"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 54,
+      "subtopic_id": 16,
+      "question_text": "Which parts of your routine are non-negotiable? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Prayer / religious commitments",
+        "Work / study responsibilities",
+        "Family obligations",
+        "Health / fitness habits",
+        "Personal alone time",
+        "Social commitments",
+        "I do not have non-negotiables",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 55,
+      "subtopic_id": 16,
+      "question_text": "How do you prefer weekday evenings?",
+      "question_type": "open_ended",
+      "options": [
+        "Quiet time at home",
+        "Time together talking/relaxing",
+        "Going out/socialising",
+        "Catching up on work/projects"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 56,
+      "subtopic_id": 16,
+      "question_text": "How much time together do you expect on a normal weekday?",
+      "question_type": "open_ended",
+      "options": [
+        "Most of the evening",
+        "Some intentional time",
+        "Minimal time due to responsibilities",
+        "It varies a lot"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 57,
+      "subtopic_id": 16,
+      "question_text": "What makes time together feel meaningful to you most?",
+      "question_type": "open_ended",
+      "options": [
+        "Focused conversation",
+        "Shared activities",
+        "Physical presence (same space)",
+        "Acts of care/service",
+        "Quality over quantity",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 58,
+      "subtopic_id": 17,
+      "question_text": "How social are you in your lifestyle?",
+      "question_type": "open_ended",
+      "options": [
+        "Very social, often out",
+        "Moderately social",
+        "Mostly home-based",
+        "It varies by season/mood"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 59,
+      "subtopic_id": 17,
+      "question_text": "How often do you expect to see friends or extended family?",
+      "question_type": "open_ended",
+      "options": [
+        "Multiple times a week",
+        "Weekly",
+        "Occasionally",
+        "Rarely"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 60,
+      "subtopic_id": 17,
+      "question_text": "How important is it that your spouse joins you in social activities?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Nice to have",
+        "Not important"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 61,
+      "subtopic_id": 18,
+      "question_text": "How would you describe your relationship with work or career?",
+      "question_type": "open_ended",
+      "options": [
+        "Central to my life",
+        "Important but balanced",
+        "Mainly a means to support life",
+        "Currently uncertain or transitioning"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 62,
+      "subtopic_id": 18,
+      "question_text": "How many hours a week do you realistically expect to work long-term?",
+      "question_type": "open_ended",
+      "options": [
+        "Under 40",
+        "40–50",
+        "50–60",
+        "More than 60"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 63,
+      "subtopic_id": 18,
+      "question_text": "If you expect 50+ hours, how do you plan to protect time for marriage/family?",
+      "question_type": "open_ended",
+      "options": [
+        "Fixed scheduling and boundaries",
+        "Intentional quality time even if limited",
+        "Reduce workload after marriage/children",
+        "I am unsure how I would manage this"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 64,
+      "subtopic_id": 18,
+      "question_text": "How do you feel about a spouse being more career-driven than you?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable and supportive",
+        "Comfortable with boundaries",
+        "Uncomfortable",
+        "Depends on circumstances"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 65,
+      "subtopic_id": 19,
+      "question_text": "Which best describes your spending style?",
+      "question_type": "open_ended",
+      "options": [
+        "Very careful and budgeted",
+        "Generally mindful",
+        "Flexible and experience-focused",
+        "I do not track closely"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 66,
+      "subtopic_id": 19,
+      "question_text": "What lifestyle matters more to you?",
+      "question_type": "open_ended",
+      "options": [
+        "Financial security and stability",
+        "Comfort and balance",
+        "Experiences and memories",
+        "Simplicity and minimalism"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 67,
+      "subtopic_id": 19,
+      "question_text": "What would you consider “overspending” in marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Any spending that creates debt or instability",
+        "Large purchases without discussion",
+        "Spending that blocks long-term goals",
+        "It depends on income and context",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 68,
+      "subtopic_id": 20,
+      "question_text": "Where do you ideally see yourself living after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Close to my family",
+        "Close to work opportunities",
+        "In a Muslim community",
+        "Somewhere new",
+        "I am flexible"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 69,
+      "subtopic_id": 20,
+      "question_text": "How important is staying close to your current city or country?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 70,
+      "subtopic_id": 20,
+      "question_text": "How open are you to relocating for your spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open with discussion",
+        "Reluctant",
+        "Not open"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 71,
+      "subtopic_id": 20,
+      "question_text": "If you are reluctant/not open, what would make relocation possible? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Better Islamic environment",
+        "Better career opportunity",
+        "Financial stability",
+        "Proximity to family (either side)",
+        "Clear timeframe (temporary move)",
+        "I would not relocate"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 72,
+      "subtopic_id": 21,
+      "question_text": "Which pace of life suits you best?",
+      "question_type": "open_ended",
+      "options": [
+        "Fast and productive",
+        "Balanced and steady",
+        "Slow and intentional"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 73,
+      "subtopic_id": 21,
+      "question_text": "How do you usually feel at the end of most days?",
+      "question_type": "open_ended",
+      "options": [
+        "Energised",
+        "Content but tired",
+        "Drained",
+        "It varies a lot"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 74,
+      "subtopic_id": 21,
+      "question_text": "What helps you reset when life feels overwhelming? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Time alone",
+        "Prayer/dua/Qur’an",
+        "Sleep/rest",
+        "Exercise/activity",
+        "Talking it out",
+        "Entertainment/distraction",
+        "Structured planning",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 75,
+      "subtopic_id": 22,
+      "question_text": "How do you feel about long-term planning?",
+      "question_type": "open_ended",
+      "options": [
+        "I like clear plans and timelines",
+        "I prefer loose plans with flexibility",
+        "I avoid planning far ahead"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 76,
+      "subtopic_id": 22,
+      "question_text": "How do you approach big life decisions most often?",
+      "question_type": "open_ended",
+      "options": [
+        "Carefully and analytically",
+        "Emotionally and intuitively",
+        "Through prayer and reflection",
+        "By seeking advice"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 77,
+      "subtopic_id": 22,
+      "question_text": "What kind of decision-maker do you want your spouse to be?",
+      "question_type": "open_ended",
+      "options": [
+        "Analytical and structured",
+        "Intuitive and values-led",
+        "Spiritually reflective",
+        "Advice-seeking and consultative",
+        "A balance of these",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 78,
+      "subtopic_id": 23,
+      "question_text": "How important is travel to you?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Nice to have occasionally",
+        "Not important"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 79,
+      "subtopic_id": 23,
+      "question_text": "What kind of trips do you enjoy most?",
+      "question_type": "open_ended",
+      "options": [
+        "Relaxing and slow",
+        "Adventurous",
+        "Cultural and educational",
+        "Visiting family"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 80,
+      "subtopic_id": 23,
+      "question_text": "How often would you ideally like to travel as a couple?",
+      "question_type": "open_ended",
+      "options": [
+        "Multiple times a year",
+        "Once a year",
+        "Occasionally",
+        "Rarely"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 81,
+      "subtopic_id": 24,
+      "question_text": "How do you handle major life changes?",
+      "question_type": "open_ended",
+      "options": [
+        "I adapt quickly",
+        "I need time to adjust",
+        "I struggle with change"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 82,
+      "subtopic_id": 24,
+      "question_text": "Are you currently in a period of transition?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes (career, studies, relocation, etc.)",
+        "Somewhat",
+        "No"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 83,
+      "subtopic_id": 24,
+      "question_text": "If yes/somewhat, how do you expect this to affect marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "It will add stress and require patience",
+        "It will require planning and structure",
+        "It will not affect marriage significantly",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 84,
+      "subtopic_id": 25,
+      "question_text": "What does a “successful life” look like to you most?",
+      "question_type": "open_ended",
+      "options": [
+        "Strong deen and purpose",
+        "Peaceful home and marriage",
+        "Family and children",
+        "Achievement and status",
+        "Financial stability/freedom",
+        "A balance of several"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 85,
+      "subtopic_id": 25,
+      "question_text": "In ten years, what do you hope daily life looks like most?",
+      "question_type": "open_ended",
+      "options": [
+        "Calm and family-centred",
+        "Ambitious and growth-focused",
+        "Community and service-oriented",
+        "Travel and experiences",
+        "Stable and routine-based",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 86,
+      "subtopic_id": 25,
+      "question_text": "What sacrifices are you willing to make for marriage? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Career growth",
+        "Lifestyle comfort",
+        "Location preferences",
+        "Personal time",
+        "None of the above"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 87,
+      "subtopic_id": 26,
+      "question_text": "What lifestyle differences would be difficult to live with? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Very different pace of life",
+        "Very different social expectations",
+        "Very different work priorities",
+        "Very different spending habits",
+        "Very different views on travel",
+        "None",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 88,
+      "subtopic_id": 26,
+      "question_text": "Where are you most flexible, and where are you least flexible?",
+      "question_type": "open_ended",
+      "options": [
+        "I am flexible in most areas",
+        "I am flexible socially, less flexible financially",
+        "I am flexible financially, less flexible socially",
+        "I am flexible on location, less flexible on lifestyle",
+        "I am unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 89,
+      "subtopic_id": 27,
+      "question_text": "Which statement best reflects how you view roles in marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Clearly defined roles based on responsibility",
+        "Shared roles with flexibility based on circumstances",
+        "Mostly shared roles without fixed structure",
+        "I am still figuring this out"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 90,
+      "subtopic_id": 27,
+      "question_text": "What does your ideal role look like day-to-day?",
+      "question_type": "open_ended",
+      "options": [
+        "Primary provider/leadership responsibility",
+        "Primary home-management responsibility",
+        "Shared across most areas",
+        "Depends on circumstances (children/work)",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 91,
+      "subtopic_id": 27,
+      "question_text": "What should your spouse’s ideal role look like day-to-day?",
+      "question_type": "open_ended",
+      "options": [
+        "Primary provider/leadership responsibility",
+        "Primary home-management responsibility",
+        "Shared across most areas",
+        "Depends on circumstances (children/work)",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 92,
+      "subtopic_id": 27,
+      "question_text": "What is the primary purpose of marriage (in your view)?",
+      "question_type": "open_ended",
+      "options": [
+        "Companionship and emotional support",
+        "Building a family",
+        "Spiritual growth together",
+        "Stability and partnership",
+        "A combination of these"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 93,
+      "subtopic_id": 27,
+      "question_text": "Which matters most to you personally?",
+      "question_type": "open_ended",
+      "options": [
+        "Companionship/emotional support",
+        "Family building",
+        "Spiritual growth",
+        "Stability/partnership",
+        "A balance",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 94,
+      "subtopic_id": 28,
+      "question_text": "How do you understand leadership within marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "One spouse leads with consultation",
+        "Leadership shifts based on strengths",
+        "Full equality in all decisions",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 95,
+      "subtopic_id": 28,
+      "question_text": "How should major decisions be made?",
+      "question_type": "open_ended",
+      "options": [
+        "Jointly with equal say",
+        "Jointly, but one has final responsibility",
+        "By whoever is most knowledgeable",
+        "Case-by-case"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 96,
+      "subtopic_id": 28,
+      "question_text": "Which decisions require joint agreement no matter what? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Finances (major spending/debt)",
+        "Location/moving",
+        "Children/parenting",
+        "In-laws and boundaries",
+        "Religion and household practice",
+        "Career decisions",
+        "None",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 97,
+      "subtopic_id": 28,
+      "question_text": "How comfortable are you taking responsibility for difficult decisions?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Prefer shared responsibility",
+        "Avoid decision-making when possible"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 98,
+      "subtopic_id": 29,
+      "question_text": "How do you view household responsibilities?",
+      "question_type": "open_ended",
+      "options": [
+        "Clearly divided roles",
+        "Shared equally",
+        "Shared but flexible",
+        "Depends on work schedules"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 99,
+      "subtopic_id": 29,
+      "question_text": "How important is it that household work feels fair?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 100,
+      "subtopic_id": 29,
+      "question_text": "What would “unfair” look like to you?",
+      "question_type": "open_ended",
+      "options": [
+        "One person doing most chores consistently",
+        "One person not contributing at all",
+        "Lack of appreciation/recognition",
+        "It depends on work/children",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 101,
+      "subtopic_id": 29,
+      "question_text": "How do you feel about hiring help if affordable?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open to it",
+        "Open if necessary",
+        "Prefer not to",
+        "Not comfortable"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 102,
+      "subtopic_id": 30,
+      "question_text": "How important is personal independence within marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 103,
+      "subtopic_id": 30,
+      "question_text": "What does healthy independence look like to you? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Personal time/hobbies",
+        "Private friendships within boundaries",
+        "Autonomy in small decisions",
+        "Transparency even with independence",
+        "Shared life with minimal separation",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 104,
+      "subtopic_id": 30,
+      "question_text": "How much autonomy do you expect in personal decisions?",
+      "question_type": "open_ended",
+      "options": [
+        "Full autonomy",
+        "Autonomy with transparency",
+        "Joint decision-making",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 105,
+      "subtopic_id": 31,
+      "question_text": "How do you feel about compromising in marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "I expect to compromise often",
+        "I expect balanced compromise",
+        "I struggle with compromise",
+        "It depends on the issue"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 106,
+      "subtopic_id": 31,
+      "question_text": "When there is disagreement, who should adjust more often?",
+      "question_type": "open_ended",
+      "options": [
+        "Whoever is more capable in that situation",
+        "It should balance over time",
+        "The one less affected",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 107,
+      "subtopic_id": 31,
+      "question_text": "Are there areas you believe you should not have to compromise? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Religious obligations",
+        "Core values",
+        "Personal boundaries",
+        "Career goals",
+        "None"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 108,
+      "subtopic_id": 31,
+      "question_text": "How willing are you to explain your non-compromise areas calmly?",
+      "question_type": "open_ended",
+      "options": [
+        "Very willing",
+        "Somewhat willing",
+        "Reluctant",
+        "Not willing"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 109,
+      "subtopic_id": 32,
+      "question_text": "How much have culture/upbringing shaped your expectations of roles?",
+      "question_type": "open_ended",
+      "options": [
+        "Very strongly",
+        "Somewhat",
+        "Minimally",
+        "Not at all"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 110,
+      "subtopic_id": 32,
+      "question_text": "Are you open to adjusting those expectations?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Somewhat",
+        "No"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 111,
+      "subtopic_id": 32,
+      "question_text": "When traditional expectations clash with practical realities, what happens?",
+      "question_type": "open_ended",
+      "options": [
+        "I adapt easily",
+        "I struggle but adjust",
+        "I resist change",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 112,
+      "subtopic_id": 33,
+      "question_text": "What behaviours make you feel respected? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Being listened to",
+        "Being consulted",
+        "Being trusted",
+        "Efforts acknowledged",
+        "Boundaries respected"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 113,
+      "subtopic_id": 33,
+      "question_text": "What behaviours feel disrespectful? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Being dismissed",
+        "Being controlled",
+        "Being criticised publicly",
+        "Being ignored",
+        "Being compared to others"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 114,
+      "subtopic_id": 33,
+      "question_text": "When respect is damaged, how should it be repaired?",
+      "question_type": "open_ended",
+      "options": [
+        "Apology and accountability",
+        "Calm discussion and reset",
+        "Changed behaviour over time",
+        "External mediation if needed",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 115,
+      "subtopic_id": 34,
+      "question_text": "What example do you want to set regarding roles?",
+      "question_type": "open_ended",
+      "options": [
+        "Clear structure and responsibility",
+        "Teamwork and partnership",
+        "Flexibility and adaptation",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 116,
+      "subtopic_id": 34,
+      "question_text": "How important is it children see cooperation between parents?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 117,
+      "subtopic_id": 35,
+      "question_text": "Which role assumptions do you think are commonly misunderstood? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "“Leadership” meaning control rather than responsibility",
+        "“Equality” meaning no structure or responsibility",
+        "Housework expectations",
+        "Financial expectations",
+        "In-law expectations",
+        "Parenting expectations",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 118,
+      "subtopic_id": 35,
+      "question_text": "Are there role-related expectations that are non-negotiable for you?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes (clear, defined)",
+        "Some (context-dependent)",
+        "No",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 119,
+      "subtopic_id": 36,
+      "question_text": "How central is your family in your life right now?",
+      "question_type": "open_ended",
+      "options": [
+        "Central, very involved",
+        "Important but balanced",
+        "Somewhat important",
+        "Not very involved"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 120,
+      "subtopic_id": 36,
+      "question_text": "How are you most involved with your family? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Frequent contact",
+        "Practical support (helping/errands)",
+        "Financial support",
+        "Emotional support",
+        "Cultural expectations/obligation",
+        "Minimal involvement"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 121,
+      "subtopic_id": 36,
+      "question_text": "How do you expect this to change after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Stay mostly the same",
+        "Slightly less involved",
+        "Shift significantly toward spouse",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 122,
+      "subtopic_id": 37,
+      "question_text": "How much influence do your parents have over major life decisions now?",
+      "question_type": "open_ended",
+      "options": [
+        "A lot",
+        "Some",
+        "Very little",
+        "None"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 123,
+      "subtopic_id": 37,
+      "question_text": "How should this change after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Parents should still strongly influence",
+        "Parents should advise, not decide",
+        "Marriage decisions should be independent",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 124,
+      "subtopic_id": 37,
+      "question_text": "Where does parental input matter most?",
+      "question_type": "open_ended",
+      "options": [
+        "Religion and values",
+        "Location and living arrangements",
+        "Finances/career",
+        "Family matters and ties",
+        "It depends",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 125,
+      "subtopic_id": 37,
+      "question_text": "If parents disagreed with a decision you and spouse made, what would you do?",
+      "question_type": "open_ended",
+      "options": [
+        "Prioritise parents’ wishes",
+        "Mediate/compromise",
+        "Stand by spouse",
+        "Depends on issue"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 126,
+      "subtopic_id": 38,
+      "question_text": "Expectations for living arrangements after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Living independently",
+        "Living near family",
+        "Living with parents temporarily",
+        "Living with parents long-term"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 127,
+      "subtopic_id": 38,
+      "question_text": "If living with parents is expected, what boundaries are essential? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Private couple space",
+        "Separate finances",
+        "Limited parental involvement in decisions",
+        "Clear visiting expectations",
+        "Clear chores/roles",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 128,
+      "subtopic_id": 38,
+      "question_text": "How important is living physically close to family?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 129,
+      "subtopic_id": 39,
+      "question_text": "How do you view your role toward spouse’s parents?",
+      "question_type": "open_ended",
+      "options": [
+        "Like my own parents",
+        "Respectful with boundaries",
+        "Cordial but limited",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 130,
+      "subtopic_id": 39,
+      "question_text": "What does your spouse owe your parents?",
+      "question_type": "open_ended",
+      "options": [
+        "Regular involvement/service",
+        "Respect and kindness",
+        "Courtesy only",
+        "Nothing beyond basic respect"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 131,
+      "subtopic_id": 39,
+      "question_text": "How comfortable are you with frequent contact between spouse and their family?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Depends on boundaries"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 132,
+      "subtopic_id": 39,
+      "question_text": "What feels like “too much” involvement?",
+      "question_type": "open_ended",
+      "options": [
+        "Daily contact",
+        "Weekly expectation-based contact",
+        "Financial dependence",
+        "Decision-making interference",
+        "It depends",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 133,
+      "subtopic_id": 40,
+      "question_text": "How important is privacy between spouses?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 134,
+      "subtopic_id": 40,
+      "question_text": "What should remain private from family? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Disagreements",
+        "Finances",
+        "Intimacy",
+        "Parenting decisions",
+        "Mental health",
+        "Everything",
+        "Nothing specifically"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 135,
+      "subtopic_id": 40,
+      "question_text": "How would you feel if a family member regularly commented on your marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Very uncomfortable",
+        "Somewhat uncomfortable",
+        "Accepting",
+        "Depends who it is"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 136,
+      "subtopic_id": 40,
+      "question_text": "How should this be handled?",
+      "question_type": "open_ended",
+      "options": [
+        "Set firm boundary directly",
+        "Boundary through spouse (their family, their role)",
+        "Reduce contact",
+        "Ignore unless it escalates",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 137,
+      "subtopic_id": 41,
+      "question_text": "If conflict arose between spouse and your family, who should address it?",
+      "question_type": "open_ended",
+      "options": [
+        "Me directly",
+        "My spouse directly",
+        "Together as a couple",
+        "A respected third party"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 138,
+      "subtopic_id": 41,
+      "question_text": "How important is it your spouse feels protected from family conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 139,
+      "subtopic_id": 41,
+      "question_text": "Would you set firm boundaries with your family if needed?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, without hesitation",
+        "Yes, but difficult",
+        "Maybe",
+        "No"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 140,
+      "subtopic_id": 41,
+      "question_text": "If difficult/no, why is it challenging?",
+      "question_type": "open_ended",
+      "options": [
+        "Fear of conflict",
+        "Cultural expectations",
+        "Emotional dependence",
+        "Financial dependence",
+        "I do not believe boundaries are needed",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 141,
+      "subtopic_id": 42,
+      "question_text": "How much does culture influence family involvement expectations?",
+      "question_type": "open_ended",
+      "options": [
+        "Very strongly",
+        "Moderately",
+        "Minimally",
+        "Not at all"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 142,
+      "subtopic_id": 42,
+      "question_text": "Are you comfortable challenging cultural expectations if harmful?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Sometimes",
+        "No",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 143,
+      "subtopic_id": 42,
+      "question_text": "Which in-law cultural expectations concern you most? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Living with parents",
+        "Frequent visits/obligations",
+        "Financial responsibilities",
+        "Parenting interference",
+        "Reputation/community pressure",
+        "None",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 144,
+      "subtopic_id": 43,
+      "question_text": "How involved are siblings/extended relatives in your life?",
+      "question_type": "open_ended",
+      "options": [
+        "Very involved",
+        "Moderately involved",
+        "Minimally involved"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 145,
+      "subtopic_id": 43,
+      "question_text": "How much involvement from extended family feels healthy?",
+      "question_type": "open_ended",
+      "options": [
+        "Frequent",
+        "Occasional",
+        "Rare"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 146,
+      "subtopic_id": 44,
+      "question_text": "After marriage, who should come first in decision-making?",
+      "question_type": "open_ended",
+      "options": [
+        "My spouse",
+        "My parents",
+        "Balanced depending on issue",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 147,
+      "subtopic_id": 44,
+      "question_text": "What does “putting your spouse first” mean most?",
+      "question_type": "open_ended",
+      "options": [
+        "Prioritising emotional safety of spouse",
+        "Making key decisions jointly with spouse",
+        "Protecting spouse from family harm",
+        "Meeting spouse’s needs before others",
+        "It depends",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 148,
+      "subtopic_id": 45,
+      "question_text": "If spouse felt hurt by something your family did, what would you do first?",
+      "question_type": "open_ended",
+      "options": [
+        "Listen and validate spouse",
+        "Explain family intentions",
+        "Defend family",
+        "Mediate immediately"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 149,
+      "subtopic_id": 45,
+      "question_text": "If family expectations conflicted with spouse’s wellbeing, what takes priority?",
+      "question_type": "open_ended",
+      "options": [
+        "My spouse",
+        "My family",
+        "Finding compromise",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 150,
+      "subtopic_id": 46,
+      "question_text": "What family-related situations would be difficult long-term? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Living with parents long-term",
+        "Heavy family interference",
+        "Financial dependence on family",
+        "Frequent conflict with in-laws",
+        "Lack of privacy",
+        "None",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 151,
+      "subtopic_id": 46,
+      "question_text": "Any non-negotiables around in-laws?",
+      "question_type": "open_ended",
+      "options": [
+        "Strong boundaries required",
+        "Some boundaries required",
+        "No strong requirements",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 152,
+      "subtopic_id": 47,
+      "question_text": "Do you want children?",
+      "question_type": "single_choice",
+      "options": [
+        "Yes",
+        "No",
+        "I am open to them",
+        "I am unsure"
+      ],
+      "order": 1,
+      "gender": null,
+      "follow_ups": [
+        {
+          "answerIndices": [
+            1
+          ],
+          "questionId": 157
+        },
+        {
+          "answerIndices": [
+            2
+          ],
+          "questionId": 160
+        },
+        {
+          "answerIndices": [
+            3
+          ],
+          "questionId": 163
+        }
+      ]
+    },
+    {
+      "id": 153,
+      "subtopic_id": 47,
+      "question_text": "Ideal number of children?",
+      "question_type": "open_ended",
+      "options": [
+        "1",
+        "2",
+        "3–4",
+        "5+",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 154,
+      "subtopic_id": 47,
+      "question_text": "Preference for children’s gender?",
+      "question_type": "open_ended",
+      "options": [
+        "Prefer boys",
+        "Prefer girls",
+        "Prefer a mix",
+        "No preference"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 155,
+      "subtopic_id": 47,
+      "question_text": "How soon after marriage would you hope for children?",
+      "question_type": "open_ended",
+      "options": [
+        "As soon as possible",
+        "Within a few years",
+        "Later in marriage",
+        "Leave timing to Allah"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 156,
+      "subtopic_id": 47,
+      "question_text": "If children were delayed, how would you feel?",
+      "question_type": "open_ended",
+      "options": [
+        "At peace, trusting Allah",
+        "Disappointed but patient",
+        "Very distressed",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 157,
+      "subtopic_id": 47,
+      "question_text": "If you answered “No”, why not?",
+      "question_type": "open_ended",
+      "options": [
+        "Personal preference/lifestyle",
+        "Health concerns",
+        "Financial concerns",
+        "Fear of responsibility",
+        "Past experiences",
+        "Unsure"
+      ],
+      "order": 6,
+      "gender": null
+    },
+    {
+      "id": 158,
+      "subtopic_id": 47,
+      "question_text": "Do you expect your view could change?",
+      "question_type": "open_ended",
+      "options": [
+        "No, I am certain",
+        "Possibly",
+        "Unsure"
+      ],
+      "order": 7,
+      "gender": null
+    },
+    {
+      "id": 159,
+      "subtopic_id": 47,
+      "question_text": "If your spouse later strongly wanted children, how would you respond?",
+      "question_type": "open_ended",
+      "options": [
+        "Reconsider seriously",
+        "Discuss but likely remain firm",
+        "Feel pressured/uncomfortable",
+        "Unsure"
+      ],
+      "order": 8,
+      "gender": null
+    },
+    {
+      "id": 160,
+      "subtopic_id": 47,
+      "question_text": "If you answered “Open”, which is closest?",
+      "question_type": "open_ended",
+      "options": [
+        "I actively want children one day",
+        "I prefer later in life",
+        "I would be content without children",
+        "I would accept if Allah gave them unexpectedly"
+      ],
+      "order": 9,
+      "gender": null
+    },
+    {
+      "id": 161,
+      "subtopic_id": 47,
+      "question_text": "Would you feel fulfilled in marriage without children?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "Unsure"
+      ],
+      "order": 10,
+      "gender": null
+    },
+    {
+      "id": 162,
+      "subtopic_id": 47,
+      "question_text": "Would you accommodate your spouse’s preferences if different?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, likely",
+        "Possibly with limits",
+        "No",
+        "Unsure"
+      ],
+      "order": 11,
+      "gender": null
+    },
+    {
+      "id": 163,
+      "subtopic_id": 47,
+      "question_text": "If “Unsure”, what best explains uncertainty?",
+      "question_type": "open_ended",
+      "options": [
+        "Age/life stage",
+        "Fear of responsibility",
+        "Relationship uncertainty",
+        "Health concerns",
+        "I need more reflection"
+      ],
+      "order": 12,
+      "gender": null
+    },
+    {
+      "id": 164,
+      "subtopic_id": 47,
+      "question_text": "Do you expect clarity before marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Possibly",
+        "No"
+      ],
+      "order": 13,
+      "gender": null
+    },
+    {
+      "id": 165,
+      "subtopic_id": 47,
+      "question_text": "What would help you gain clarity?",
+      "question_type": "open_ended",
+      "options": [
+        "Time",
+        "Experience in marriage",
+        "Prayer and reflection",
+        "Counselling/advice"
+      ],
+      "order": 14,
+      "gender": null
+    },
+    {
+      "id": 166,
+      "subtopic_id": 47,
+      "question_text": "Would your family pressure you to have children after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Definitely",
+        "Potentially",
+        "No",
+        "Unsure"
+      ],
+      "order": 15,
+      "gender": null
+    },
+    {
+      "id": 167,
+      "subtopic_id": 47,
+      "question_text": "If pressured, would it make you have children sooner?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, likely",
+        "Possibly",
+        "No",
+        "Unsure"
+      ],
+      "order": 16,
+      "gender": null
+    },
+    {
+      "id": 168,
+      "subtopic_id": 48,
+      "question_text": "Which values matter most to instil? (Rank 1–6)",
+      "question_type": "multi_choice",
+      "options": [
+        "Islamic values and practice",
+        "Kindness and empathy",
+        "Discipline and structure",
+        "Independence",
+        "Academic success",
+        "Emotional intelligence"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 169,
+      "subtopic_id": 48,
+      "question_text": "Your instinctive parenting style?",
+      "question_type": "open_ended",
+      "options": [
+        "Gentle and nurturing",
+        "Structured and disciplined",
+        "Balanced",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 170,
+      "subtopic_id": 48,
+      "question_text": "Importance of raising children with strong Islamic foundations?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 171,
+      "subtopic_id": 49,
+      "question_text": "How do you feel about discipline?",
+      "question_type": "open_ended",
+      "options": [
+        "Necessary and important",
+        "Important but gentle",
+        "Minimal discipline",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 172,
+      "subtopic_id": 49,
+      "question_text": "How should discipline decisions be made?",
+      "question_type": "open_ended",
+      "options": [
+        "Jointly and consistently",
+        "By the more involved parent",
+        "Case-by-case",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 173,
+      "subtopic_id": 49,
+      "question_text": "If spouse’s discipline style differed, how would you feel?",
+      "question_type": "open_ended",
+      "options": [
+        "Open to discussion",
+        "Concerned but adaptable",
+        "Very uncomfortable",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 174,
+      "subtopic_id": 49,
+      "question_text": "Views on physical discipline?",
+      "question_type": "open_ended",
+      "options": [
+        "Never",
+        "Only very mild (e.g., light slap on wrist)",
+        "Sometimes",
+        "Depends on what happened"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 175,
+      "subtopic_id": 50,
+      "question_text": "How should childcare be shared?",
+      "question_type": "open_ended",
+      "options": [
+        "Equally",
+        "Based on work schedules",
+        "Primarily one parent",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 176,
+      "subtopic_id": 50,
+      "question_text": "Adjusting your career for children?",
+      "question_type": "open_ended",
+      "options": [
+        "Very willing",
+        "Willing if necessary",
+        "Reluctant",
+        "Not willing"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 177,
+      "subtopic_id": 50,
+      "question_text": "If one parent stayed home temporarily, who should it be?",
+      "question_type": "open_ended",
+      "options": [
+        "Husband",
+        "Wife",
+        "Whoever earns less",
+        "Whoever is more suited",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 178,
+      "subtopic_id": 51,
+      "question_text": "How patient are you with children?",
+      "question_type": "open_ended",
+      "options": [
+        "Very patient",
+        "Somewhat patient",
+        "I struggle with patience",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 179,
+      "subtopic_id": 51,
+      "question_text": "When exhausted/overwhelmed, what happens?",
+      "question_type": "open_ended",
+      "options": [
+        "Stay calm",
+        "Become irritable",
+        "Withdraw",
+        "Ask for help"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 180,
+      "subtopic_id": 51,
+      "question_text": "What support would you need from a spouse? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Practical help",
+        "Emotional reassurance",
+        "Space",
+        "Clear teamwork plan",
+        "Family support",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 181,
+      "subtopic_id": 52,
+      "question_text": "How open are you to discussing fertility challenges?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Somewhat open",
+        "Uncomfortable",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 182,
+      "subtopic_id": 52,
+      "question_text": "If biological children were not possible, what alternatives are you open to? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Adoption",
+        "Fostering",
+        "Child-free marriage",
+        "None",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 183,
+      "subtopic_id": 52,
+      "question_text": "If fertility issue came from you, what stance fits best?",
+      "question_type": "open_ended",
+      "options": [
+        "I would not end the marriage for this",
+        "I would discuss options deeply before deciding",
+        "I would consider separation to allow spouse children",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 184,
+      "subtopic_id": 52,
+      "question_text": "If fertility issue came from your spouse, what stance fits best?",
+      "question_type": "open_ended",
+      "options": [
+        "I would not end the marriage for this",
+        "I would discuss options deeply before deciding",
+        "I would consider separation to allow children",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 185,
+      "subtopic_id": 52,
+      "question_text": "If relevant Islamically, stance on polygyny as a solution?",
+      "question_type": "open_ended",
+      "options": [
+        "Not acceptable to me",
+        "Acceptable only if both agree genuinely",
+        "Acceptable in principle",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 186,
+      "subtopic_id": 53,
+      "question_text": "Environment you want children raised in?",
+      "question_type": "open_ended",
+      "options": [
+        "Calm and structured",
+        "Loving and expressive",
+        "Faith-centred",
+        "Academically focused",
+        "Balanced"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 187,
+      "subtopic_id": 53,
+      "question_text": "Importance of raising children near family?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 188,
+      "subtopic_id": 54,
+      "question_text": "Comfort with family influencing parenting decisions?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable",
+        "Somewhat uncomfortable",
+        "Very uncomfortable"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 189,
+      "subtopic_id": 54,
+      "question_text": "Who should have final say on parenting?",
+      "question_type": "open_ended",
+      "options": [
+        "The parents only",
+        "With advice from elders",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 190,
+      "subtopic_id": 55,
+      "question_text": "Desired relationship with children as adults?",
+      "question_type": "open_ended",
+      "options": [
+        "Close and emotionally connected",
+        "Respectful with healthy independence",
+        "Strong Islamic guidance relationship",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 191,
+      "subtopic_id": 55,
+      "question_text": "Parenting mistakes you most want to avoid? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Harshness",
+        "Neglect/absence",
+        "Inconsistency",
+        "Spoiling/lack of boundaries",
+        "Weak Islamic foundation",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 192,
+      "subtopic_id": 55,
+      "question_text": "Parenting views that would be deal-breakers? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Different Islamic upbringing expectations",
+        "Physical discipline differences",
+        "Education priorities conflict",
+        "Family interference tolerance differences",
+        "None",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 193,
+      "subtopic_id": 55,
+      "question_text": "Fears about becoming a parent? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Financial burden",
+        "Emotional responsibility",
+        "Losing freedom",
+        "Repeating family patterns",
+        "Not being patient enough",
+        "None",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 194,
+      "subtopic_id": 55,
+      "question_text": "What would make you feel confident and supported as a parent? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Clear teamwork with spouse",
+        "Family support",
+        "Financial stability",
+        "Islamic guidance/learning",
+        "Personal growth/therapy/coaching",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 195,
+      "subtopic_id": 56,
+      "question_text": "How do you generally feel about conflict in close relationships?",
+      "question_type": "open_ended",
+      "options": [
+        "Normal and necessary",
+        "Dislike it but deal with it",
+        "Try to avoid it",
+        "Find it very distressing"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 196,
+      "subtopic_id": 56,
+      "question_text": "What is hardest about conflict for you?",
+      "question_type": "open_ended",
+      "options": [
+        "Feeling misunderstood",
+        "Emotional intensity",
+        "Fear of escalation",
+        "Past experiences",
+        "Pride/ego",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 197,
+      "subtopic_id": 56,
+      "question_text": "When disagreement starts, first instinct?",
+      "question_type": "open_ended",
+      "options": [
+        "Address immediately",
+        "Pause and think",
+        "Withdraw/avoid",
+        "Defend myself"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 198,
+      "subtopic_id": 57,
+      "question_text": "When emotions rise in an argument, what happens?",
+      "question_type": "open_ended",
+      "options": [
+        "I stay calm and focused",
+        "I become emotional but recover",
+        "I become reactive (voice/words)",
+        "I shut down"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 199,
+      "subtopic_id": 57,
+      "question_text": "What helps you calm down enough to continue? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Time alone",
+        "Physical reassurance",
+        "Prayer/dua",
+        "Clear structure/timebox",
+        "Feeling heard first",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 200,
+      "subtopic_id": 57,
+      "question_text": "Awareness of tone/words during conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Very aware",
+        "Somewhat aware",
+        "Not aware in the moment"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 201,
+      "subtopic_id": 57,
+      "question_text": "Have you said things you regretted in conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, often",
+        "Yes, occasionally",
+        "Rarely",
+        "Never"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 202,
+      "subtopic_id": 57,
+      "question_text": "How do you usually repair after saying something harmful?",
+      "question_type": "open_ended",
+      "options": [
+        "Apologise quickly",
+        "Apologise after time to cool down",
+        "Show care through actions",
+        "Prefer to move on without discussing",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 203,
+      "subtopic_id": 58,
+      "question_text": "How much space do you need during conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "None, resolve quickly",
+        "Short breaks help",
+        "Significant time alone",
+        "Depends on issue"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 204,
+      "subtopic_id": 58,
+      "question_text": "What does “too much space” look like?",
+      "question_type": "open_ended",
+      "options": [
+        "Minutes",
+        "Hours",
+        "A full day",
+        "More than a day"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 205,
+      "subtopic_id": 58,
+      "question_text": "Continuing daily interaction while conflict is unresolved?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable",
+        "Difficult but manageable",
+        "Cannot tolerate it"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 206,
+      "subtopic_id": 59,
+      "question_text": "When you feel misunderstood, what do you do?",
+      "question_type": "open_ended",
+      "options": [
+        "Explain again",
+        "Get frustrated",
+        "Withdraw",
+        "Give up"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 207,
+      "subtopic_id": 59,
+      "question_text": "How do you prefer spouse raises concerns?",
+      "question_type": "open_ended",
+      "options": [
+        "Calmly and directly",
+        "Gently and indirectly",
+        "With examples and clarity",
+        "In private, not in the moment"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 208,
+      "subtopic_id": 59,
+      "question_text": "Which behaviours affect you negatively in conflict? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Interrupting",
+        "Dismissing feelings",
+        "Criticism",
+        "Ignoring",
+        "Sarcasm"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 209,
+      "subtopic_id": 59,
+      "question_text": "Preferred alternative from spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Let me finish without interruption",
+        "Validate feelings first",
+        "Speak respectfully and specifically",
+        "Stay present (no stonewalling)",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 210,
+      "subtopic_id": 60,
+      "question_text": "How easy is it for you to admit fault?",
+      "question_type": "open_ended",
+      "options": [
+        "Very easy",
+        "Somewhat difficult",
+        "Very difficult",
+        "I rarely feel at fault"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 211,
+      "subtopic_id": 60,
+      "question_text": "What makes an apology feel genuine? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Clear ownership",
+        "Changed behaviour",
+        "Emotional validation",
+        "Time and consistency"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 212,
+      "subtopic_id": 60,
+      "question_text": "After conflict, what helps reconnect most?",
+      "question_type": "open_ended",
+      "options": [
+        "Calm conversation",
+        "Physical affection",
+        "Acts of care",
+        "Time and normalcy",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 213,
+      "subtopic_id": 60,
+      "question_text": "Time needed to reset emotionally after conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Minutes",
+        "Hours",
+        "A day",
+        "Several days"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 214,
+      "subtopic_id": 61,
+      "question_text": "What escalates conflict for you? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Feeling unheard",
+        "Feeling disrespected",
+        "Feeling controlled",
+        "Feeling criticised",
+        "Feeling blamed"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 215,
+      "subtopic_id": 61,
+      "question_text": "When conflict escalates, what is your pattern?",
+      "question_type": "open_ended",
+      "options": [
+        "Explain harder",
+        "Withdraw",
+        "Become defensive",
+        "Shut down emotionally"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 216,
+      "subtopic_id": 61,
+      "question_text": "Sensitive topics for you? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Finances",
+        "Family",
+        "Religion",
+        "Time/attention",
+        "Past experiences",
+        "None"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 217,
+      "subtopic_id": 61,
+      "question_text": "What makes sensitive topics safer to discuss?",
+      "question_type": "open_ended",
+      "options": [
+        "Setting time to talk calmly",
+        "Using gentle tone",
+        "Having clear examples",
+        "Involving a mediator",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 218,
+      "subtopic_id": 62,
+      "question_text": "How do you feel about silence during conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Helps me regulate",
+        "Uncomfortable",
+        "Hurtful",
+        "Depends on length"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 219,
+      "subtopic_id": 62,
+      "question_text": "Have you used silence to protect yourself?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Occasionally",
+        "No"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 220,
+      "subtopic_id": 62,
+      "question_text": "Healthy way to pause a conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Agree a time to return",
+        "Take space without pressure",
+        "Pause until emotions settle",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 221,
+      "subtopic_id": 63,
+      "question_text": "Involving a third party when conflict is stuck?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open as last resort",
+        "Reluctant",
+        "Not open"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 222,
+      "subtopic_id": 63,
+      "question_text": "Who would you trust most?",
+      "question_type": "open_ended",
+      "options": [
+        "Imam/scholar",
+        "Professional counsellor",
+        "Family",
+        "Friends",
+        "No one"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 223,
+      "subtopic_id": 64,
+      "question_text": "How often do you reflect on your own role after conflict?",
+      "question_type": "open_ended",
+      "options": [
+        "Always",
+        "Often",
+        "Sometimes",
+        "Rarely"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 224,
+      "subtopic_id": 64,
+      "question_text": "What have past conflicts taught you most?",
+      "question_type": "open_ended",
+      "options": [
+        "I need to communicate earlier",
+        "I need better emotional regulation",
+        "I need clearer boundaries",
+        "I need to listen more",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 225,
+      "subtopic_id": 65,
+      "question_text": "If spouse raised the same issue repeatedly, what would it signal?",
+      "question_type": "open_ended",
+      "options": [
+        "It is truly important to them",
+        "I have not changed enough",
+        "They feel unheard",
+        "They are overfocused on it",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 226,
+      "subtopic_id": 65,
+      "question_text": "If conflict kept repeating, what would you do first?",
+      "question_type": "open_ended",
+      "options": [
+        "Deeper conversation",
+        "Suggest counselling",
+        "Become emotionally distant",
+        "Hope it resolves"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 227,
+      "subtopic_id": 65,
+      "question_text": "Unacceptable conflict behaviours in marriage? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Yelling",
+        "Name-calling",
+        "Threats",
+        "Silent treatment",
+        "Public criticism",
+        "Bringing up past mistakes"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 228,
+      "subtopic_id": 65,
+      "question_text": "How should boundaries be enforced if those occur?",
+      "question_type": "open_ended",
+      "options": [
+        "Immediate pause and firm boundary",
+        "Structured consequence (time apart/counselling)",
+        "Escalate to mediator",
+        "Consider separation if repeated",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 229,
+      "subtopic_id": 65,
+      "question_text": "How important is it that conflict strengthens the marriage long-term?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 230,
+      "subtopic_id": 66,
+      "question_text": "How do you view money most?",
+      "question_type": "open_ended",
+      "options": [
+        "Tool for stability",
+        "Tool for freedom",
+        "Test/trust from Allah",
+        "Source of stress",
+        "Means to provide for others"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 231,
+      "subtopic_id": 66,
+      "question_text": "How did upbringing influence this view?",
+      "question_type": "open_ended",
+      "options": [
+        "Strongly shaped it",
+        "Somewhat shaped it",
+        "Minimally shaped it",
+        "Not at all",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 232,
+      "subtopic_id": 66,
+      "question_text": "Comfort discussing money with partner currently?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Very uncomfortable"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 233,
+      "subtopic_id": 66,
+      "question_text": "Comfort discussing money when married?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Very uncomfortable"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 234,
+      "subtopic_id": 67,
+      "question_text": "What do you expect to contribute financially when married? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Housing",
+        "Bills",
+        "Food",
+        "Children expenses",
+        "Family support",
+        "Shared goals (travel/home)",
+        "It depends/unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 235,
+      "subtopic_id": 67,
+      "question_text": "What do you expect your partner to contribute financially? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Housing",
+        "Bills",
+        "Food",
+        "Children expenses",
+        "Family support",
+        "Shared goals",
+        "No expectation",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 236,
+      "subtopic_id": 67,
+      "question_text": "Importance that you personally contribute financially?",
+      "question_type": "open_ended",
+      "options": [
+        "Essential",
+        "Important",
+        "Optional",
+        "Not important"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 237,
+      "subtopic_id": 67,
+      "question_text": "Who would you prefer to be the higher earner?",
+      "question_type": "open_ended",
+      "options": [
+        "Me",
+        "My spouse",
+        "No preference",
+        "Depends"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 238,
+      "subtopic_id": 67,
+      "question_text": "How would you feel if spouse earned significantly more?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable",
+        "Slightly uncomfortable",
+        "Very uncomfortable",
+        "Depends"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 239,
+      "subtopic_id": 67,
+      "question_text": "If spouse could not fulfil financial obligations, what would you do?",
+      "question_type": "open_ended",
+      "options": [
+        "Cover temporarily and plan together",
+        "Reduce lifestyle quickly",
+        "Seek external support/family",
+        "It would create major strain",
+        "Unsure"
+      ],
+      "order": 6,
+      "gender": null
+    },
+    {
+      "id": 240,
+      "subtopic_id": 67,
+      "question_text": "If you could not fulfil financial obligations, what do you expect from spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Patience and teamwork",
+        "Practical planning and budgeting",
+        "Temporary support",
+        "Minimal expectation; I would solve it",
+        "Unsure"
+      ],
+      "order": 7,
+      "gender": null
+    },
+    {
+      "id": 241,
+      "subtopic_id": 67,
+      "question_text": "Do you expect spouse to work when married?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "Only if necessary",
+        "Unsure"
+      ],
+      "order": 8,
+      "gender": null
+    },
+    {
+      "id": 242,
+      "subtopic_id": 68,
+      "question_text": "Spending style?",
+      "question_type": "open_ended",
+      "options": [
+        "Very careful and planned",
+        "Generally mindful",
+        "Flexible and experience-focused",
+        "Impulsive at times"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 243,
+      "subtopic_id": 68,
+      "question_text": "Budgeting approach?",
+      "question_type": "open_ended",
+      "options": [
+        "I actively budget",
+        "I loosely track",
+        "I do not budget",
+        "I avoid budgets"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 244,
+      "subtopic_id": 68,
+      "question_text": "What matters more in daily life?",
+      "question_type": "open_ended",
+      "options": [
+        "Financial security",
+        "Comfort and balance",
+        "Enjoyment and experiences",
+        "Simplicity/minimalism"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 245,
+      "subtopic_id": 69,
+      "question_text": "How should money be stored?",
+      "question_type": "open_ended",
+      "options": [
+        "Single joint account",
+        "Joint + individual accounts",
+        "Only individual accounts",
+        "Mostly cash",
+        "Not sure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 246,
+      "subtopic_id": 69,
+      "question_text": "Importance of financial transparency?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 247,
+      "subtopic_id": 69,
+      "question_text": "Information that should always be shared? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Income",
+        "Debts",
+        "Major purchases",
+        "Savings",
+        "None",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 248,
+      "subtopic_id": 69,
+      "question_text": "Spending level that requires discussion?",
+      "question_type": "open_ended",
+      "options": [
+        "Any non-essential spending",
+        "Above a set threshold",
+        "Only major purchases",
+        "Only if it affects bills/goals",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 249,
+      "subtopic_id": 69,
+      "question_text": "Who should have final say on significant financial decisions?",
+      "question_type": "open_ended",
+      "options": [
+        "Joint agreement always",
+        "One leads with consultation",
+        "Whoever earns more",
+        "Case-by-case",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 250,
+      "subtopic_id": 70,
+      "question_text": "How do you feel about debt?",
+      "question_type": "open_ended",
+      "options": [
+        "Strongly avoid it",
+        "Cautious but accept some",
+        "Comfortable with debt",
+        "Depends on purpose"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 251,
+      "subtopic_id": 70,
+      "question_text": "Do you currently have debt?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "Prefer not to say"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 252,
+      "subtopic_id": 70,
+      "question_text": "Approach to managing debt?",
+      "question_type": "open_ended",
+      "options": [
+        "Aggressively paying it down",
+        "Managing steadily",
+        "Not actively addressing it",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 253,
+      "subtopic_id": 70,
+      "question_text": "How do you feel about financial risk?",
+      "question_type": "open_ended",
+      "options": [
+        "Risk-averse",
+        "Balanced risk tolerance",
+        "Comfortable with risk",
+        "Depends on the opportunity"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 254,
+      "subtopic_id": 70,
+      "question_text": "Open to interest-based loans?",
+      "question_type": "open_ended",
+      "options": [
+        "Never",
+        "Only if unavoidable",
+        "Yes, if beneficial",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 255,
+      "subtopic_id": 71,
+      "question_text": "Response to financial stress?",
+      "question_type": "open_ended",
+      "options": [
+        "Become anxious",
+        "Try to control/manage",
+        "Avoid thinking about it",
+        "Communicate openly"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 256,
+      "subtopic_id": 71,
+      "question_text": "How handle financial disagreements?",
+      "question_type": "open_ended",
+      "options": [
+        "Discuss calmly",
+        "Feel defensive",
+        "Withdraw",
+        "Defer to spouse"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 257,
+      "subtopic_id": 71,
+      "question_text": "Stressful money behaviours in spouse? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Overspending",
+        "Secrecy",
+        "Excessive control",
+        "Irresponsibility",
+        "Lack of planning"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 258,
+      "subtopic_id": 72,
+      "question_text": "Willingness to adjust lifestyle for stability?",
+      "question_type": "open_ended",
+      "options": [
+        "Very willing",
+        "Somewhat willing",
+        "Not very willing",
+        "Not willing"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 259,
+      "subtopic_id": 72,
+      "question_text": "If finances tight, first cut-back?",
+      "question_type": "open_ended",
+      "options": [
+        "Luxuries/eating out",
+        "Travel",
+        "Shopping",
+        "Housing costs (downsize)",
+        "Helping others",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 260,
+      "subtopic_id": 73,
+      "question_text": "Importance of giving (zakat/sadaqah/family support)?",
+      "question_type": "open_ended",
+      "options": [
+        "Central to my values",
+        "Important",
+        "Occasional",
+        "Not a focus"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 261,
+      "subtopic_id": 73,
+      "question_text": "Intended portion of income to give?",
+      "question_type": "open_ended",
+      "options": [
+        "Minimum zakat only",
+        "Regular sadaqah beyond zakat",
+        "Significant giving when possible",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 262,
+      "subtopic_id": 73,
+      "question_text": "How should giving decisions be made?",
+      "question_type": "open_ended",
+      "options": [
+        "Jointly",
+        "Individually",
+        "One spouse leads",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 263,
+      "subtopic_id": 73,
+      "question_text": "Expect spouse to disclose all charitable deeds?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "Only major/ongoing commitments",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 264,
+      "subtopic_id": 74,
+      "question_text": "Importance of long-term financial planning?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 265,
+      "subtopic_id": 74,
+      "question_text": "Financial goals that matter most? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Home ownership",
+        "Financial independence",
+        "Supporting family",
+        "Travel/experiences",
+        "Business/investments",
+        "Betrayed",
+        "Upset but open to discussion",
+        "Understanding if intentions good",
+        "Depends"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 266,
+      "subtopic_id": 74,
+      "question_text": "Willing to help with a significant purchase even if not responsible for payment?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Maybe",
+        "No"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 267,
+      "subtopic_id": 74,
+      "question_text": "Financial deal-breakers? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Persistent overspending",
+        "Secrecy/hidden debt",
+        "Interest-based lifestyle dependence",
+        "Refusal to plan",
+        "Financial control/abuse",
+        "None",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 268,
+      "subtopic_id": 74,
+      "question_text": "Financial fears entering marriage? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Not being able to provide",
+        "Being controlled",
+        "Conflict over money",
+        "Debt burden",
+        "None",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 269,
+      "subtopic_id": 75,
+      "question_text": "Importance of health in daily life?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not a focus right now"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 270,
+      "subtopic_id": 75,
+      "question_text": "What does “taking care of health” look like? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Exercise",
+        "Nutrition",
+        "Sleep",
+        "Mental health practices",
+        "Medical check-ups",
+        "Spiritual routines",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 271,
+      "subtopic_id": 75,
+      "question_text": "Energy levels most days?",
+      "question_type": "open_ended",
+      "options": [
+        "High and consistent",
+        "Moderate and stable",
+        "Often low",
+        "Very variable"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 272,
+      "subtopic_id": 76,
+      "question_text": "Physical activity intention?",
+      "question_type": "open_ended",
+      "options": [
+        "Very consistent",
+        "Somewhat intentional",
+        "Inconsistent",
+        "Not intentional"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 273,
+      "subtopic_id": 76,
+      "question_text": "Importance of healthy household lifestyle?",
+      "question_type": "open_ended",
+      "options": [
+        "Non-negotiable",
+        "Important",
+        "Nice to have",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 274,
+      "subtopic_id": 76,
+      "question_text": "When tired/run down, how do you treat your body?",
+      "question_type": "open_ended",
+      "options": [
+        "Rest and recover",
+        "Push through",
+        "Ignore it",
+        "Depends"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 275,
+      "subtopic_id": 77,
+      "question_text": "Comfort talking about emotional/mental health?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Very uncomfortable",
+        "When emotionally struggling, you usually:",
+        "Talk to someone",
+        "Process privately",
+        "Distract myself",
+        "Suppress it"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 276,
+      "subtopic_id": 77,
+      "question_text": "Support that helps most during those times? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Listening and reassurance",
+        "Practical help",
+        "Space",
+        "Dua/spiritual support",
+        "Professional support",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 277,
+      "subtopic_id": 77,
+      "question_text": "Coping with prolonged stress?",
+      "question_type": "open_ended",
+      "options": [
+        "Structured routine and discipline",
+        "Talking and support",
+        "Withdrawal and solitude",
+        "Distraction/avoidance",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 278,
+      "subtopic_id": 78,
+      "question_text": "When unwell/low, what do you expect from spouse?",
+      "question_type": "open_ended",
+      "options": [
+        "Emotional presence",
+        "Practical help",
+        "Space and patience",
+        "Minimal expectation"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 279,
+      "subtopic_id": 78,
+      "question_text": "Comfort caring for spouse during illness/difficulty?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Comfortable but unsure how",
+        "Uncomfortable",
+        "Depends severity"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 280,
+      "subtopic_id": 78,
+      "question_text": "How should responsibilities shift if one spouse struggles?",
+      "question_type": "open_ended",
+      "options": [
+        "Automatically adjust",
+        "Adjust with discussion",
+        "Maintain roles as much as possible",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 281,
+      "subtopic_id": 79,
+      "question_text": "Awareness of personal limits?",
+      "question_type": "open_ended",
+      "options": [
+        "Very aware",
+        "Somewhat aware",
+        "Often overextend",
+        "Unsure"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 282,
+      "subtopic_id": 79,
+      "question_text": "When close to burnout, response?",
+      "question_type": "open_ended",
+      "options": [
+        "Slow down and rest",
+        "Push harder",
+        "Withdraw",
+        "Ignore it"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 283,
+      "subtopic_id": 79,
+      "question_text": "Signs spouse should look for? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Irritability",
+        "Withdrawal",
+        "Fatigue/sleep changes",
+        "Loss of motivation",
+        "Increased anxiety",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 284,
+      "subtopic_id": 80,
+      "question_text": "Openness to self-reflection and change?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open with support",
+        "Resistant but willing",
+        "Not open"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 285,
+      "subtopic_id": 80,
+      "question_text": "Have you intentionally worked through personal challenges before?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes, significantly",
+        "Yes, somewhat",
+        "No",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 286,
+      "subtopic_id": 80,
+      "question_text": "Have you experienced trauma?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Prefer not to say"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 287,
+      "subtopic_id": 80,
+      "question_text": "Willingness to elaborate on difficult experiences?",
+      "question_type": "open_ended",
+      "options": [
+        "Comfortable sharing early",
+        "Share only with trust over time",
+        "Prefer privacy",
+        "Not willing"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 288,
+      "subtopic_id": 81,
+      "question_text": "How do you feel about professional help if needed?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open as last resort",
+        "Uncomfortable",
+        "Not open"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 289,
+      "subtopic_id": 81,
+      "question_text": "Who would you seek support from? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Spouse",
+        "Trusted friend/family",
+        "Imam/scholar",
+        "Professional counsellor",
+        "No one"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 290,
+      "subtopic_id": 82,
+      "question_text": "How do you view personal growth after marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Essential and ongoing",
+        "Important but gradual",
+        "Occasional",
+        "Not a focus"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 291,
+      "subtopic_id": 82,
+      "question_text": "How should spouses support growth?",
+      "question_type": "open_ended",
+      "options": [
+        "Encourage and challenge",
+        "Support without pressure",
+        "Stay out of it",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 292,
+      "subtopic_id": 82,
+      "question_text": "Areas you are most focused on improving now? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Deen",
+        "Emotional regulation",
+        "Communication",
+        "Career/finances",
+        "Health/fitness",
+        "Family relationships",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 293,
+      "subtopic_id": 83,
+      "question_text": "Discipline with habits?",
+      "question_type": "open_ended",
+      "options": [
+        "Very disciplined",
+        "Moderately disciplined",
+        "Inconsistent",
+        "Struggle with consistency"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 294,
+      "subtopic_id": 83,
+      "question_text": "How do you build new habits?",
+      "question_type": "open_ended",
+      "options": [
+        "Slowly and intentionally",
+        "With structure/accountability",
+        "In bursts",
+        "I struggle to build habits"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 295,
+      "subtopic_id": 84,
+      "question_text": "If marriage enters a difficult season, what would you need most?",
+      "question_type": "open_ended",
+      "options": [
+        "Emotional reassurance",
+        "Practical teamwork",
+        "Patience and time",
+        "Faith and perspective"
+      ],
+      "order": 1,
+      "gender": null
+    },
+    {
+      "id": 296,
+      "subtopic_id": 84,
+      "question_text": "What would make you feel unsupported? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Being blamed",
+        "Being ignored",
+        "Lack of practical help",
+        "Lack of empathy",
+        "Lack of dua/spiritual grounding",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": null
+    },
+    {
+      "id": 297,
+      "subtopic_id": 84,
+      "question_text": "What does a healthy life together look like?",
+      "question_type": "open_ended",
+      "options": [
+        "Peaceful and emotionally safe",
+        "Faith-centred and disciplined",
+        "Growth and achievement oriented",
+        "Balanced and flexible",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": null
+    },
+    {
+      "id": 298,
+      "subtopic_id": 84,
+      "question_text": "Health/well-being expectations that are non-negotiable?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes (strongly)",
+        "Some",
+        "No",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": null
+    },
+    {
+      "id": 299,
+      "subtopic_id": 84,
+      "question_text": "Anything spouse should understand about your needs/capacity early?",
+      "question_type": "open_ended",
+      "options": [
+        "I need significant alone time",
+        "I need frequent emotional connection",
+        "I need structure/routine",
+        "I need flexibility/low pressure",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": null
+    },
+    {
+      "id": 300,
+      "subtopic_id": 85,
+      "question_text": "Current understanding of the menstrual cycle?",
+      "question_type": "open_ended",
+      "options": [
+        "Understand well",
+        "Basic understanding",
+        "Know very little",
+        "Never really learned"
+      ],
+      "order": 1,
+      "gender": "male"
+    },
+    {
+      "id": 301,
+      "subtopic_id": 85,
+      "question_text": "Importance for a husband to understand his wife’s cycle?",
+      "question_type": "open_ended",
+      "options": [
+        "Very important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 2,
+      "gender": "male"
+    },
+    {
+      "id": 302,
+      "subtopic_id": 85,
+      "question_text": "Why do you feel that way?",
+      "question_type": "open_ended",
+      "options": [
+        "Empathy and emotional support",
+        "Better conflict management",
+        "Better planning and expectations",
+        "I do not think it matters much",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": "male"
+    },
+    {
+      "id": 303,
+      "subtopic_id": 85,
+      "question_text": "Openness to learning how hormones affect mood/energy?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open if it benefits marriage",
+        "Reluctant",
+        "Not open",
+        "Patient and understanding",
+        "Listen but struggle to adjust",
+        "Find it hard to relate",
+        "Unsure",
+        "When someone is more sensitive/irritable than usual, your instinct:",
+        "Be patient and reassuring",
+        "Give space",
+        "Feel frustrated",
+        "Take it personally"
+      ],
+      "order": 4,
+      "gender": "male"
+    },
+    {
+      "id": 304,
+      "subtopic_id": 85,
+      "question_text": "Comfort offering support even without fully understanding?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": "male"
+    },
+    {
+      "id": 305,
+      "subtopic_id": 85,
+      "question_text": "Willingness to adjust expectations when wife not feeling well?",
+      "question_type": "open_ended",
+      "options": [
+        "Very willing",
+        "Somewhat willing",
+        "Reluctant",
+        "Not willing"
+      ],
+      "order": 6,
+      "gender": "male"
+    },
+    {
+      "id": 306,
+      "subtopic_id": 85,
+      "question_text": "Support that matters most during physically uncomfortable days? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Emotional reassurance",
+        "Practical help",
+        "Reduced expectations",
+        "Quiet companionship",
+        "Unsure"
+      ],
+      "order": 7,
+      "gender": "male"
+    },
+    {
+      "id": 307,
+      "subtopic_id": 85,
+      "question_text": "Willing to provide different support types across different stages of cycle?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Maybe",
+        "No",
+        "Unsure",
+        "She may be unwell/exhausted",
+        "She needs space",
+        "I did something wrong",
+        "I would feel rejected"
+      ],
+      "order": 8,
+      "gender": "male"
+    },
+    {
+      "id": 308,
+      "subtopic_id": 85,
+      "question_text": "Importance of avoiding calling emotional reactions “overreacting”?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 9,
+      "gender": "male"
+    },
+    {
+      "id": 309,
+      "subtopic_id": 85,
+      "question_text": "How should intimacy be approached when wife low energy/uncomfortable?",
+      "question_type": "open_ended",
+      "options": [
+        "Sensitivity and flexibility",
+        "Open discussion",
+        "Have not thought about it",
+        "Unsure"
+      ],
+      "order": 10,
+      "gender": "male"
+    },
+    {
+      "id": 310,
+      "subtopic_id": 85,
+      "question_text": "Importance of respecting privacy while being supportive?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 11,
+      "gender": "male"
+    },
+    {
+      "id": 311,
+      "subtopic_id": 85,
+      "question_text": "Understanding Islamic rulings around menstruation and marital interaction?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "There are rulings"
+      ],
+      "order": 12,
+      "gender": "male"
+    },
+    {
+      "id": 312,
+      "subtopic_id": 85,
+      "question_text": "Comfort with Islamic rulings?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Somewhat",
+        "No",
+        "Unsure"
+      ],
+      "order": 13,
+      "gender": "male"
+    },
+    {
+      "id": 313,
+      "subtopic_id": 85,
+      "question_text": "Intention to follow Islamic rulings?",
+      "question_type": "open_ended",
+      "options": [
+        "Definitely",
+        "I will try",
+        "Unlikely",
+        "Depends"
+      ],
+      "order": 14,
+      "gender": "male"
+    },
+    {
+      "id": 314,
+      "subtopic_id": 85,
+      "question_text": "Do you view learning wife’s cycle as part of ihsān in marriage?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Somewhat",
+        "Not thought about it",
+        "No"
+      ],
+      "order": 15,
+      "gender": "male"
+    },
+    {
+      "id": 315,
+      "subtopic_id": 85,
+      "question_text": "If disagreement happens during difficult time, what should happen?",
+      "question_type": "open_ended",
+      "options": [
+        "Pause and revisit later",
+        "Address gently",
+        "Continue as normal",
+        "Unsure"
+      ],
+      "order": 16,
+      "gender": "male"
+    },
+    {
+      "id": 316,
+      "subtopic_id": 85,
+      "question_text": "Importance of separating temporary emotional states from deeper issues?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 17,
+      "gender": "male"
+    },
+    {
+      "id": 317,
+      "subtopic_id": 85,
+      "question_text": "Do you believe lack of empathy here could harm marriage long-term?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Possibly",
+        "No",
+        "Unsure"
+      ],
+      "order": 18,
+      "gender": "male"
+    },
+    {
+      "id": 318,
+      "subtopic_id": 86,
+      "question_text": "Comfort talking to spouse about your cycle/effects?",
+      "question_type": "open_ended",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Uncomfortable",
+        "Very uncomfortable"
+      ],
+      "order": 1,
+      "gender": "female"
+    },
+    {
+      "id": 319,
+      "subtopic_id": 86,
+      "question_text": "What makes these conversations easier/harder?",
+      "question_type": "open_ended",
+      "options": [
+        "Husband is empathetic and calm",
+        "Fear of being dismissed",
+        "Modesty/privacy concerns",
+        "Past negative experiences",
+        "Unsure"
+      ],
+      "order": 2,
+      "gender": "female"
+    },
+    {
+      "id": 320,
+      "subtopic_id": 86,
+      "question_text": "How long is your menstrual cycle?",
+      "question_type": "open_ended",
+      "options": [
+        "Usually 21–25 days",
+        "Usually 26–30 days",
+        "Usually 31–35 days",
+        "Highly irregular",
+        "Unsure"
+      ],
+      "order": 3,
+      "gender": "female"
+    },
+    {
+      "id": 321,
+      "subtopic_id": 86,
+      "question_text": "Side effects you experience across cycle? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Cramps/pain",
+        "Fatigue",
+        "Mood changes",
+        "Headaches",
+        "Appetite changes",
+        "Anxiety/low mood",
+        "Minimal symptoms",
+        "Unsure"
+      ],
+      "order": 4,
+      "gender": "female"
+    },
+    {
+      "id": 322,
+      "subtopic_id": 86,
+      "question_text": "What would you want from husband to help with side effects? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Emotional reassurance",
+        "Practical help",
+        "Reduced expectations",
+        "Space",
+        "Quiet companionship",
+        "Unsure"
+      ],
+      "order": 5,
+      "gender": "female"
+    },
+    {
+      "id": 323,
+      "subtopic_id": 86,
+      "question_text": "Importance husband understands how cycle affects you?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 6,
+      "gender": "female"
+    },
+    {
+      "id": 324,
+      "subtopic_id": 86,
+      "question_text": "Realistic expectation of husband’s understanding?",
+      "question_type": "open_ended",
+      "options": [
+        "Deep understanding",
+        "Basic awareness and empathy",
+        "Willingness to listen",
+        "Unsure"
+      ],
+      "order": 7,
+      "gender": "female"
+    },
+    {
+      "id": 325,
+      "subtopic_id": 86,
+      "question_text": "During difficult days, what support matters most? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Emotional reassurance",
+        "Practical help",
+        "Reduced expectations",
+        "Space",
+        "Quiet presence",
+        "Most supportive response from husband during those times:",
+        "Validate and reassure",
+        "Help practically",
+        "Give space without offence",
+        "Ask what I need",
+        "Unsure"
+      ],
+      "order": 8,
+      "gender": "female"
+    },
+    {
+      "id": 326,
+      "subtopic_id": 86,
+      "question_text": "When you are low/tired, what do you hope husband does not assume? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "I am upset with him",
+        "There is a serious relationship problem",
+        "I am being difficult",
+        "I am distant on purpose"
+      ],
+      "order": 9,
+      "gender": "female"
+    },
+    {
+      "id": 327,
+      "subtopic_id": 86,
+      "question_text": "Importance husband does not dismiss feelings as exaggerated?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 10,
+      "gender": "female"
+    },
+    {
+      "id": 328,
+      "subtopic_id": 86,
+      "question_text": "How should intimacy be handled during low-energy/uncomfortable days?",
+      "question_type": "open_ended",
+      "options": [
+        "Sensitivity and flexibility",
+        "Open discussion",
+        "Prefer space",
+        "Unsure"
+      ],
+      "order": 11,
+      "gender": "female"
+    },
+    {
+      "id": 329,
+      "subtopic_id": 86,
+      "question_text": "Comfort approaching husband for intimacy generally?",
+      "question_type": "open_ended",
+      "options": [
+        "Completely comfortable",
+        "Mostly comfortable",
+        "Somewhat uncomfortable",
+        "Not comfortable"
+      ],
+      "order": 12,
+      "gender": "female"
+    },
+    {
+      "id": 330,
+      "subtopic_id": 86,
+      "question_text": "Comfort saying “not today” without guilt?",
+      "question_type": "open_ended",
+      "options": [
+        "Completely comfortable",
+        "Mostly comfortable",
+        "Somewhat uncomfortable",
+        "Not comfortable"
+      ],
+      "order": 13,
+      "gender": "female"
+    },
+    {
+      "id": 331,
+      "subtopic_id": 86,
+      "question_text": "Understanding Islamic rulings around menstruation and marital interaction?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "No",
+        "There are rulings"
+      ],
+      "order": 14,
+      "gender": "female"
+    },
+    {
+      "id": 332,
+      "subtopic_id": 86,
+      "question_text": "Comfort with Islamic rulings?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Somewhat",
+        "No",
+        "Unsure"
+      ],
+      "order": 15,
+      "gender": "female"
+    },
+    {
+      "id": 333,
+      "subtopic_id": 86,
+      "question_text": "Intention to follow Islamic rulings?",
+      "question_type": "open_ended",
+      "options": [
+        "Definitely",
+        "I will try",
+        "Unlikely",
+        "Depends"
+      ],
+      "order": 16,
+      "gender": "female"
+    },
+    {
+      "id": 334,
+      "subtopic_id": 86,
+      "question_text": "Willingness for other halal intimacy (not intercourse) during menstruation?",
+      "question_type": "open_ended",
+      "options": [
+        "Yes",
+        "Maybe",
+        "No",
+        "Unsure"
+      ],
+      "order": 17,
+      "gender": "female"
+    },
+    {
+      "id": 335,
+      "subtopic_id": 86,
+      "question_text": "Importance of privacy around physical/emotional state?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important"
+      ],
+      "order": 18,
+      "gender": "female"
+    },
+    {
+      "id": 336,
+      "subtopic_id": 86,
+      "question_text": "What would feel intrusive/uncomfortable? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Too many questions/check-ins",
+        "Minimising symptoms",
+        "Sharing private details with others",
+        "Using it against me in conflict",
+        "Pressuring intimacy",
+        "Unsure"
+      ],
+      "order": 19,
+      "gender": "female"
+    },
+    {
+      "id": 337,
+      "subtopic_id": 86,
+      "question_text": "If disagreement arises during difficult time, preference?",
+      "question_type": "open_ended",
+      "options": [
+        "Pause and revisit later",
+        "Address gently",
+        "Avoid until I feel better",
+        "Unsure"
+      ],
+      "order": 20,
+      "gender": "female"
+    },
+    {
+      "id": 338,
+      "subtopic_id": 86,
+      "question_text": "What helps you feel safe enough to communicate then? (Select all)",
+      "question_type": "multi_choice",
+      "options": [
+        "Gentle tone",
+        "No defensiveness",
+        "Validation first",
+        "Time to calm down",
+        "Privacy",
+        "Unsure"
+      ],
+      "order": 21,
+      "gender": "female"
+    },
+    {
+      "id": 339,
+      "subtopic_id": 86,
+      "question_text": "Openness to educating husband about changes?",
+      "question_type": "open_ended",
+      "options": [
+        "Very open",
+        "Open if he is receptive",
+        "Reluctant",
+        "Not open"
+      ],
+      "order": 22,
+      "gender": "female"
+    },
+    {
+      "id": 340,
+      "subtopic_id": 86,
+      "question_text": "Importance learning and adjustment go both ways?",
+      "question_type": "open_ended",
+      "options": [
+        "Extremely important",
+        "Important",
+        "Somewhat important",
+        "Not important",
+        "Belief that being understood here affects marital happiness:",
+        "Strongly agree",
+        "Agree",
+        "Unsure",
+        "Disagree"
+      ],
+      "order": 23,
+      "gender": "female"
+    },
+    {
+      "id": 341,
+      "subtopic_id": 86,
+      "question_text": "What would make you feel deeply supported in this area?",
+      "question_type": "open_ended",
+      "options": [
+        "Consistent empathy and patience",
+        "Practical support without being asked",
+        "Respect for boundaries and privacy",
+        "Open communication without judgement",
+        "Unsure"
+      ],
+      "order": 24,
+      "gender": "female"
+    }
+  ]
+}

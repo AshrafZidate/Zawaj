@@ -4,6 +4,9 @@
 //
 //  Created on 2025-12-22.
 //
+//  DEPRECATED: This view is kept for backwards compatibility.
+//  New implementations should use AnswersReviewSheet in QuestionsView.swift
+//
 
 import SwiftUI
 
@@ -110,7 +113,7 @@ struct AnswerCard: View {
 struct ComparisonSection: View {
     let userAnswer: String
     let partnerAnswer: String
-    let questionType: QuestionType
+    let questionType: LegacyQuestionType
 
     private var answersMatch: Bool {
         userAnswer.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) ==

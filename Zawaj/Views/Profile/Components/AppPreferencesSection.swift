@@ -28,8 +28,8 @@ struct AppPreferencesSection: View {
                 .padding(.top, 16)
 
                 Picker("", selection: $viewModel.defaultAnswerFormat) {
-                    Text("Open Ended").tag(QuestionType.openEnded)
-                    Text("Multiple Choice").tag(QuestionType.multipleChoice)
+                    Text("Open Ended").tag(LegacyQuestionType.openEnded)
+                    Text("Multiple Choice").tag(LegacyQuestionType.multipleChoice)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal, 20)

@@ -47,3 +47,5 @@ GoogleService-Info.plist
 # Environment files
 .env
 .env.*
+node_modules/
+serviceAccountKey.json

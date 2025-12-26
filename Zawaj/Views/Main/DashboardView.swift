@@ -37,13 +37,9 @@ struct DashboardView: View {
             AddPartnerView()
         }
         .sheet(item: $selectedPartner) { partner in
-            if let question = viewModel.todayQuestion {
-                AnswerRevealSheet(
-                    viewModel: viewModel,
-                    question: question,
-                    partner: partner
-                )
-            }
+            // Show answers review sheet for selected partner
+            // The QuestionsView handles this via AnswersReviewSheet
+            AnswersReviewSheetWrapper(viewModel: viewModel, partner: partner)
         }
         .onAppear {
             Task {
@@ -87,38 +83,10 @@ struct HomeTabContent: View {
         return "\(inviteMessage)\n\n\(appStoreLink)"
     }
 
-    // Sort partners by answer status priority, then by connection order
+    // Sort partners - for now, maintain original order
+    // Future: Could sort by answer status per partnership
     private var sortedPartners: [User] {
-        viewModel.partners.sorted { partner1, partner2 in
-            let status1 = statusPriority(for: partner1)
-            let status2 = statusPriority(for: partner2)
-
-            if status1 != status2 {
-                return status1 < status2
-            }
-
-            // Same status - maintain original order (connection order)
-            guard let index1 = viewModel.partners.firstIndex(where: { $0.id == partner1.id }),
-                  let index2 = viewModel.partners.firstIndex(where: { $0.id == partner2.id }) else {
-                return false
-            }
-            return index1 < index2
-        }
-    }
-
-    // Priority: 1 = Both answered, 2 = Partner answered (user needs to), 3 = Both unanswered, 4 = User answered (waiting)
-    private func statusPriority(for partner: User) -> Int {
-        let partnerAnswered = viewModel.partnerAnswers[partner.id] ?? false
-
-        if viewModel.userAnswered && partnerAnswered {
-            return 1 // Both answered - review ready
-        } else if !viewModel.userAnswered && partnerAnswered {
-            return 2 // Partner answered, user needs to answer
-        } else if !viewModel.userAnswered && !partnerAnswered {
-            return 3 // Both unanswered
-        } else {
-            return 4 // User answered, waiting for partner
-        }
+        viewModel.partners
     }
 
     var body: some View {
@@ -154,23 +122,23 @@ struct HomeTabContent: View {
                                         .foregroundColor(.white)
 
                                     ForEach(sortedPartners) { partner in
-                                        PartnerCard(
+                                        PartnerCardNew(
                                             partner: partner,
-                                            userAnswered: viewModel.userAnswered,
-                                            partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false,
-                                            todayTopic: viewModel.todayQuestion?.topic,
+                                            viewModel: viewModel,
                                             onTap: {
-                                                let status = PartnerAnswerStatus.determine(
-                                                    userAnswered: viewModel.userAnswered,
-                                                    partnerAnswered: viewModel.partnerAnswers[partner.id] ?? false
-                                                )
-
-                                                if status == .reviewAnswers {
-                                                    selectedPartner = partner
-                                                } else {
-                                                    selectedPartnerForQuestions = partner
-                                                    selectedTab = 1
+                                                // Navigate to questions tab and select this partner
+                                                Task {
+                                                    await viewModel.selectPartner(partner)
                                                 }
+                                                selectedPartnerForQuestions = partner
+                                                selectedTab = 1
+                                            },
+                                            onReview: {
+                                                // Show review sheet
+                                                Task {
+                                                    await viewModel.selectPartner(partner)
+                                                }
+                                                selectedPartner = partner
                                             }
                                         )
                                     }
@@ -191,6 +159,7 @@ struct HomeTabContent: View {
                     }
                 }
             }
+            
             .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
             .toolbar {
                 if viewModel.hasPartner {
@@ -344,6 +313,261 @@ struct ProfileTabContent: View {
             GradientBackground()
             ProfileView()
         }
+    }
+}
+
+// MARK: - Partner Card (New)
+
+struct PartnerCardNew: View {
+    let partner: User
+    @ObservedObject var viewModel: DashboardViewModel
+    let onTap: () -> Void
+    let onReview: () -> Void
+
+    private var isSelectedPartner: Bool {
+        viewModel.selectedPartner?.id == partner.id
+    }
+
+    private var topicName: String? {
+        guard isSelectedPartner else { return nil }
+        return viewModel.todayTopic?.name
+    }
+
+    private var status: PartnerAnswerStatus {
+        guard isSelectedPartner else { return .answerBoth }
+
+        if viewModel.isPartnershipComplete {
+            return .newQuestionsTomorrow
+        }
+
+        let allUserAnswered = viewModel.isAllQuestionsComplete
+        let allPartnerAnswered = !viewModel.questions.isEmpty && viewModel.questions.allSatisfy { question in
+            viewModel.partnerAnswers[question.id] != nil
+        }
+
+        return PartnerAnswerStatus.determine(userAnswered: allUserAnswered, partnerAnswered: allPartnerAnswered)
+    }
+
+    private var topicText: String {
+        guard let topic = topicName else {
+            return "Tap to see today's questions"
+        }
+
+        switch status {
+        case .reviewAnswers, .newQuestionsTomorrow:
+            return "Today's topic was \(topic)"
+        default:
+            return "Today's topic is \(topic)"
+        }
+    }
+
+    var body: some View {
+        Button(action: {
+            if status == .reviewAnswers {
+                onReview()
+            } else {
+                onTap()
+            }
+        }) {
+            HStack {
+                // Partner Info
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(partner.fullName)
+                        .font(.body.weight(.medium))
+                        .foregroundColor(.white)
+
+                    Text(topicText)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+
+                Spacer()
+
+                // Status indicator
+                HStack(spacing: 6) {
+                    Image(systemName: status.icon)
+                        .font(.system(size: 18))
+                        .foregroundColor(status.iconColor)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.4))
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 12)
+            .glassEffect(.clear)
+        }
+        .buttonStyle(PartnerCardButtonStyle())
+        .onAppear {
+            // Load partnership data if this is the first/only partner
+            if viewModel.selectedPartner == nil {
+                Task {
+                    await viewModel.selectPartner(partner)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Answers Review Sheet Wrapper
+
+struct AnswersReviewSheetWrapper: View {
+    @ObservedObject var viewModel: DashboardViewModel
+    let partner: User
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                GradientBackground()
+
+                if viewModel.questions.isEmpty {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+
+                        Text("Loading answers...")
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                } else {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Header
+                            VStack(spacing: 8) {
+                                if let topic = viewModel.todayTopic {
+                                    Text(topic.name)
+                                        .font(.title2.weight(.bold))
+                                        .foregroundColor(.white)
+                                }
+
+                                if let subtopic = viewModel.todaySubtopic {
+                                    Text(subtopic.name)
+                                        .font(.subheadline)
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                            }
+                            .padding(.top, 8)
+
+                            // Questions and Answers
+                            ForEach(viewModel.questions) { question in
+                                AnswerComparisonCardDashboard(
+                                    question: question,
+                                    userAnswer: viewModel.userAnswers[question.id],
+                                    partnerAnswer: viewModel.partnerAnswers[question.id],
+                                    partnerName: partner.fullName.split(separator: " ").first.map(String.init) ?? "Partner"
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 40)
+                    }
+                }
+            }
+            .navigationTitle("Compare Answers")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                }
+            }
+        }
+        .onAppear {
+            // Refresh partner answers when sheet appears
+            Task {
+                await viewModel.refreshPartnerAnswers()
+            }
+        }
+    }
+}
+
+// MARK: - Answer Comparison Card (Dashboard)
+
+struct AnswerComparisonCardDashboard: View {
+    let question: Question
+    let userAnswer: Answer?
+    let partnerAnswer: Answer?
+    let partnerName: String
+
+    private var answersMatch: Bool {
+        guard let userText = userAnswer?.answerText,
+              let partnerText = partnerAnswer?.answerText else {
+            return false
+        }
+        return userText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) ==
+               partnerText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Question
+            Text(question.questionText)
+                .font(.headline)
+                .foregroundColor(.white)
+
+            // Your Answer
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundColor(Color(red: 0.94, green: 0.26, blue: 0.42))
+                    Text("Your Answer")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+
+                if let answer = userAnswer {
+                    Text(answer.answerText)
+                        .font(.body)
+                        .foregroundColor(.white)
+                } else {
+                    Text("Not answered yet")
+                        .font(.body)
+                        .italic()
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
+
+            // Partner's Answer
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.circle")
+                        .foregroundColor(.blue)
+                    Text("\(partnerName)'s Answer")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+
+                if let answer = partnerAnswer {
+                    Text(answer.answerText)
+                        .font(.body)
+                        .foregroundColor(.white)
+                } else {
+                    Text("Waiting for answer...")
+                        .font(.body)
+                        .italic()
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
+
+            // Match indicator (for choice questions with options)
+            if (question.questionType == .singleChoice || question.questionType == .openEnded) &&
+               question.options != nil && userAnswer != nil && partnerAnswer != nil {
+                HStack(spacing: 8) {
+                    Image(systemName: answersMatch ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                        .foregroundColor(answersMatch ? .green : .orange)
+
+                    Text(answersMatch ? "You both chose the same!" : "Different choices - discuss together")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                .padding(.top, 4)
+            }
+        }
+        .padding(20)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 }
 

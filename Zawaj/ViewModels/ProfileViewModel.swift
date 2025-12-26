@@ -29,7 +29,10 @@ class ProfileViewModel: ObservableObject {
     @Published var streakNotifications: Bool = true
 
     // MARK: - App Preferences
-    @Published var defaultAnswerFormat: QuestionType = .openEnded
+    // User preference for how multi_choice questions are displayed:
+    // .openEnded = Show as free text input
+    // .multipleChoice = Show as checkbox selection
+    @Published var defaultAnswerFormat: LegacyQuestionType = .openEnded
 
     // MARK: - Sheet States
     @Published var showingEditProfile: Bool = false

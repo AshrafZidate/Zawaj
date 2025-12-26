@@ -14,19 +14,13 @@ struct QuestionsView: View {
     @State private var selectedPartnerForReveal: User?
     @State private var tabViewId: UUID = UUID()
 
-    // Partners ordered by connection order (who they partnered with first)
     private var sortedPartners: [User] {
         viewModel.partners
     }
 
-    private var currentPartnerIndex: Int {
-        guard let selectedId = selectedPartnerId else { return 0 }
-        return sortedPartners.firstIndex(where: { $0.id == selectedId }) ?? 0
-    }
-
     var body: some View {
         VStack(spacing: 0) {
-            // Page indicator dots
+            // Page indicator dots for multiple partners
             if sortedPartners.count > 1 {
                 HStack(spacing: 8) {
                     ForEach(sortedPartners) { partner in
@@ -61,6 +55,14 @@ struct QuestionsView: View {
                 selectedPartnerId = firstPartner.id
             }
         }
+        .onChange(of: selectedPartnerId) { _, newPartnerId in
+            if let partnerId = newPartnerId,
+               let partner = sortedPartners.first(where: { $0.id == partnerId }) {
+                Task {
+                    await viewModel.selectPartner(partner)
+                }
+            }
+        }
         .onChange(of: selectedPartnerForQuestions) { _, partner in
             if let partner = partner {
                 selectedPartnerId = partner.id
@@ -69,13 +71,7 @@ struct QuestionsView: View {
             }
         }
         .sheet(item: $selectedPartnerForReveal) { partner in
-            if let question = viewModel.todayQuestion {
-                AnswerRevealSheet(
-                    viewModel: viewModel,
-                    question: question,
-                    partner: partner
-                )
-            }
+            AnswersReviewSheet(viewModel: viewModel, partner: partner)
         }
     }
 }
@@ -87,62 +83,51 @@ struct PartnerQuestionPage: View {
     let partner: User
     let onViewAnswer: () -> Void
 
-    private var partnerAnswered: Bool {
-        viewModel.partnerAnswers[partner.id] ?? false
-    }
-
-    private var status: PartnerAnswerStatus {
-        PartnerAnswerStatus.determine(userAnswered: viewModel.userAnswered, partnerAnswered: partnerAnswered)
+    private var hasPartnerAnsweredCurrentQuestion: Bool {
+        guard let question = viewModel.currentQuestion else { return false }
+        return viewModel.partnerAnswers[question.id] != nil
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Partner Header
-                VStack(spacing: 8) {
-                    Text(partner.fullName)
-                        .font(.title2.weight(.bold))
-                        .foregroundColor(.white)
+                // Header with partner name and topic info
+                QuestionHeader(
+                    partnerName: partner.fullName,
+                    topicName: viewModel.todayTopic?.name,
+                    subtopicName: viewModel.todaySubtopic?.name,
+                    progressText: viewModel.progressText
+                )
 
-                    if let question = viewModel.todayQuestion {
-                        Text(question.topic)
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                }
-                .padding(.top, 32)
+                // Main content based on state
+                if viewModel.isPartnershipComplete {
+                    PartnershipCompleteView()
+                } else if viewModel.isAllQuestionsComplete {
+                    AllQuestionsCompleteView(
+                        partner: partner,
+                        hasPartnerAnswered: !viewModel.partnerAnswers.isEmpty,
+                        onViewAnswers: onViewAnswer
+                    )
+                } else if let question = viewModel.currentQuestion {
+                    // Show current question
+                    QuestionCardNew(question: question)
 
-                // Question Card
-                if let question = viewModel.todayQuestion {
-                    QuestionCard(question: question)
-                }
-
-                // Status-based content
-                switch status {
-                case .reviewAnswers:
-                    // Both answered - show review button
-                    ReviewReadyView(partner: partner, onViewAnswer: onViewAnswer)
-
-                case .waitingForPartner:
-                    // User answered, waiting for partner
-                    WaitingForPartnerView(partner: partner)
-
-                case .answerToUnlock, .answerBoth:
-                    // User needs to answer
-                    if let question = viewModel.todayQuestion {
-                        AnswerInputSection(
-                            question: question,
-                            onSubmit: { answer in
-                                Task {
-                                    await viewModel.submitAnswer(questionId: question.id, answerText: answer)
-                                }
+                    // Answer input section
+                    AnswerInputSectionNew(
+                        question: question,
+                        userPreference: viewModel.currentUser?.answerPreference ?? "choice",
+                        onSubmit: { answerText, selectedOptions in
+                            Task {
+                                await viewModel.submitAnswer(
+                                    answerText: answerText,
+                                    selectedOptions: selectedOptions
+                                )
                             }
-                        )
-                    }
-
-                case .newQuestionsTomorrow:
-                    // All done for today
-                    NewQuestionsTomorrowView()
+                        }
+                    )
+                } else {
+                    // Loading or no questions state
+                    LoadingQuestionsView()
                 }
             }
             .padding(.horizontal, 24)
@@ -151,154 +136,66 @@ struct PartnerQuestionPage: View {
     }
 }
 
-// MARK: - Review Ready View
+// MARK: - Question Header
 
-struct ReviewReadyView: View {
-    let partner: User
-    let onViewAnswer: () -> Void
+struct QuestionHeader: View {
+    let partnerName: String
+    let topicName: String?
+    let subtopicName: String?
+    let progressText: String
 
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.green)
-
-            Text("Both answered!")
-                .font(.title3.weight(.semibold))
+        VStack(spacing: 8) {
+            Text(partnerName)
+                .font(.title2.weight(.bold))
                 .foregroundColor(.white)
 
-            Text("See how \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) answered")
-                .font(.body)
-                .foregroundColor(.white.opacity(0.7))
-                .multilineTextAlignment(.center)
-
-            GlassButtonPrimary(title: "View Answers") {
-                onViewAnswer()
+            if let topic = topicName {
+                Text(topic)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.white.opacity(0.8))
             }
-            .padding(.top, 8)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-    }
-}
 
-// MARK: - Waiting For Partner View
+            if let subtopic = subtopicName {
+                Text(subtopic)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
+            }
 
-struct WaitingForPartnerView: View {
-    let partner: User
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "clock.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.blue)
-
-            Text("Waiting for \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName)")
-                .font(.title3.weight(.semibold))
-                .foregroundColor(.white)
-
-            Text("You've answered! We'll notify you when they respond.")
-                .font(.body)
-                .foregroundColor(.white.opacity(0.7))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-    }
-}
-
-// MARK: - New Questions Tomorrow View
-
-struct NewQuestionsTomorrowView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "moon.stars.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.purple)
-
-            Text("All done for today!")
-                .font(.title3.weight(.semibold))
-                .foregroundColor(.white)
-
-            Text("New questions will be available tomorrow.")
-                .font(.body)
-                .foregroundColor(.white.opacity(0.7))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-    }
-}
-
-// MARK: - Answer Reveal Sheet
-
-struct AnswerRevealSheet: View {
-    @ObservedObject var viewModel: DashboardViewModel
-    let question: DailyQuestion
-    let partner: User
-    @State private var userAnswer: String = ""
-    @State private var partnerAnswer: String = ""
-    @State private var isLoading: Bool = true
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        ZStack {
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.5)
-            } else {
-                AnswerRevealView(
-                    question: question,
-                    partner: partner,
-                    userAnswer: userAnswer,
-                    partnerAnswer: partnerAnswer
-                )
+            if !progressText.isEmpty {
+                Text("Question \(progressText)")
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(.white.opacity(0.5))
+                    .padding(.top, 4)
             }
         }
-        .onAppear {
-            Task {
-                let answers = await viewModel.getAnswers(for: question.id)
-                await MainActor.run {
-                    userAnswer = answers.userAnswer ?? ""
-                    partnerAnswer = answers.partnerAnswers[partner.id] ?? ""
-                    isLoading = false
-                }
-            }
-        }
+        .padding(.top, 32)
     }
 }
 
-// MARK: - Question Card
+// MARK: - Question Card (New)
 
-struct QuestionCard: View {
-    let question: DailyQuestion
+struct QuestionCardNew: View {
+    let question: Question
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            // Question type badge
+            HStack {
+                Text(question.questionType == .singleChoice ? "Choose one" : "Select all that apply")
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(.white.opacity(0.6))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Color.white.opacity(0.1), in: Capsule())
+
+                Spacer()
+            }
+
             Text(question.questionText)
                 .font(.title3.weight(.semibold))
                 .foregroundColor(.white)
                 .fixedSize(horizontal: false, vertical: true)
-
-            if question.questionType == .multipleChoice, let options = question.options {
-                VStack(spacing: 8) {
-                    ForEach(Array(options.enumerated()), id: \.offset) { _, option in
-                        HStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.2))
-                                .frame(width: 8, height: 8)
-
-                            Text(option)
-                                .font(.body)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
-                }
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -306,137 +203,111 @@ struct QuestionCard: View {
     }
 }
 
-// MARK: - Partner Question Status Card
+// MARK: - Answer Input Section (New)
 
-struct PartnerQuestionStatusCard: View {
-    let partner: User
-    let userAnswered: Bool
-    let partnerAnswered: Bool
-    let onAnswerQuestion: () -> Void
-    let onViewAnswer: () -> Void
-
-    private var status: PartnerAnswerStatus {
-        PartnerAnswerStatus.determine(userAnswered: userAnswered, partnerAnswered: partnerAnswered)
-    }
-
-    var body: some View {
-        Button(action: {
-            if status == .reviewAnswers {
-                onViewAnswer()
-            } else {
-                onAnswerQuestion()
-            }
-        }) {
-            HStack(spacing: 12) {
-                // Partner initial
-                Circle()
-                    .fill(Color.white.opacity(0.2))
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Text(String(partner.fullName.prefix(1)))
-                            .font(.headline)
-                            .foregroundColor(.white)
-                    )
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(partner.fullName.split(separator: " ").first.map(String.init) ?? "")
-                        .font(.body.weight(.medium))
-                        .foregroundColor(.white)
-
-                    HStack(spacing: 4) {
-                        Image(systemName: status.icon)
-                            .font(.caption2)
-                            .foregroundColor(status.iconColor)
-
-                        Text(status.message)
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.4))
-            }
-            .padding(12)
-            .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-        }
-        .buttonStyle(PlainButtonStyle())
-        .padding(.horizontal, 24)
-    }
-}
-
-// MARK: - Answer Input Section
-
-struct AnswerInputSection: View {
-    let question: DailyQuestion
-    let onSubmit: (String) -> Void
+struct AnswerInputSectionNew: View {
+    let question: Question
+    let userPreference: String  // "open-ended" or "multiple-choice"
+    let onSubmit: (String, [String]?) -> Void
 
     @State private var answerText: String = ""
-    @State private var selectedOption: String?
+    @State private var selectedOption: String? = nil
+    @State private var selectedOptions: Set<String> = []
+    @State private var useOpenEnded: Bool = false
+
+    // Determine display mode based on question type and user preference
+    // singleChoice: Always radio buttons (pick one)
+    // multiChoice + open-ended pref: Free text
+    // multiChoice + multiple-choice pref: Checkboxes (pick multiple), can toggle to free text
+    // openEnded + open-ended pref: Free text
+    // openEnded + multiple-choice pref: Radio buttons (pick one), can toggle to free text
+    private var displayMode: AnswerDisplayMode {
+        switch question.questionType {
+        case .singleChoice:
+            // Always radio buttons, no toggle
+            return .singleChoice
+        case .multiChoice:
+            if userPreference == "open-ended" {
+                return .openEnded
+            } else {
+                return useOpenEnded ? .openEnded : .multiChoice
+            }
+        case .openEnded:
+            if userPreference == "open-ended" {
+                return .openEnded
+            } else {
+                return useOpenEnded ? .openEnded : .singleChoice
+            }
+        }
+    }
+
+    // Whether to show the toggle button
+    private var showToggle: Bool {
+        switch question.questionType {
+        case .singleChoice:
+            return false  // singleChoice never has toggle
+        case .multiChoice:
+            return userPreference != "open-ended"  // Can toggle if pref is multiple-choice
+        case .openEnded:
+            return userPreference != "open-ended"  // Can toggle if pref is multiple-choice
+        }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Your Answer")
-                .font(.headline)
-                .foregroundColor(.white)
-
-            if question.questionType == .openEnded {
-                // Open-ended text input
-                VStack(alignment: .leading, spacing: 8) {
-                    TextEditor(text: $answerText)
-                        .frame(minHeight: 120)
-                        .padding(12)
-                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+            // Header with optional toggle
+            if showToggle {
+                HStack {
+                    Text("Your Answer")
+                        .font(.headline)
                         .foregroundColor(.white)
-                        .scrollContentBackground(.hidden)
 
-                    Text("\(answerText.count)/500")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.5))
-                }
-            } else if question.questionType == .multipleChoice, let options = question.options {
-                // Multiple choice selection
-                VStack(spacing: 12) {
-                    ForEach(options, id: \.self) { option in
-                        Button(action: {
-                            selectedOption = option
-                        }) {
-                            HStack {
-                                Circle()
-                                    .fill(selectedOption == option ? Color(red: 0.94, green: 0.26, blue: 0.42) : Color.white.opacity(0.2))
-                                    .frame(width: 20, height: 20)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.white.opacity(0.4), lineWidth: 1)
-                                    )
+                    Spacer()
 
-                                Text(option)
-                                    .font(.body)
-                                    .foregroundColor(.white)
-
-                                Spacer()
-                            }
-                            .padding(16)
-                            .background(
-                                selectedOption == option ?
-                                Color.white.opacity(0.15) : Color.white.opacity(0.05),
-                                in: RoundedRectangle(cornerRadius: 12)
-                            )
+                    Button(action: {
+                        useOpenEnded.toggle()
+                        // Clear selections when toggling
+                        selectedOptions.removeAll()
+                        selectedOption = nil
+                        answerText = ""
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: useOpenEnded ? "list.bullet" : "text.alignleft")
+                                .font(.caption)
+                            Text(useOpenEnded ? "Show options" : "Write freely")
+                                .font(.caption)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.white.opacity(0.1), in: Capsule())
                     }
                 }
+            } else {
+                Text("Your Answer")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+
+            // Input based on display mode
+            switch displayMode {
+            case .openEnded:
+                OpenEndedInput(answerText: $answerText)
+            case .singleChoice:
+                SingleChoiceInput(
+                    options: question.options ?? [],
+                    selectedOption: $selectedOption
+                )
+            case .multiChoice:
+                MultiChoiceInput(
+                    options: question.options ?? [],
+                    selectedOptions: $selectedOptions
+                )
             }
 
             // Submit Button
             GlassButtonPrimary(title: "Submit Answer") {
-                let answer = question.questionType == .openEnded ? answerText : (selectedOption ?? "")
-                if !answer.isEmpty {
-                    onSubmit(answer)
-                }
+                submitAnswer()
             }
             .disabled(!canSubmit)
         }
@@ -445,48 +316,361 @@ struct AnswerInputSection: View {
     }
 
     private var canSubmit: Bool {
-        if question.questionType == .openEnded {
+        switch displayMode {
+        case .openEnded:
             return !answerText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        } else {
+        case .singleChoice:
             return selectedOption != nil
+        case .multiChoice:
+            return !selectedOptions.isEmpty
+        }
+    }
+
+    private func submitAnswer() {
+        switch displayMode {
+        case .openEnded:
+            onSubmit(answerText.trimmingCharacters(in: .whitespacesAndNewlines), nil)
+        case .singleChoice:
+            if let option = selectedOption {
+                onSubmit(option, [option])
+            }
+        case .multiChoice:
+            let optionsArray = Array(selectedOptions)
+            onSubmit(optionsArray.joined(separator: ", "), optionsArray)
         }
     }
 }
 
-// MARK: - Waiting for Partners View
+// Display mode for answer input
+enum AnswerDisplayMode {
+    case openEnded      // Free text input
+    case singleChoice   // Radio buttons (pick one)
+    case multiChoice    // Checkboxes (pick multiple)
+}
 
-struct WaitingForPartnersView: View {
-    let partners: [User]
-    let partnerAnswers: [String: Bool]
+// MARK: - Open Ended Input
 
-    private var partnersWhoAnswered: Int {
-        partnerAnswers.values.filter { $0 }.count
+struct OpenEndedInput: View {
+    @Binding var answerText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            TextEditor(text: $answerText)
+                .frame(minHeight: 120)
+                .padding(12)
+                .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                .foregroundColor(.white)
+                .scrollContentBackground(.hidden)
+
+            Text("\(answerText.count)/500")
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.5))
+        }
     }
+}
 
-    private var allPartnersAnswered: Bool {
-        !partners.isEmpty && partnersWhoAnswered == partners.count
+// MARK: - Single Choice Input
+
+struct SingleChoiceInput: View {
+    let options: [String]
+    @Binding var selectedOption: String?
+
+    var body: some View {
+        VStack(spacing: 12) {
+            ForEach(options, id: \.self) { option in
+                Button(action: {
+                    selectedOption = option
+                }) {
+                    HStack {
+                        Circle()
+                            .fill(selectedOption == option ? Color(red: 0.94, green: 0.26, blue: 0.42) : Color.clear)
+                            .frame(width: 20, height: 20)
+                            .overlay(
+                                Circle()
+                                    .stroke(selectedOption == option ? Color(red: 0.94, green: 0.26, blue: 0.42) : Color.white.opacity(0.4), lineWidth: 2)
+                            )
+
+                        Text(option)
+                            .font(.body)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
+
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(
+                        selectedOption == option ?
+                        Color.white.opacity(0.15) : Color.white.opacity(0.05),
+                        in: RoundedRectangle(cornerRadius: 12)
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
     }
+}
+
+// MARK: - Multi Choice Input
+
+struct MultiChoiceInput: View {
+    let options: [String]
+    @Binding var selectedOptions: Set<String>
+
+    var body: some View {
+        VStack(spacing: 12) {
+            ForEach(options, id: \.self) { option in
+                Button(action: {
+                    if selectedOptions.contains(option) {
+                        selectedOptions.remove(option)
+                    } else {
+                        selectedOptions.insert(option)
+                    }
+                }) {
+                    HStack {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(selectedOptions.contains(option) ? Color(red: 0.94, green: 0.26, blue: 0.42) : Color.clear)
+                            .frame(width: 20, height: 20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(selectedOptions.contains(option) ? Color(red: 0.94, green: 0.26, blue: 0.42) : Color.white.opacity(0.4), lineWidth: 2)
+                            )
+                            .overlay(
+                                selectedOptions.contains(option) ?
+                                Image(systemName: "checkmark")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundColor(.white)
+                                : nil
+                            )
+
+                        Text(option)
+                            .font(.body)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
+
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(
+                        selectedOptions.contains(option) ?
+                        Color.white.opacity(0.15) : Color.white.opacity(0.05),
+                        in: RoundedRectangle(cornerRadius: 12)
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+}
+
+// MARK: - All Questions Complete View
+
+struct AllQuestionsCompleteView: View {
+    let partner: User
+    let hasPartnerAnswered: Bool
+    let onViewAnswers: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: allPartnersAnswered ? "checkmark.circle.fill" : "clock.fill")
+            Image(systemName: hasPartnerAnswered ? "checkmark.circle.fill" : "clock.fill")
                 .font(.system(size: 60))
-                .foregroundColor(allPartnersAnswered ? .green : .blue)
+                .foregroundColor(hasPartnerAnswered ? .green : .blue)
 
-            Text(allPartnersAnswered ? "All partners answered!" : "Waiting for partners")
+            Text(hasPartnerAnswered ? "Both answered!" : "You've finished!")
                 .font(.title3.weight(.semibold))
                 .foregroundColor(.white)
 
-            Text(allPartnersAnswered ?
-                 "Tap on a partner above to see their answer" :
-                 "\(partnersWhoAnswered)/\(partners.count) partners have answered"
-            )
+            Text(hasPartnerAnswered ?
+                 "See how \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) answered" :
+                 "Waiting for \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) to complete")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+
+            if hasPartnerAnswered {
+                GlassButtonPrimary(title: "View Answers") {
+                    onViewAnswers()
+                }
+                .padding(.top, 8)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+// MARK: - Partnership Complete View
+
+struct PartnershipCompleteView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "star.circle.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.yellow)
+
+            Text("All Done!")
+                .font(.title3.weight(.semibold))
+                .foregroundColor(.white)
+
+            Text("You've completed all the questions with this partner. Check the Archives to review past answers.")
                 .font(.body)
                 .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+// MARK: - Loading Questions View
+
+struct LoadingQuestionsView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .scaleEffect(1.2)
+
+            Text("Loading questions...")
+                .font(.body)
+                .foregroundColor(.white.opacity(0.7))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+// MARK: - Answers Review Sheet
+
+struct AnswersReviewSheet: View {
+    @ObservedObject var viewModel: DashboardViewModel
+    let partner: User
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        ZStack {
+            GradientBackground()
+
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    HStack {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+
+                        Spacer()
+
+                        Text("Answers Review")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        Spacer()
+
+                        // Spacer for balance
+                        Color.clear.frame(width: 28, height: 28)
+                    }
+                    .padding(.top, 8)
+
+                    // Topic/Subtopic info
+                    if let topic = viewModel.todayTopic, let subtopic = viewModel.todaySubtopic {
+                        VStack(spacing: 4) {
+                            Text(topic.name)
+                                .font(.title3.weight(.semibold))
+                                .foregroundColor(.white)
+
+                            Text(subtopic.name)
+                                .font(.subheadline)
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                    }
+
+                    // Questions and answers
+                    ForEach(viewModel.questions) { question in
+                        AnswerComparisonCard(
+                            question: question,
+                            userAnswer: viewModel.userAnswers[question.id],
+                            partnerAnswer: viewModel.partnerAnswers[question.id],
+                            partnerName: partner.fullName
+                        )
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+}
+
+// MARK: - Answer Comparison Card
+
+struct AnswerComparisonCard: View {
+    let question: Question
+    let userAnswer: Answer?
+    let partnerAnswer: Answer?
+    let partnerName: String
+
+    private var partnerFirstName: String {
+        partnerName.split(separator: " ").first.map(String.init) ?? partnerName
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Question
+            Text(question.questionText)
+                .font(.headline)
+                .foregroundColor(.white)
+
+            // Your answer
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundColor(Color(red: 0.94, green: 0.26, blue: 0.42))
+                    Text("Your answer")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+
+                if let answer = userAnswer {
+                    Text(answer.answerText)
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.9))
+                } else {
+                    Text("Not answered yet")
+                        .font(.body.italic())
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
+
+            Divider()
+                .background(Color.white.opacity(0.2))
+
+            // Partner's answer
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.circle")
+                        .foregroundColor(.blue)
+                    Text("\(partnerFirstName)'s answer")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+
+                if let answer = partnerAnswer {
+                    Text(answer.answerText)
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.9))
+                } else {
+                    Text("Not answered yet")
+                        .font(.body.italic())
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
+        }
+        .padding(20)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 }
