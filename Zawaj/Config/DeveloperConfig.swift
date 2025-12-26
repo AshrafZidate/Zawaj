@@ -14,7 +14,7 @@ struct DeveloperConfig {
     static let isEnabled = true
 
     /// When enabled, automatically logs into the first test account on app launch
-    static let autoLoginEnabled = false
+    static let autoLoginEnabled = true
 
     /// Test accounts for quick switching during development
     /// Credentials are stored in DeveloperCredentials.swift (excluded from git)

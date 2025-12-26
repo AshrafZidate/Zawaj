@@ -397,6 +397,36 @@ class FirestoreService {
         return try decoder.decode(DailySubtopicAssignment.self, from: document.data() ?? [:])
     }
 
+    /// Gets the active subtopic assignment for a partnership (today's OR most recent incomplete)
+    /// This handles the case where users haven't completed yesterday's assignment
+    func getActiveSubtopicAssignment(partnershipId: String) async throws -> DailySubtopicAssignment? {
+        // First check for today's assignment
+        let today = formatDate(Date())
+        let todayDocId = "\(partnershipId)_\(today)"
+
+        let todayDoc = try await db.collection("daily_subtopic_assignments")
+            .document(todayDocId)
+            .getDocument()
+
+        if todayDoc.exists {
+            let decoder = Firestore.Decoder()
+            return try decoder.decode(DailySubtopicAssignment.self, from: todayDoc.data() ?? [:])
+        }
+
+        // If no today's assignment, find most recent incomplete one
+        let querySnapshot = try await db.collection("daily_subtopic_assignments")
+            .whereField("partnership_id", isEqualTo: partnershipId)
+            .whereField("both_completed", isEqualTo: false)
+            .order(by: "date", descending: true)
+            .limit(to: 1)
+            .getDocuments()
+
+        guard let document = querySnapshot.documents.first else { return nil }
+
+        let decoder = Firestore.Decoder()
+        return try decoder.decode(DailySubtopicAssignment.self, from: document.data())
+    }
+
     /// Creates a daily subtopic assignment
     func createDailySubtopicAssignment(
         partnershipId: String,
@@ -421,6 +451,94 @@ class FirestoreService {
             .setData(assignmentData)
 
         return assignment
+    }
+
+    /// Marks a user as completed for a subtopic assignment
+    func markUserCompletedSubtopic(partnershipId: String, date: String, userId: String) async throws {
+        let documentId = "\(partnershipId)_\(date)"
+
+        try await db.collection("daily_subtopic_assignments")
+            .document(documentId)
+            .updateData([
+                "user_completion.\(userId)": Timestamp(date: Date())
+            ])
+    }
+
+    /// Checks if both users have completed their questions
+    /// The Cloud Function will update both_completed when it detects both have completed
+    /// Returns true if both users have completion entries
+    func checkIfBothCompleted(partnershipId: String, date: String, userIds: [String]) async throws -> Bool {
+        let documentId = "\(partnershipId)_\(date)"
+        let docRef = db.collection("daily_subtopic_assignments").document(documentId)
+
+        let document = try await docRef.getDocument()
+        guard document.exists else { return false }
+
+        let decoder = Firestore.Decoder()
+        let assignment = try decoder.decode(DailySubtopicAssignment.self, from: document.data() ?? [:])
+
+        // If already marked as both completed by Cloud Function, return true
+        if assignment.bothCompleted {
+            return true
+        }
+
+        // Check if both users have completion entries
+        // The Cloud Function will handle setting both_completed when triggered
+        return userIds.allSatisfy { assignment.userCompletion[$0] != nil }
+    }
+
+    /// Calculates the next 12pm GMT date for scheduling
+    /// If current time is before 12pm GMT today, returns today
+    /// Otherwise returns tomorrow
+    func calculateNext12pmGMTDate() -> String {
+        let now = Date()
+
+        // Create GMT calendar
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "GMT")!
+
+        // Get current hour in GMT
+        let currentHour = calendar.component(.hour, from: now)
+
+        // If before 12pm GMT, next assignment is today
+        // Otherwise, next assignment is tomorrow
+        let targetDate: Date
+        if currentHour < 12 {
+            targetDate = now
+        } else {
+            targetDate = calendar.date(byAdding: .day, value: 1, to: now)!
+        }
+
+        // Format as YYYY-MM-DD
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "GMT")
+        return formatter.string(from: targetDate)
+    }
+
+    /// Gets the current 12pm GMT status for display purposes
+    func getTimeUntilNext12pmGMT() -> TimeInterval {
+        let now = Date()
+
+        // Create GMT calendar
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "GMT")!
+
+        // Get today at 12pm GMT
+        var components = calendar.dateComponents([.year, .month, .day], from: now)
+        components.hour = 12
+        components.minute = 0
+        components.second = 0
+
+        guard let todayNoon = calendar.date(from: components) else { return 0 }
+
+        if now < todayNoon {
+            return todayNoon.timeIntervalSince(now)
+        } else {
+            // Tomorrow at 12pm GMT
+            let tomorrowNoon = calendar.date(byAdding: .day, value: 1, to: todayNoon)!
+            return tomorrowNoon.timeIntervalSince(now)
+        }
     }
 
     // MARK: - Answers (Updated)

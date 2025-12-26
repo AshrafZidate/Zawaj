@@ -114,13 +114,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Daily subtopic assignments - partners can read their own assignments
+    // Daily subtopic assignments - partners can read their assignments and update their completion
     match /daily_subtopic_assignments/{assignmentId} {
       allow read: if isAuthenticated();
 
-      allow create: if isAuthenticated();
+      // Only Cloud Functions create assignments
+      allow create: if false;
 
-      allow update: if false; // Assignments are immutable
+      // Users can only update their own completion entry in user_completion map
+      // The both_completed, both_completed_at, next_scheduled_date fields are updated via Cloud Functions
+      allow update: if isAuthenticated() &&
+                      // Only allow updating user_completion with the current user's ID
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['user_completion']) &&
+                      // Ensure only the current user's completion is being set
+                      request.resource.data.user_completion.diff(resource.data.user_completion).affectedKeys()
+                        .hasOnly([request.auth.uid]);
 
       allow delete: if false;
     }

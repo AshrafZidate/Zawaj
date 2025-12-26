@@ -19,6 +19,7 @@ class DashboardViewModel: ObservableObject {
     // Current partnership state
     @Published var currentPartnershipId: String?
     @Published var partnershipProgress: PartnershipProgress?
+    @Published var currentAssignment: DailySubtopicAssignment?
     @Published var todaySubtopic: Subtopic?
     @Published var todayTopic: Topic?
 
@@ -32,6 +33,8 @@ class DashboardViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isAllQuestionsComplete: Bool = false
     @Published var isPartnershipComplete: Bool = false
+    @Published var isWaitingForNextDay: Bool = false  // Both completed, waiting for 12pm GMT
+    @Published var timeUntilNextSubtopic: TimeInterval = 0
     @Published var error: String?
 
     // Partner requests
@@ -192,61 +195,87 @@ class DashboardViewModel: ObservableObject {
 
     private func loadTodaySubtopic(partnershipId: String, progress: PartnershipProgress) async {
         do {
-            // Check if we already have an assignment for today
-            var assignment = try await firestoreService.getTodaySubtopicAssignment(partnershipId: partnershipId)
+            // Get active assignment (today's or most recent incomplete)
+            // Cloud Functions handle creating new assignments at 12pm GMT
+            let assignment = try await firestoreService.getActiveSubtopicAssignment(partnershipId: partnershipId)
 
-            if assignment == nil {
-                // Need to create a new assignment
-                var mutableProgress = progress
+            guard let activeAssignment = assignment else {
+                // No assignment exists - this means:
+                // 1. Partnership just formed (Cloud Function will create first assignment)
+                // 2. Both completed previous assignment but 12pm GMT hasn't passed yet
+                // Check if there's a completed assignment waiting for next day
+                let todayAssignment = try await firestoreService.getTodaySubtopicAssignment(partnershipId: partnershipId)
 
-                // Try to get the next subtopic
-                var nextSubtopic = try await questionBankService.getNextSubtopic(progress: mutableProgress)
-
-                // If nil, might need to increment round
-                while nextSubtopic == nil && !mutableProgress.isComplete {
-                    // Check if there are more rounds
-                    let maxRound = try await getMaxSubtopicCount(for: mutableProgress.combinedTopicOrder)
-
-                    if mutableProgress.currentRound < maxRound {
-                        // Increment round
-                        mutableProgress.currentRound += 1
-                        try await firestoreService.incrementPartnershipRound(partnershipId: partnershipId)
-                        nextSubtopic = try await questionBankService.getNextSubtopic(progress: mutableProgress)
-                    } else {
-                        // All complete
-                        mutableProgress.isComplete = true
-                        try await firestoreService.markPartnershipComplete(partnershipId: partnershipId)
-
-                        await MainActor.run {
-                            self.partnershipProgress = mutableProgress
-                            self.isPartnershipComplete = true
-                            self.todaySubtopic = nil
-                            self.todayTopic = nil
-                            self.questions = []
-                        }
-                        return
-                    }
-                }
-
-                guard let subtopic = nextSubtopic else {
-                    // No more subtopics
+                if let completed = todayAssignment, completed.bothCompleted {
+                    // Waiting for next assignment at 12pm GMT
+                    let timeRemaining = firestoreService.getTimeUntilNext12pmGMT()
                     await MainActor.run {
-                        self.isPartnershipComplete = true
+                        self.isWaitingForNextDay = true
+                        self.timeUntilNextSubtopic = timeRemaining
+                        self.todaySubtopic = nil
+                        self.todayTopic = nil
+                        self.questions = []
                     }
                     return
                 }
 
-                // Create assignment for today
-                assignment = try await firestoreService.createDailySubtopicAssignment(
-                    partnershipId: partnershipId,
-                    subtopicId: subtopic.id
-                )
+                // No assignment at all - waiting for Cloud Function to create first one
+                await MainActor.run {
+                    self.isWaitingForNextDay = false
+                    self.todaySubtopic = nil
+                    self.todayTopic = nil
+                    self.questions = []
+                }
+                return
             }
 
-            guard let todayAssignment = assignment else { return }
+            // Check if both have completed this assignment
+            if activeAssignment.bothCompleted {
+                // Check if next assignment should be available
+                let today = DailySubtopicAssignment.todayDateString()
+                if let nextDate = activeAssignment.nextScheduledDate, nextDate <= today {
+                    // Should have a new assignment - try to fetch it
+                    if let newAssignment = try await firestoreService.getTodaySubtopicAssignment(partnershipId: partnershipId),
+                       !newAssignment.bothCompleted {
+                        // Use the new assignment
+                        await loadAssignment(newAssignment, partnershipId: partnershipId)
+                        return
+                    }
+                }
 
+                // Still waiting for 12pm GMT
+                let timeRemaining = firestoreService.getTimeUntilNext12pmGMT()
+                await MainActor.run {
+                    self.isWaitingForNextDay = true
+                    self.timeUntilNextSubtopic = timeRemaining
+                    self.currentAssignment = activeAssignment
+                }
+
+                // Still load the subtopic info for display
+                if let subtopic = try await questionBankService.fetchSubtopic(id: activeAssignment.subtopicId) {
+                    let topic = try await questionBankService.fetchTopic(id: subtopic.topicId)
+                    await MainActor.run {
+                        self.todaySubtopic = subtopic
+                        self.todayTopic = topic
+                    }
+                }
+                return
+            }
+
+            // Load the active assignment
+            await loadAssignment(activeAssignment, partnershipId: partnershipId)
+
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to load today's questions: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func loadAssignment(_ assignment: DailySubtopicAssignment, partnershipId: String) async {
+        do {
             // Fetch the subtopic
-            guard let subtopic = try await questionBankService.fetchSubtopic(id: todayAssignment.subtopicId) else {
+            guard let subtopic = try await questionBankService.fetchSubtopic(id: assignment.subtopicId) else {
                 throw FirestoreError.invalidData
             }
 
@@ -254,8 +283,10 @@ class DashboardViewModel: ObservableObject {
             let topic = try await questionBankService.fetchTopic(id: subtopic.topicId)
 
             await MainActor.run {
+                self.currentAssignment = assignment
                 self.todaySubtopic = subtopic
                 self.todayTopic = topic
+                self.isWaitingForNextDay = false
             }
 
             // Load questions for this subtopic
@@ -263,7 +294,7 @@ class DashboardViewModel: ObservableObject {
 
         } catch {
             await MainActor.run {
-                self.error = "Failed to load today's questions: \(error.localizedDescription)"
+                self.error = "Failed to load assignment: \(error.localizedDescription)"
             }
         }
     }
@@ -430,26 +461,42 @@ class DashboardViewModel: ObservableObject {
         guard let subtopic = todaySubtopic,
               let partnershipId = currentPartnershipId,
               let partner = selectedPartner,
-              let user = currentUser else { return }
+              let user = currentUser,
+              let assignment = currentAssignment else { return }
 
         do {
             let questionIds = questions.map { $0.id }
 
-            let bothComplete = try await firestoreService.haveBothPartnersCompletedSubtopic(
-                partnerIds: [user.id, partner.id],
-                questionIds: questionIds
-            )
+            // Check if current user has completed all their questions
+            let userComplete = questionIds.allSatisfy { userAnswers[$0] != nil }
 
-            if bothComplete {
-                // Mark subtopic as completed
-                try await firestoreService.markSubtopicCompleted(
+            if userComplete {
+                // Mark this user as completed for the assignment
+                try await firestoreService.markUserCompletedSubtopic(
                     partnershipId: partnershipId,
-                    subtopicId: subtopic.id
+                    date: assignment.date,
+                    userId: user.id
                 )
 
-                // Update local progress
-                await MainActor.run {
-                    self.partnershipProgress?.completedSubtopics.append(subtopic.id)
+                // Check if both users are now complete
+                // The Cloud Function will handle updating both_completed and scheduling
+                let bothComplete = try await firestoreService.checkIfBothCompleted(
+                    partnershipId: partnershipId,
+                    date: assignment.date,
+                    userIds: [user.id, partner.id]
+                )
+
+                if bothComplete {
+                    // Cloud Function handles marking subtopic as completed
+                    // Just update local state to show waiting UI
+                    let timeRemaining = firestoreService.getTimeUntilNext12pmGMT()
+                    await MainActor.run {
+                        if !self.partnershipProgress!.completedSubtopics.contains(subtopic.id) {
+                            self.partnershipProgress?.completedSubtopics.append(subtopic.id)
+                        }
+                        self.isWaitingForNextDay = true
+                        self.timeUntilNextSubtopic = timeRemaining
+                    }
                 }
             }
         } catch {
@@ -530,15 +577,6 @@ class DashboardViewModel: ObservableObject {
         let maleId = userIsMale ? user.id : partner.id
         let femaleId = userIsMale ? partner.id : user.id
         return PartnershipProgress.createPartnershipId(maleId: maleId, femaleId: femaleId)
-    }
-
-    private func getMaxSubtopicCount(for topicIds: [Int]) async throws -> Int {
-        var maxCount = 0
-        for topicId in topicIds {
-            let subtopics = try await questionBankService.fetchSubtopics(forTopicId: topicId)
-            maxCount = max(maxCount, subtopics.count)
-        }
-        return maxCount
     }
 
     // MARK: - Refresh
