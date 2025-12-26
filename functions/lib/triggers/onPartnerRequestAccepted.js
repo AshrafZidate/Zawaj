@@ -37,6 +37,7 @@ exports.onPartnerRequestAccepted = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const subtopicService_1 = require("../utils/subtopicService");
+const notificationService_1 = require("../utils/notificationService");
 const db = admin.firestore();
 /**
  * Trigger: When a partner request is accepted
@@ -113,6 +114,9 @@ exports.onPartnerRequestAccepted = functions.firestore
         else {
             console.error("No subtopics found for first assignment");
         }
+        // Send notification to the sender that their request was accepted
+        const receiverName = await (0, notificationService_1.getUserFullName)(after.receiverId);
+        await (0, notificationService_1.sendNotificationToUser)(after.senderId, notificationService_1.NotificationMessages.partnerRequestAccepted(receiverName));
         return null;
     }
     catch (error) {

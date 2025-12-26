@@ -50,12 +50,6 @@ struct NotificationSettingsSection: View {
                     title: "Reminders",
                     isOn: $viewModel.reminderNotifications
                 )
-
-                SettingsToggle(
-                    icon: "flame",
-                    title: "Streak Alerts",
-                    isOn: $viewModel.streakNotifications
-                )
             }
         }
     }

@@ -9,6 +9,10 @@ import {
   markPartnershipComplete,
   PartnershipProgress,
 } from "../utils/subtopicService";
+import {
+  sendNotificationToUsers,
+  NotificationMessages,
+} from "../utils/notificationService";
 
 const db = admin.firestore();
 
@@ -130,6 +134,12 @@ export const dailySubtopicScheduler = functions.pubsub
             console.log(
               `Created assignment for ${assignment.partnership_id}: ` +
                 `subtopic ${nextSubtopic.id}`
+            );
+
+            // Send notification to both partners
+            await sendNotificationToUsers(
+              progress.user_ids,
+              NotificationMessages.newQuestionsAvailable()
             );
           }
         } catch (error) {

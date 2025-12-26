@@ -26,7 +26,6 @@ class ProfileViewModel: ObservableObject {
     @Published var partnerAnsweredNotifications: Bool = true
     @Published var partnerRequestNotifications: Bool = true
     @Published var reminderNotifications: Bool = true
-    @Published var streakNotifications: Bool = true
 
     // MARK: - App Preferences
     // User preference for how multi_choice questions are displayed:
@@ -124,23 +123,38 @@ class ProfileViewModel: ObservableObject {
     }
 
     func disconnectPartner(partnerId: String? = nil) async {
-        guard let _ = currentUser?.id else { return }
+        guard let currentUserId = currentUser?.id else { return }
 
-        // TODO: Implement partner disconnect logic in Firestore
-        await MainActor.run {
+        do {
             if let partnerId = partnerId {
-                // Remove specific partner
-                self.partners.removeAll { $0.id == partnerId }
-                self.currentUser?.partnerIds.removeAll { $0 == partnerId }
-                if self.partner?.id == partnerId {
-                    self.partner = self.partners.first
+                // Disconnect specific partner
+                try await firestoreService.disconnectPartner(currentUserId: currentUserId, partnerId: partnerId)
+
+                await MainActor.run {
+                    self.partners.removeAll { $0.id == partnerId }
+                    self.currentUser?.partnerIds.removeAll { $0 == partnerId }
+                    if self.partner?.id == partnerId {
+                        self.partner = self.partners.first
+                    }
+                    self.successMessage = "Successfully separated from partner"
                 }
             } else {
-                // Remove all partners (legacy behavior)
-                self.partner = nil
-                self.partners = []
-                self.currentUser?.partnerId = nil
-                self.currentUser?.partnerConnectionStatus = .none
+                // Disconnect all partners (legacy behavior)
+                for partner in partners {
+                    try await firestoreService.disconnectPartner(currentUserId: currentUserId, partnerId: partner.id)
+                }
+
+                await MainActor.run {
+                    self.partner = nil
+                    self.partners = []
+                    self.currentUser?.partnerId = nil
+                    self.currentUser?.partnerConnectionStatus = .none
+                    self.successMessage = "Successfully separated from all partners"
+                }
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error.localizedDescription
             }
         }
     }
@@ -167,6 +181,11 @@ class ProfileViewModel: ObservableObject {
 
     func signOut() async {
         do {
+            // Clear FCM token before signing out
+            if let userId = currentUser?.id {
+                NotificationService.shared.clearFCMToken(for: userId)
+            }
+
             try authService.signOut()
             // Reset state
             await MainActor.run {
@@ -242,14 +261,22 @@ class ProfileViewModel: ObservableObject {
         }
 
         do {
+            // Clear FCM token for current user before signing out
+            if let currentUserId = currentUser?.id {
+                NotificationService.shared.clearFCMToken(for: currentUserId)
+            }
+
             // Sign out current user
             try authService.signOut()
 
             // Sign in with new account
-            _ = try await authService.signInWithEmail(email: email, password: password)
+            let newUser = try await authService.signInWithEmail(email: email, password: password)
 
             // Load the new user's profile
             await loadProfileData()
+
+            // Update FCM token for new user
+            NotificationService.shared.updateFCMToken(for: newUser.uid)
 
             await MainActor.run {
                 self.isLoading = false

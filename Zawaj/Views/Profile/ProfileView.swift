@@ -858,12 +858,6 @@ struct SettingsContent: View {
                             title: "Reminders",
                             isOn: $viewModel.reminderNotifications
                         )
-
-                        SettingsListToggle(
-                            icon: "flame",
-                            title: "Streak Alerts",
-                            isOn: $viewModel.streakNotifications
-                        )
                     }
                 } header: {
                     Text("Notifications")

@@ -24,7 +24,8 @@ class DashboardViewModel: ObservableObject {
     @Published var todayTopic: Topic?
 
     // Questions for current subtopic
-    @Published var questions: [Question] = []
+    @Published var questions: [Question] = []  // Filtered questions for current user's flow
+    @Published var allSubtopicQuestions: [Question] = []  // All questions (unfiltered) for answer review
     @Published var currentQuestionIndex: Int = 0
     @Published var userAnswers: [Int: Answer] = [:] // questionId -> Answer
     @Published var partnerAnswers: [Int: Answer] = [:] // questionId -> Answer
@@ -36,6 +37,12 @@ class DashboardViewModel: ObservableObject {
     @Published var isWaitingForNextDay: Bool = false  // Both completed, waiting for 12pm GMT
     @Published var timeUntilNextSubtopic: TimeInterval = 0
     @Published var error: String?
+
+    // Remind partner state
+    @Published var canRemindPartner: Bool = true
+    @Published var reminderCooldownMinutes: Int = 0
+    @Published var isRemindingPartner: Bool = false
+    @Published var reminderSuccessMessage: String?
 
     // Partner requests
     @Published var pendingPartnerRequests: [PartnerRequest] = []
@@ -60,7 +67,9 @@ class DashboardViewModel: ObservableObject {
 
     var progressText: String {
         guard !questions.isEmpty else { return "" }
-        return "\(currentQuestionIndex + 1) of \(questions.count)"
+        // Cap the display index at questions.count to avoid showing "N+1 of N" when complete
+        let displayIndex = min(currentQuestionIndex + 1, questions.count)
+        return "\(displayIndex) of \(questions.count)"
     }
 
     var userGender: Gender? {
@@ -303,26 +312,28 @@ class DashboardViewModel: ObservableObject {
         guard let user = currentUser, let partner = selectedPartner else { return }
 
         do {
+            // Fetch ALL questions for this subtopic (not gender-filtered) for answer review
+            let allQuestionsUnfiltered = try await questionBankService.fetchQuestions(forSubtopicId: subtopic.id)
+            let allQuestionIds = allQuestionsUnfiltered.map { $0.id }
+
             // Fetch all questions for this subtopic, filtered by user's gender
             let allQuestions = try await questionBankService.fetchQuestions(
                 forSubtopicId: subtopic.id,
                 gender: userGender
             )
 
-            let questionIds = allQuestions.map { $0.id }
-
-            // Fetch user's existing answers for this subtopic
+            // Fetch user's existing answers for this subtopic (for all questions)
             let existingUserAnswers = try await firestoreService.getAnswersForSubtopic(
                 userId: user.id,
                 subtopicId: subtopic.id,
-                questionIds: questionIds
+                questionIds: allQuestionIds
             )
 
-            // Fetch partner's existing answers
+            // Fetch partner's existing answers (for all questions, to show in review)
             let existingPartnerAnswers = try await firestoreService.getAnswersForSubtopic(
                 userId: partner.id,
                 subtopicId: subtopic.id,
-                questionIds: questionIds
+                questionIds: allQuestionIds
             )
 
             // Filter questions based on branching conditions
@@ -346,6 +357,7 @@ class DashboardViewModel: ObservableObject {
             }
 
             await MainActor.run {
+                self.allSubtopicQuestions = allQuestionsUnfiltered  // Store all questions (unfiltered) for answer review
                 self.questions = filteredQuestions
                 self.userAnswers = existingUserAnswers
                 self.partnerAnswers = existingPartnerAnswers
@@ -598,6 +610,67 @@ class DashboardViewModel: ObservableObject {
             }
         } catch {
             // Silent fail for refresh
+        }
+    }
+
+    // MARK: - Remind Partner
+
+    /// Check if user can send a reminder to their partner
+    func checkReminderCooldown() async {
+        guard let userId = currentUser?.id,
+              let partnershipId = currentPartnershipId else {
+            return
+        }
+
+        do {
+            let (canSend, remainingMinutes) = try await firestoreService.canSendReminder(
+                userId: userId,
+                partnershipId: partnershipId
+            )
+
+            await MainActor.run {
+                self.canRemindPartner = canSend
+                self.reminderCooldownMinutes = remainingMinutes
+            }
+        } catch {
+            // If check fails, assume can send
+            await MainActor.run {
+                self.canRemindPartner = true
+                self.reminderCooldownMinutes = 0
+            }
+        }
+    }
+
+    /// Send a reminder notification to the partner
+    func remindPartner() async {
+        guard let partnershipId = currentPartnershipId,
+              let partnerId = selectedPartner?.id else {
+            return
+        }
+
+        await MainActor.run {
+            self.isRemindingPartner = true
+            self.error = nil
+            self.reminderSuccessMessage = nil
+        }
+
+        do {
+            let message = try await firestoreService.remindPartner(
+                partnershipId: partnershipId,
+                partnerId: partnerId
+            )
+
+            await MainActor.run {
+                self.isRemindingPartner = false
+                self.reminderSuccessMessage = message
+                self.canRemindPartner = false
+                self.reminderCooldownMinutes = 240 // 4 hours
+            }
+        } catch {
+            await MainActor.run {
+                self.isRemindingPartner = false
+                self.error = error.localizedDescription
+            }
         }
     }
 }

@@ -1,6 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {calculateNext12pmGMTDate} from "../utils/dateUtils";
+import {
+  sendNotificationToUser,
+  getUserFullName,
+  NotificationMessages,
+} from "../utils/notificationService";
 
 const db = admin.firestore();
 
@@ -19,7 +24,8 @@ interface DailySubtopicAssignment {
 
 /**
  * Trigger: When user_completion is updated
- * Checks if both partners have completed and schedules next assignment
+ * - Notifies the other partner when one completes
+ * - Checks if both partners have completed and schedules next assignment
  */
 export const onBothPartnersCompleted = functions.firestore
   .document("daily_subtopic_assignments/{assignmentId}")
@@ -33,17 +39,26 @@ export const onBothPartnersCompleted = functions.firestore
     }
 
     // Check if user_completion has changed
-    const beforeCompletions = Object.keys(before.user_completion || {}).length;
-    const afterCompletions = Object.keys(after.user_completion || {}).length;
+    const beforeUserIds = Object.keys(before.user_completion || {});
+    const afterUserIds = Object.keys(after.user_completion || {});
 
-    if (beforeCompletions === afterCompletions) {
+    if (beforeUserIds.length === afterUserIds.length) {
       // No new completions, skip
       return null;
     }
 
+    // Find which user just completed
+    const newlyCompletedUserId = afterUserIds.find(
+      (userId) => !beforeUserIds.includes(userId)
+    );
+
+    if (!newlyCompletedUserId) {
+      return null;
+    }
+
     console.log(
-      `User completion updated for assignment ${context.params.assignmentId}: ` +
-        `${beforeCompletions} -> ${afterCompletions} completions`
+      `User ${newlyCompletedUserId} completed assignment ` +
+        `${context.params.assignmentId}`
     );
 
     // Get partnership progress to find both user IDs
@@ -65,16 +80,37 @@ export const onBothPartnersCompleted = functions.firestore
       return null;
     }
 
+    // Find the other partner
+    const otherPartnerId = userIds.find((id) => id !== newlyCompletedUserId);
+    if (!otherPartnerId) {
+      return null;
+    }
+
     // Check if both users have completed
     const bothComplete = userIds.every(
       (userId) => after.user_completion[userId] != null
     );
 
+    // Get the name of the user who just completed
+    const completedUserName = await getUserFullName(newlyCompletedUserId);
+
     if (!bothComplete) {
-      console.log("Not all users have completed yet");
+      // Only one user completed - notify the other partner
+      const hasOtherCompleted = after.user_completion[otherPartnerId] != null;
+
+      await sendNotificationToUser(
+        otherPartnerId,
+        NotificationMessages.partnerCompletedQuestions(
+          completedUserName,
+          hasOtherCompleted
+        )
+      );
+
+      console.log(`Notified partner ${otherPartnerId} that ${completedUserName} completed`);
       return null;
     }
 
+    // Both users have completed
     console.log(
       `Both partners completed assignment ${context.params.assignmentId}`
     );
@@ -108,6 +144,12 @@ export const onBothPartnersCompleted = functions.firestore
       });
 
       console.log(`Marked subtopic ${after.subtopic_id} as completed`);
+
+      // Notify the other partner that both have completed (they can now review)
+      await sendNotificationToUser(
+        otherPartnerId,
+        NotificationMessages.partnerCompletedQuestions(completedUserName, true)
+      );
 
       return null;
     } catch (error) {

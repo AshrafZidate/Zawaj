@@ -41,6 +41,10 @@ struct User: Codable, Identifiable, Equatable {
     var updatedAt: Date
     var photoURL: String?
 
+    // Push notifications
+    var fcmToken: String?
+    var lastReminderSentAt: [String: Date]?  // partnershipId -> last reminder timestamp
+
     init(
         id: String,
         email: String,
@@ -60,7 +64,9 @@ struct User: Codable, Identifiable, Equatable {
         answerPreference: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
-        photoURL: String? = nil
+        photoURL: String? = nil,
+        fcmToken: String? = nil,
+        lastReminderSentAt: [String: Date]? = nil
     ) {
         self.id = id
         self.email = email
@@ -81,5 +87,7 @@ struct User: Codable, Identifiable, Equatable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.photoURL = photoURL
+        self.fcmToken = fcmToken
+        self.lastReminderSentAt = lastReminderSentAt
     }
 }

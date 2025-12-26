@@ -15,27 +15,27 @@ class QuestionBankService {
 
     /// Fetches all active topics ordered by their order field
     func fetchAllTopics() async throws -> [Topic] {
+        // Note: Not filtering by archived_at since the field may not exist on all documents
+        // If soft-delete is needed later, ensure all documents have archived_at: null
         let snapshot = try await db.collection("topics")
-            .whereField("archived_at", isEqualTo: NSNull())
             .order(by: "order")
             .getDocuments()
 
         return try snapshot.documents.compactMap { doc in
             try parseFirestoreDocument(doc, as: Topic.self)
-        }
+        }.filter { $0.archivedAt == nil }
     }
 
     /// Fetches only rankable topics (for priority ranking UI)
     func fetchRankableTopics() async throws -> [Topic] {
         let snapshot = try await db.collection("topics")
             .whereField("is_rankable", isEqualTo: true)
-            .whereField("archived_at", isEqualTo: NSNull())
             .order(by: "order")
             .getDocuments()
 
         return try snapshot.documents.compactMap { doc in
             try parseFirestoreDocument(doc, as: Topic.self)
-        }
+        }.filter { $0.archivedAt == nil }
     }
 
     /// Fetches a specific topic by ID
@@ -51,13 +51,12 @@ class QuestionBankService {
     func fetchSubtopics(forTopicId topicId: Int) async throws -> [Subtopic] {
         let snapshot = try await db.collection("subtopics")
             .whereField("topic_id", isEqualTo: topicId)
-            .whereField("archived_at", isEqualTo: NSNull())
             .order(by: "order")
             .getDocuments()
 
         return try snapshot.documents.compactMap { doc in
             try parseFirestoreDocument(doc, as: Subtopic.self)
-        }
+        }.filter { $0.archivedAt == nil }
     }
 
     /// Fetches a specific subtopic by ID
@@ -72,12 +71,11 @@ class QuestionBankService {
         let snapshot = try await db.collection("subtopics")
             .whereField("topic_id", isEqualTo: topicId)
             .whereField("order", isEqualTo: order)
-            .whereField("archived_at", isEqualTo: NSNull())
-            .limit(to: 1)
             .getDocuments()
 
         guard let doc = snapshot.documents.first else { return nil }
-        return try parseFirestoreDocument(doc, as: Subtopic.self)
+        let subtopic = try parseFirestoreDocument(doc, as: Subtopic.self)
+        return subtopic.archivedAt == nil ? subtopic : nil
     }
 
     // MARK: - Fetch Questions
@@ -86,13 +84,12 @@ class QuestionBankService {
     func fetchQuestions(forSubtopicId subtopicId: Int) async throws -> [Question] {
         let snapshot = try await db.collection("questions")
             .whereField("subtopic_id", isEqualTo: subtopicId)
-            .whereField("archived_at", isEqualTo: NSNull())
             .order(by: "order")
             .getDocuments()
 
         return try snapshot.documents.compactMap { doc in
             try parseFirestoreDocument(doc, as: Question.self)
-        }
+        }.filter { $0.archivedAt == nil }
     }
 
     /// Fetches questions filtered by gender (null gender means for everyone)

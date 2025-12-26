@@ -38,6 +38,7 @@ const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const dateUtils_1 = require("../utils/dateUtils");
 const subtopicService_1 = require("../utils/subtopicService");
+const notificationService_1 = require("../utils/notificationService");
 const db = admin.firestore();
 /**
  * Scheduled function: Runs at 12:00 UTC (GMT) daily
@@ -114,6 +115,8 @@ exports.dailySubtopicScheduler = functions.pubsub
                     await (0, subtopicService_1.createDailySubtopicAssignment)(assignment.partnership_id, nextSubtopic.id, today);
                     console.log(`Created assignment for ${assignment.partnership_id}: ` +
                         `subtopic ${nextSubtopic.id}`);
+                    // Send notification to both partners
+                    await (0, notificationService_1.sendNotificationToUsers)(progress.user_ids, notificationService_1.NotificationMessages.newQuestionsAvailable());
                 }
             }
             catch (error) {

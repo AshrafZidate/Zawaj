@@ -74,7 +74,7 @@ enum OnboardingStep: Int, CaseIterable {
 }
 
 class OnboardingCoordinator: ObservableObject {
-    @Published var currentStep: OnboardingStep = .welcome
+    @Published var currentStep: OnboardingStep = .launch  // Start with launch/loading state
     @Published var navigationPath = NavigationPath()
 
     private var authStateListener: AuthStateDidChangeListenerHandle?
@@ -100,6 +100,8 @@ class OnboardingCoordinator: ObservableObject {
             if let _ = try? await firestoreService.getUserProfile(userId: currentUser.uid) {
                 // Profile exists, go directly to completed
                 currentStep = .completed
+                // Update FCM token for push notifications
+                NotificationService.shared.updateFCMToken(for: currentUser.uid)
                 return
             }
         }
@@ -107,6 +109,9 @@ class OnboardingCoordinator: ObservableObject {
         // No existing session - try auto-login if enabled
         if AppConfig.autoLoginEnabled {
             await performAutoLogin()
+        } else {
+            // No auto-login, show welcome screen
+            currentStep = .welcome
         }
     }
 
@@ -148,6 +153,8 @@ class OnboardingCoordinator: ObservableObject {
             if let _ = try? await firestoreService.getUserProfile(userId: user.uid) {
                 // Profile exists, login successful
                 currentStep = .completed
+                // Update FCM token for push notifications
+                NotificationService.shared.updateFCMToken(for: user.uid)
             } else {
                 // Profile doesn't exist - create a minimal test profile
                 print("⚠️ User profile not found. Creating test profile...")
@@ -177,6 +184,8 @@ class OnboardingCoordinator: ObservableObject {
                 print("✅ Test profile created successfully")
 
                 currentStep = .completed
+                // Update FCM token for push notifications
+                NotificationService.shared.updateFCMToken(for: user.uid)
             }
         } catch {
             // Auto-login failed, show welcome screen
@@ -365,6 +374,8 @@ class OnboardingCoordinator: ObservableObject {
                 await MainActor.run {
                     isLoading = false
                     skipToStep(.completed)
+                    // Update FCM token for push notifications
+                    NotificationService.shared.updateFCMToken(for: user.uid)
                 }
             } else {
                 // User authenticated but hasn't completed onboarding
@@ -408,6 +419,8 @@ class OnboardingCoordinator: ObservableObject {
                 await MainActor.run {
                     isLoading = false
                     skipToStep(.completed)
+                    // Update FCM token for push notifications
+                    NotificationService.shared.updateFCMToken(for: user.uid)
                 }
             } else {
                 await MainActor.run {
@@ -436,6 +449,8 @@ class OnboardingCoordinator: ObservableObject {
                 await MainActor.run {
                     isLoading = false
                     skipToStep(.completed)
+                    // Update FCM token for push notifications
+                    NotificationService.shared.updateFCMToken(for: user.uid)
                 }
             } else {
                 await MainActor.run {
@@ -493,6 +508,9 @@ class OnboardingCoordinator: ObservableObject {
 
             // Send any queued partner requests
             await sendQueuedPartnerRequests(userId: firebaseUser.uid)
+
+            // Update FCM token for push notifications
+            NotificationService.shared.updateFCMToken(for: firebaseUser.uid)
 
             await MainActor.run {
                 isLoading = false

@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseFunctions
 
 enum FirestoreError: Error, LocalizedError {
     case userNotFound
@@ -224,6 +225,69 @@ class FirestoreService {
                 "status": "rejected",
                 "respondedAt": Timestamp(date: Date())
             ])
+        } catch {
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
+    /// Disconnects two partners by removing each other from their partnerIds arrays
+    /// and updating the partner request status to "separated"
+    func disconnectPartner(currentUserId: String, partnerId: String) async throws {
+        do {
+            // Get current user's data to check if they have other partners
+            let currentUserDoc = try await db.collection("users").document(currentUserId).getDocument()
+            let currentUserPartnerIds = currentUserDoc.data()?["partnerIds"] as? [String] ?? []
+            let currentUserWillHaveNoPartners = currentUserPartnerIds.filter { $0 != partnerId }.isEmpty
+
+            // Get partner's data to check if they have other partners
+            let partnerDoc = try await db.collection("users").document(partnerId).getDocument()
+            let partnerPartnerIds = partnerDoc.data()?["partnerIds"] as? [String] ?? []
+            let partnerWillHaveNoPartners = partnerPartnerIds.filter { $0 != currentUserId }.isEmpty
+
+            // Remove partnerId from current user's partnerIds and update connection status if needed
+            var currentUserUpdates: [String: Any] = [
+                "partnerIds": FieldValue.arrayRemove([partnerId]),
+                "updatedAt": Timestamp(date: Date())
+            ]
+            if currentUserWillHaveNoPartners {
+                currentUserUpdates["partnerConnectionStatus"] = "none"
+                currentUserUpdates["partnerId"] = NSNull()
+            }
+            try await db.collection("users").document(currentUserId).updateData(currentUserUpdates)
+
+            // Remove currentUserId from partner's partnerIds and update connection status if needed
+            var partnerUpdates: [String: Any] = [
+                "partnerIds": FieldValue.arrayRemove([currentUserId]),
+                "updatedAt": Timestamp(date: Date())
+            ]
+            if partnerWillHaveNoPartners {
+                partnerUpdates["partnerConnectionStatus"] = "none"
+                partnerUpdates["partnerId"] = NSNull()
+            }
+            try await db.collection("users").document(partnerId).updateData(partnerUpdates)
+
+            // Find and update the partner request to "separated"
+            // Check both directions (sender/receiver could be either user)
+            let requests1 = try await db.collection("partnerRequests")
+                .whereField("senderId", isEqualTo: currentUserId)
+                .whereField("receiverId", isEqualTo: partnerId)
+                .whereField("status", isEqualTo: "accepted")
+                .getDocuments()
+
+            let requests2 = try await db.collection("partnerRequests")
+                .whereField("senderId", isEqualTo: partnerId)
+                .whereField("receiverId", isEqualTo: currentUserId)
+                .whereField("status", isEqualTo: "accepted")
+                .getDocuments()
+
+            let allRequests = requests1.documents + requests2.documents
+
+            for request in allRequests {
+                try await db.collection("partnerRequests").document(request.documentID).updateData([
+                    "status": "separated",
+                    "separatedAt": Timestamp(date: Date())
+                ])
+            }
         } catch {
             throw FirestoreError.unknown(error.localizedDescription)
         }
@@ -612,6 +676,74 @@ class FirestoreService {
             }
         }
         return true
+    }
+
+    // MARK: - Cloud Functions
+
+    private lazy var functions = Functions.functions()
+
+    /// Sends a reminder notification to a partner
+    /// - Parameters:
+    ///   - partnershipId: The partnership ID
+    ///   - partnerId: The partner's user ID to remind
+    /// - Returns: Success message or throws an error
+    func remindPartner(partnershipId: String, partnerId: String) async throws -> String {
+        let data: [String: Any] = [
+            "partnershipId": partnershipId,
+            "partnerId": partnerId
+        ]
+
+        do {
+            let result = try await functions.httpsCallable("remindPartner").call(data)
+
+            if let response = result.data as? [String: Any],
+               let message = response["message"] as? String {
+                return message
+            }
+
+            return "Reminder sent successfully"
+        } catch {
+            // Parse Firebase Functions error
+            let nsError = error as NSError
+            if let errorMessage = nsError.userInfo["message"] as? String {
+                throw FirestoreError.unknown(errorMessage)
+            }
+            throw FirestoreError.unknown(error.localizedDescription)
+        }
+    }
+
+    /// Gets the last reminder time for a partnership
+    func getLastReminderTime(userId: String, partnershipId: String) async throws -> Date? {
+        let document = try await db.collection("users").document(userId).getDocument()
+
+        guard document.exists,
+              let data = document.data(),
+              let lastReminderSentAt = data["lastReminderSentAt"] as? [String: Timestamp],
+              let timestamp = lastReminderSentAt[partnershipId] else {
+            return nil
+        }
+
+        return timestamp.dateValue()
+    }
+
+    /// Checks if reminder can be sent (4-hour cooldown)
+    func canSendReminder(userId: String, partnershipId: String) async throws -> (canSend: Bool, remainingMinutes: Int) {
+        let cooldownMs = 4 * 60 * 60 * 1000 // 4 hours in milliseconds
+
+        guard let lastReminderTime = try await getLastReminderTime(userId: userId, partnershipId: partnershipId) else {
+            return (true, 0)
+        }
+
+        let timeSinceLastReminder = Date().timeIntervalSince(lastReminderTime) * 1000 // Convert to ms
+
+        if timeSinceLastReminder >= Double(cooldownMs) {
+            return (true, 0)
+        }
+
+        let remainingMs = Double(cooldownMs) - timeSinceLastReminder
+        let remainingMinutes = Int(ceil(remainingMs / (60 * 1000)))
+
+        return (false, remainingMinutes)
     }
 
     // MARK: - Helper Methods

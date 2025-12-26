@@ -106,8 +106,19 @@ struct PartnerQuestionPage: View {
                     AllQuestionsCompleteView(
                         partner: partner,
                         hasPartnerAnswered: !viewModel.partnerAnswers.isEmpty,
-                        onViewAnswers: onViewAnswer
+                        onViewAnswers: onViewAnswer,
+                        canRemindPartner: viewModel.canRemindPartner,
+                        isRemindingPartner: viewModel.isRemindingPartner,
+                        reminderCooldownMinutes: viewModel.reminderCooldownMinutes,
+                        onRemindPartner: {
+                            Task {
+                                await viewModel.remindPartner()
+                            }
+                        }
                     )
+                    .task {
+                        await viewModel.checkReminderCooldown()
+                    }
                 } else if let question = viewModel.currentQuestion {
                     // Show current question
                     QuestionCardNew(question: question)
@@ -468,6 +479,26 @@ struct AllQuestionsCompleteView: View {
     let partner: User
     let hasPartnerAnswered: Bool
     let onViewAnswers: () -> Void
+    let canRemindPartner: Bool
+    let isRemindingPartner: Bool
+    let reminderCooldownMinutes: Int
+    let onRemindPartner: () -> Void
+
+    private var partnerFirstName: String {
+        partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName
+    }
+
+    private var cooldownText: String {
+        if reminderCooldownMinutes >= 60 {
+            let hours = reminderCooldownMinutes / 60
+            let minutes = reminderCooldownMinutes % 60
+            if minutes > 0 {
+                return "\(hours)h \(minutes)m"
+            }
+            return "\(hours)h"
+        }
+        return "\(reminderCooldownMinutes)m"
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -480,8 +511,8 @@ struct AllQuestionsCompleteView: View {
                 .foregroundColor(.white)
 
             Text(hasPartnerAnswered ?
-                 "See how \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) answered" :
-                 "Waiting for \(partner.fullName.split(separator: " ").first.map(String.init) ?? partner.fullName) to complete")
+                 "See how \(partnerFirstName) answered" :
+                 "Waiting for \(partnerFirstName) to complete")
                 .font(.body)
                 .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
@@ -489,6 +520,39 @@ struct AllQuestionsCompleteView: View {
             if hasPartnerAnswered {
                 GlassButtonPrimary(title: "View Answers") {
                     onViewAnswers()
+                }
+                .padding(.top, 8)
+            } else {
+                // Remind partner button
+                VStack(spacing: 8) {
+                    Button(action: onRemindPartner) {
+                        HStack(spacing: 8) {
+                            if isRemindingPartner {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(0.8)
+                            } else {
+                                Image(systemName: "bell.badge")
+                            }
+                            Text(isRemindingPartner ? "Sending..." : "Remind \(partnerFirstName)")
+                        }
+                        .font(.body.weight(.medium))
+                        .foregroundColor(canRemindPartner ? .white : .white.opacity(0.5))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            canRemindPartner ?
+                            Color.white.opacity(0.2) : Color.white.opacity(0.1),
+                            in: Capsule()
+                        )
+                    }
+                    .disabled(!canRemindPartner || isRemindingPartner)
+
+                    if !canRemindPartner && reminderCooldownMinutes > 0 {
+                        Text("Available again in \(cooldownText)")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
                 }
                 .padding(.top, 8)
             }
@@ -549,6 +613,13 @@ struct AnswersReviewSheet: View {
     let partner: User
     @Environment(\.dismiss) var dismiss
 
+    /// Questions to show in review - all questions where at least one person answered
+    private var questionsToShow: [Question] {
+        viewModel.allSubtopicQuestions.filter { question in
+            viewModel.userAnswers[question.id] != nil || viewModel.partnerAnswers[question.id] != nil
+        }
+    }
+
     var body: some View {
         ZStack {
             GradientBackground()
@@ -589,8 +660,8 @@ struct AnswersReviewSheet: View {
                         }
                     }
 
-                    // Questions and answers
-                    ForEach(viewModel.questions) { question in
+                    // Questions and answers - show all questions where at least one person answered
+                    ForEach(questionsToShow) { question in
                         AnswerComparisonCard(
                             question: question,
                             userAnswer: viewModel.userAnswers[question.id],

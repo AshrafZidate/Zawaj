@@ -7,6 +7,11 @@ import {
   getNextSubtopic,
   createDailySubtopicAssignment,
 } from "../utils/subtopicService";
+import {
+  sendNotificationToUser,
+  getUserFullName,
+  NotificationMessages,
+} from "../utils/notificationService";
 
 const db = admin.firestore();
 
@@ -146,6 +151,13 @@ export const onPartnerRequestAccepted = functions.firestore
       } else {
         console.error("No subtopics found for first assignment");
       }
+
+      // Send notification to the sender that their request was accepted
+      const receiverName = await getUserFullName(after.receiverId);
+      await sendNotificationToUser(
+        after.senderId,
+        NotificationMessages.partnerRequestAccepted(receiverName)
+      );
 
       return null;
     } catch (error) {

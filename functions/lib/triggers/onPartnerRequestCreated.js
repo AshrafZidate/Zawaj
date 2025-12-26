@@ -33,20 +33,34 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dailySubtopicScheduler = exports.remindPartner = exports.onBothPartnersCompleted = exports.onPartnerRequestAccepted = exports.onPartnerRequestCreated = void 0;
+exports.onPartnerRequestCreated = void 0;
+const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-// Initialize Firebase Admin SDK
-admin.initializeApp();
-// Export triggers
-var onPartnerRequestCreated_1 = require("./triggers/onPartnerRequestCreated");
-Object.defineProperty(exports, "onPartnerRequestCreated", { enumerable: true, get: function () { return onPartnerRequestCreated_1.onPartnerRequestCreated; } });
-var onPartnerRequestAccepted_1 = require("./triggers/onPartnerRequestAccepted");
-Object.defineProperty(exports, "onPartnerRequestAccepted", { enumerable: true, get: function () { return onPartnerRequestAccepted_1.onPartnerRequestAccepted; } });
-var onBothPartnersCompleted_1 = require("./triggers/onBothPartnersCompleted");
-Object.defineProperty(exports, "onBothPartnersCompleted", { enumerable: true, get: function () { return onBothPartnersCompleted_1.onBothPartnersCompleted; } });
-var onRemindPartner_1 = require("./triggers/onRemindPartner");
-Object.defineProperty(exports, "remindPartner", { enumerable: true, get: function () { return onRemindPartner_1.remindPartner; } });
-// Export scheduled functions
-var dailySubtopicScheduler_1 = require("./scheduled/dailySubtopicScheduler");
-Object.defineProperty(exports, "dailySubtopicScheduler", { enumerable: true, get: function () { return dailySubtopicScheduler_1.dailySubtopicScheduler; } });
-//# sourceMappingURL=index.js.map
+const notificationService_1 = require("../utils/notificationService");
+const db = admin.firestore();
+/**
+ * Trigger: When a new partner request is created
+ * Sends a push notification to the receiver
+ */
+exports.onPartnerRequestCreated = functions.firestore
+    .document("partnerRequests/{requestId}")
+    .onCreate(async (snapshot, context) => {
+    const request = snapshot.data();
+    console.log(`New partner request created: ${context.params.requestId}`);
+    // Get receiver's user ID from their username
+    const receiverQuery = await db
+        .collection("users")
+        .where("username", "==", request.receiverUsername.toLowerCase())
+        .limit(1)
+        .get();
+    if (receiverQuery.empty) {
+        console.log(`Receiver not found: ${request.receiverUsername}`);
+        return null;
+    }
+    const receiverId = receiverQuery.docs[0].id;
+    const senderName = request.senderFullName || await (0, notificationService_1.getUserFullName)(request.senderId);
+    // Send notification to receiver
+    await (0, notificationService_1.sendNotificationToUser)(receiverId, notificationService_1.NotificationMessages.newPartnerRequest(senderName));
+    return null;
+});
+//# sourceMappingURL=onPartnerRequestCreated.js.map
